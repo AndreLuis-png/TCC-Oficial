@@ -1,0 +1,31 @@
+/* ==========================================
+   VARIÁVEIS GLOBAIS (DESIGN SYSTEM)
+   ========================================== */
+:root {
+    /* Cores Principais: Definem a identidade visual da aplicação (Azul, Laranja, Branco e Cinza) */
+    --primary-blue: #192A6B;
+    --accent-orange: #FF9500;
+    --pure-white: #FFFFFF;
+    --gray-muted: #9BA2B0;
+
+    /* Cores de Fundo Secundárias e Variações Escuras: Usadas no fundo da página, cartões e bordas */
+    --bg-main: #f1f5f9;
+    --bg-card: var(--pure-white);
+    --border-color: #cbd5e1;
+    
+    /* Variações de Tons Escuros (Filtros e Painéis): Usadas para diferenciar seções como painel admin ou barra de busca */
+    --dark-blue-gray: #19436B;
+    --deep-purple: #23196B;
+    --teal-dark: #195D6B;
+    --plum-dark: #3E196B;
+
+    /* Tons de Alerta, Categorias e Destaques (Amarelos/Laranjas): Usados principalmente nas "badges" (etiquetas) das áreas */
+    --orange-bright: #FF6800;
+    --yellow-gold: #FFB400;
+    --yellow-bright: #FFD200;
+    --yellow-light: #FFD262;
+    
+    /* Cores de Estado Funcional: Verde para sucesso, Vermelho para erro/perigo */
+    --error: #ef4444;
+    --success: #22c55e;
+}
