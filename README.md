@@ -13,10 +13,11 @@ ROTAS DE API E URL
             se o usuário for admin exibe todas as rotas 
             se o usuário for user, oculta a rota admin.html e exibe as outras
         funções relacionadas ao admin
-            permite adição de usuário 
-            permite bloquieo/desbloqueio de usuários
-            permite exclusão de usuários
-            permite a alteração de senhas de usuários 
+            com a inserção da chave do banco de dados:
+                permite adição de usuário 
+                permite bloquieo/desbloqueio de usuários
+                permite exclusão de usuários
+                permite a alteração de senhas de usuários 
         função de encriptação de senhas inseridas pelo banco de dados pelo bcrypt
 
     rota de login 
@@ -28,7 +29,7 @@ ROTAS DE API E URL
     exibe os itens do banco de dados na tela
     exibe os filtros de itens
     exibe a caixa de pesquisa
-    verifica a função de rota para exibir ou não todas as rotas
+    verifica a função para ocultar a rota exclusiva a admin (url e api) para exibir ou não todas as rotas
 
     rota movimento 
     adiciona novos itens ao banco de dados 
@@ -57,3 +58,4 @@ BANCO DE DADOS
         preco 
         descricao 
         link da imagem
+    gera uma tabela de histórico de lançamentos para a página do admin
