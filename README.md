@@ -17,7 +17,10 @@ ROTAS DE API E URL
                 permite adição de usuário 
                 permite bloquieo/desbloqueio de usuários
                 permite exclusão de usuários
-                permite a alteração de senhas de usuários 
+                permite a alteração de senhas de usuários
+        função de padronização de IDs por categoria (Geral "00001", Mecanica "10001" ou Eletrica "20001")
+        função para inserir um item no banco com o próximo ID disponível
+            Se estão no banco os itens de IDs "00001" e "00003", antes de adicionar o "00004" preencha com o "00002", isso em todas as classes pra todas as novas inserções 
         função de encriptação de senhas inseridas pelo banco de dados pelo bcrypt
 
     rota de login 
