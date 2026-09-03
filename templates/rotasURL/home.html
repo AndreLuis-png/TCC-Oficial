@@ -1,0 +1,91 @@
+<style>
+:root {
+    --primary-blue: #192A6B;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--primary-blue) url('../../static/Almoxarifado.png') center/cover no-repeat;
+    font-family: Arial, sans-serif;
+}
+
+/* CAIXINHA BRANCA INVISIVEL */
+.login-box {
+    position: absolute;
+    top: 49%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 510px;
+    height: 298px;
+    background: white;
+    border-radius: 30 px;
+    padding: 20px 0;
+}
+
+/* LETRERO LOGIN */
+.login-box h1 {
+    margin: 0 0 15px;
+    text-align: center;
+    color: #f28c00;
+    font-size: 60px;
+    text-shadow: 3px 3px #000;
+}
+
+/* QUADRADO ESPAÇADOR E FORMATADOR DA CAIXA DE SENHA E LOGIN */
+.campo {
+    margin-left: 82px;
+    margin-bottom: 10px;
+}
+
+.campo label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+/* BORDA DAS CAIXAS DE TEXTO*/
+.campo input {
+    width: 390px;
+    height: 32px;
+    margin-left: -1px;
+    padding: 0 12px;
+    border: 2px solid #000;
+    border-radius: 20px;
+    box-sizing: border-box;
+}
+
+/* BOTÃO PARA IR PARA A TELA HOME */
+.botao-menu {
+    display: block;
+    width: 120px;
+    margin: 14px auto 0;
+    padding: 10px 0;
+
+    background: #192A6B;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 20px;
+    font-weight: bold;
+}
+</style>
+
+<div class="login-box">
+
+    <h1>Login</h1>
+
+    <div class="campo">
+        <label for="usuario">Usuário:</label>
+        <input type="text" id="usuario" name="usuario">
+    </div>
+
+    <div class="campo">
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha">
+    </div>
+
+    <a href="home.html" class="botao-menu">Entrar</a>
+
+</div>
