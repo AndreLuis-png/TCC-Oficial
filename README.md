@@ -62,3 +62,13 @@ BANCO DE DADOS
         descricao 
         link da imagem
     gera uma tabela de histórico de lançamentos para a página do admin
+
+- Função para limpar caracteres (ANDRÉ USE-O)
+UPDATE itens 
+SET nome_item = CONCAT(
+    -- 1. Pega a primeira letra, remove o acento e deixa MAIÚSCULA
+    UPPER(CONVERT(LEFT(TRIM(nome_item), 1) USING usascii)),
+    
+    -- 2. Pega o restante do texto, remove os acentos e deixa minúscula
+    LOWER(CONVERT(SUBSTRING(TRIM(nome_item), 2) USING usascii))
+);
