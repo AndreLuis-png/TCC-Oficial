@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cyber Runner - Power-ups</title>
+  <title>Cyber Runner - Balanced Chaos</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -22,14 +22,29 @@
     .title { font-size: 1.5rem; font-weight: 800; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0, 243, 255, 0.6); }
     .score-board { font-family: monospace; font-size: 1.2rem; color: #f43f5e; background: #111827; padding: 6px 16px; border-radius: 8px; border: 1px solid #1f2937; }
     .score-board span { color: #00f3ff; margin-left: 10px; }
-    canvas { width: 100%; height: auto; background: #0f172a; border: 2px solid #00f3ff; border-radius: 12px; box-shadow: 0 0 20px rgba(0, 243, 255, 0.2); display: block; }
+    
+    canvas {
+      width: 100%;
+      height: auto;
+      background: #0f172a;
+      border: 2px solid #00f3ff;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    canvas.flipped {
+      transform: rotate(180deg);
+    }
+
     .overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(15, 23, 42, 0.95); border: 2px solid #00f3ff; backdrop-filter: blur(8px); padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 0 30px rgba(0, 243, 255, 0.4); width: 85%; max-width: 420px; z-index: 10; }
     .overlay h2 { font-size: 2rem; margin-bottom: 10px; color: #f43f5e; }
     .overlay p { color: #94a3b8; margin-bottom: 20px; font-size: 0.95rem; }
     .btn { background: #00f3ff; color: #080b10; border: none; padding: 12px 28px; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }
     .btn:hover { transform: scale(1.05); background: #38bdf8; }
-    .status-bar { display: flex; gap: 10px; margin-top: 8px; font-size: 0.85rem; font-weight: bold; height: 20px; }
-    .status-tag { padding: 2px 8px; border-radius: 4px; display: none; }
+    
+    .status-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; font-size: 0.75rem; font-weight: bold; min-height: 24px; }
+    .status-tag { padding: 3px 8px; border-radius: 4px; display: none; }
   </style>
 </head>
 <body>
@@ -44,14 +59,18 @@
 
     <div class="status-bar">
       <div id="tagShield" class="status-tag" style="background: #ffd700; color: #000;">ESCUDO</div>
-      <div id="tagInvert" class="status-tag" style="background: #22c55e; color: #000;">CONTROLES INVERTIDOS</div>
-      <div id="tagSlow" class="status-tag" style="background: #3b82f6; color: #fff;">CÂMERA LENTA</div>
-      <div id="tagSpeed" class="status-tag" style="background: #a855f7; color: #fff;">HIPERVELOCIDADE</div>
+      <div id="tagInvert" class="status-tag" style="background: #22c55e; color: #000;">INVERTIDO</div>
+      <div id="tagSlow" class="status-tag" style="background: #3b82f6; color: #fff;">LENTO</div>
+      <div id="tagSpeed" class="status-tag" style="background: #a855f7; color: #fff;">HIPERVELOZ</div>
+      <div id="tagFlip" class="status-tag" style="background: #ec4899; color: #fff;">CABEÇA P/ BAIXO</div>
+      <div id="tagSuperJump" class="status-tag" style="background: #f97316; color: #fff;">SUPER PULO</div>
+      <div id="tagBlind" class="status-tag" style="background: #dc2626; color: #fff;">CEGUEIRA</div>
+      <div id="tagHeavy" class="status-tag" style="background: #64748b; color: #fff;">PESADO</div>
     </div>
 
     <div id="overlay" class="overlay">
-      <h2 id="overlayTitle">PRONTO?</h2>
-      <p id="overlayMessage">Cuidado com as bolinhas verdes, roxas e multicoloridas!</p>
+      <h2 id="overlayTitle">CYBER RUNNER</h2>
+      <p id="overlayMessage">Atravesse os portais azuis para receber poderes misteriosos sem repetição exagerada!</p>
       <button id="startBtn" class="btn">JOGAR</button>
     </div>
   </div>
@@ -107,10 +126,14 @@
 
     const GROUND_Y = 240;
     let gameRunning = false;
-    let gameSpeed = 6;
+    let gameSpeed = 5.5;
     let score = 0;
     let highScore = localStorage.getItem('cyber_runner_hi') || 0;
     let frameCount = 0;
+    
+    // Controle de cadência
+    let wallCooldown = 0;
+    let lastEffect = null;
 
     hiScoreText.innerText = String(highScore).padStart(5, '0');
     const rawKeys = { jump: false, duck: false };
@@ -122,11 +145,8 @@
       vy: 0, gravity: 0.8, jumpForce: -13,
       isGrounded: false, isDucking: false,
       
-      // Efeitos ativos (em frames)
-      shieldTime: 0,
-      invertTime: 0,
-      slowTime: 0,
-      speedTime: 0,
+      shieldTime: 0, invertTime: 0, slowTime: 0, speedTime: 0,
+      flipTime: 0, superJumpTime: 0, blindTime: 0, heavyTime: 0,
 
       reset() {
         this.y = GROUND_Y - this.normalHeight;
@@ -134,18 +154,19 @@
         this.vy = 0;
         this.isGrounded = true;
         this.isDucking = false;
-        this.shieldTime = 0;
-        this.invertTime = 0;
-        this.slowTime = 0;
-        this.speedTime = 0;
+        this.shieldTime = 0; this.invertTime = 0; this.slowTime = 0;
+        this.speedTime = 0; this.flipTime = 0; this.superJumpTime = 0;
+        this.blindTime = 0; this.heavyTime = 0;
+        canvas.classList.remove('flipped');
       },
 
       update() {
-        // Aplicação do efeito de Inversão de Controles
         const wantJump = this.invertTime > 0 ? rawKeys.duck : rawKeys.jump;
         const wantDuck = this.invertTime > 0 ? rawKeys.jump : rawKeys.duck;
 
-        // Agachar
+        let currentGravity = this.heavyTime > 0 ? 1.5 : 0.8;
+        let currentJumpForce = this.superJumpTime > 0 ? -16 : (this.heavyTime > 0 ? -10 : -13);
+
         if (wantDuck && this.isGrounded) {
           if (!this.isDucking) {
             this.isDucking = true;
@@ -158,14 +179,13 @@
           this.y = GROUND_Y - this.normalHeight;
         }
 
-        // Pular
         if (wantJump && this.isGrounded && !this.isDucking) {
-          this.vy = this.jumpForce;
+          this.vy = currentJumpForce;
           this.isGrounded = false;
           playSound('jump');
         }
 
-        this.vy += this.gravity;
+        this.vy += currentGravity;
         this.y += this.vy;
 
         if (this.y + this.height >= GROUND_Y) {
@@ -174,25 +194,37 @@
           this.isGrounded = true;
         }
 
-        // Decrementar timers dos poderes
         if (this.shieldTime > 0) this.shieldTime--;
         if (this.invertTime > 0) this.invertTime--;
         if (this.slowTime > 0) this.slowTime--;
         if (this.speedTime > 0) this.speedTime--;
+        if (this.superJumpTime > 0) this.superJumpTime--;
+        if (this.blindTime > 0) this.blindTime--;
+        if (this.heavyTime > 0) this.heavyTime--;
 
-        // Atualizar Tags Visuais
+        if (this.flipTime > 0) {
+          this.flipTime--;
+          canvas.classList.add('flipped');
+        } else {
+          canvas.classList.remove('flipped');
+        }
+
         document.getElementById('tagShield').style.display = this.shieldTime > 0 ? 'block' : 'none';
         document.getElementById('tagInvert').style.display = this.invertTime > 0 ? 'block' : 'none';
         document.getElementById('tagSlow').style.display = this.slowTime > 0 ? 'block' : 'none';
         document.getElementById('tagSpeed').style.display = this.speedTime > 0 ? 'block' : 'none';
+        document.getElementById('tagFlip').style.display = this.flipTime > 0 ? 'block' : 'none';
+        document.getElementById('tagSuperJump').style.display = this.superJumpTime > 0 ? 'block' : 'none';
+        document.getElementById('tagBlind').style.display = this.blindTime > 0 ? 'block' : 'none';
+        document.getElementById('tagHeavy').style.display = this.heavyTime > 0 ? 'block' : 'none';
       },
 
       draw() {
         ctx.save();
         let glowColor = '#00f3ff';
         if (this.shieldTime > 0) glowColor = '#ffd700';
-        else if (this.invertTime > 0) glowColor = '#22c55e';
-        else if (this.speedTime > 0) glowColor = '#a855f7';
+        else if (this.superJumpTime > 0) glowColor = '#f97316';
+        else if (this.heavyTime > 0) glowColor = '#64748b';
 
         ctx.shadowBlur = 12;
         ctx.shadowColor = glowColor;
@@ -206,50 +238,65 @@
     };
 
     let obstacles = [];
-    let powerups = [];
+    let powerWalls = [];
 
-    function applyEffect(type) {
-      const effects = ['shield', 'invert', 'slow', 'speed'];
-      let selectedEffect = type === 'random' ? effects[Math.floor(Math.random() * effects.length)] : type;
+    function applyRandomEffect() {
+      const allEffects = ['shield', 'invert', 'slow', 'speed', 'flip', 'superJump', 'blind', 'heavy'];
+      
+      // Evita aplicar o mesmo efeito duas vezes seguidas
+      const available = allEffects.filter(e => e !== lastEffect);
+      let selected = available[Math.floor(Math.random() * available.length)];
+      lastEffect = selected;
 
-      if (selectedEffect === 'shield') {
-        player.shieldTime = 300; // Amarela (Bom)
-        playSound('good');
-      } else if (selectedEffect === 'invert') {
-        player.invertTime = 240; // Verde (Ruim)
-        playSound('bad');
-      } else if (selectedEffect === 'slow') {
-        player.slowTime = 240;   // Azul (Bom: Câmera Lenta)
-        player.speedTime = 0;
-        playSound('good');
-      } else if (selectedEffect === 'speed') {
-        player.speedTime = 240;  // Roxa (Ruim: Aceleração)
-        player.slowTime = 0;
-        playSound('bad');
-      }
+      if (selected === 'shield') { player.shieldTime = 250; playSound('good'); }
+      else if (selected === 'invert') { player.invertTime = 180; playSound('bad'); }
+      else if (selected === 'slow') { player.slowTime = 200; player.speedTime = 0; playSound('good'); }
+      else if (selected === 'speed') { player.speedTime = 180; player.slowTime = 0; playSound('bad'); }
+      else if (selected === 'flip') { player.flipTime = 200; playSound('bad'); }
+      else if (selected === 'superJump') { player.superJumpTime = 250; playSound('good'); }
+      else if (selected === 'blind') { player.blindTime = 180; playSound('bad'); }
+      else if (selected === 'heavy') { player.heavyTime = 180; playSound('bad'); }
+    }
+
+    function spawnObstacle() {
+      const rand = Math.random();
+      const isFlying = rand < 0.35 && score > 120;
+      const isJumper = rand > 0.75 && score > 180;
+
+      obstacles.push({
+        x: canvas.width,
+        y: isFlying ? GROUND_Y - 75 : GROUND_Y - 45,
+        width: isFlying ? 35 : (isJumper ? 30 : 25),
+        height: isFlying ? 25 : 45,
+        vy: 0,
+        isJumper: isJumper,
+        hasJumped: false,
+        color: isFlying ? '#d946ef' : (isJumper ? '#eab308' : '#f43f5e')
+      });
     }
 
     function spawnEntities() {
-      if (frameCount % Math.max(40, Math.floor(90 - gameSpeed * 2)) === 0) {
-        if (Math.random() < 0.7) {
-          const isFlying = Math.random() < 0.35 && score > 150;
-          obstacles.push({
-            x: canvas.width,
-            y: isFlying ? GROUND_Y - 75 : GROUND_Y - 45,
-            width: isFlying ? 35 : 25,
-            height: isFlying ? 25 : 45,
-            color: isFlying ? '#d946ef' : '#f43f5e'
-          });
+      // Cadência reduzida: intervalo de spawn aumentado para dar mais respiro
+      if (frameCount % Math.max(50, Math.floor(100 - gameSpeed * 2)) === 0) {
+        
+        // Garante um espaço mínimo de 3 obstáculos comuns antes de gerar outra parede
+        if (wallCooldown > 0) {
+          wallCooldown--;
+          spawnObstacle();
+          return;
+        }
+
+        // 80% de chance para obstáculo normal, 20% para portal azul
+        if (Math.random() < 0.8) {
+          spawnObstacle();
         } else {
-          // Tipos: shield (amarela), invert (verde), slow (azul), speed (roxa), random (rainbow)
-          const types = ['shield', 'invert', 'slow', 'speed', 'random'];
-          const chosenType = types[Math.floor(Math.random() * types.length)];
-          powerups.push({
+          powerWalls.push({
             x: canvas.width,
-            y: GROUND_Y - (Math.random() < 0.5 ? 40 : 85),
-            size: 22,
-            type: chosenType
+            y: 0,
+            width: 14,
+            height: GROUND_Y
           });
+          wallCooldown = 3; // Cooldown ativado
         }
       }
     }
@@ -257,10 +304,12 @@
     function startGame() {
       player.reset();
       obstacles = [];
-      powerups = [];
+      powerWalls = [];
       score = 0;
-      gameSpeed = 6;
+      gameSpeed = 5.5;
       frameCount = 0;
+      wallCooldown = 0;
+      lastEffect = null;
       gameRunning = true;
       overlay.style.display = 'none';
       requestAnimationFrame(gameLoop);
@@ -287,12 +336,11 @@
 
       frameCount++;
       score++;
-      if (frameCount % 300 === 0) gameSpeed += 0.4;
+      if (frameCount % 400 === 0) gameSpeed += 0.3; // Aceleração do jogo mais suave
 
-      // Calcular velocidade atual considerando os efeitos
       let currentSpeed = gameSpeed;
-      if (player.slowTime > 0) currentSpeed *= 0.5;
-      if (player.speedTime > 0) currentSpeed *= 1.6;
+      if (player.slowTime > 0) currentSpeed *= 0.55;
+      if (player.speedTime > 0) currentSpeed *= 1.4;
 
       scoreText.innerText = String(score).padStart(5, '0');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -312,6 +360,19 @@
       for (let i = obstacles.length - 1; i >= 0; i--) {
         let obs = obstacles[i];
         obs.x -= currentSpeed;
+
+        if (obs.isJumper) {
+          if (!obs.hasJumped && obs.x - player.x < 160) {
+            obs.vy = -9;
+            obs.hasJumped = true;
+          }
+          obs.vy += 0.6;
+          obs.y += obs.vy;
+          if (obs.y >= GROUND_Y - obs.height) {
+            obs.y = GROUND_Y - obs.height;
+            obs.vy = 0;
+          }
+        }
 
         ctx.fillStyle = obs.color;
         ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
@@ -334,39 +395,48 @@
         if (obs.x + obs.width < 0) obstacles.splice(i, 1);
       }
 
-      // Power-ups
-      for (let i = powerups.length - 1; i >= 0; i--) {
-        let p = powerups[i];
-        p.x -= currentSpeed;
+      // Paredes Azuis
+      for (let i = powerWalls.length - 1; i >= 0; i--) {
+        let wall = powerWalls[i];
+        wall.x -= currentSpeed;
 
         ctx.save();
-        if (p.type === 'shield') ctx.fillStyle = '#ffd700';       // Amarela
-        else if (p.type === 'invert') ctx.fillStyle = '#22c55e';   // Verde
-        else if (p.type === 'slow') ctx.fillStyle = '#3b82f6';     // Azul
-        else if (p.type === 'speed') ctx.fillStyle = '#a855f7';    // Roxa
-        else if (p.type === 'random') {
-          ctx.fillStyle = `hsl(${(frameCount * 12) % 360}, 100%, 60%)`; // Multicolorida
-        }
-
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = ctx.fillStyle;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.fillStyle = '#00f3ff';
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = '#00f3ff';
+        
+        ctx.fillRect(wall.x, wall.y, wall.width, wall.height);
+        
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(wall.x + 4, wall.y, 6, wall.height);
         ctx.restore();
 
         if (
-          player.x < p.x + p.size &&
-          player.x + player.width > p.x &&
-          player.y < p.y + p.size &&
-          player.y + player.height > p.y
+          player.x < wall.x + wall.width &&
+          player.x + player.width > wall.x &&
+          player.y < wall.y + wall.height &&
+          player.y + player.height > wall.y
         ) {
-          applyEffect(p.type);
-          powerups.splice(i, 1);
+          applyRandomEffect();
+          powerWalls.splice(i, 1);
           continue;
         }
 
-        if (p.x + p.size < 0) powerups.splice(i, 1);
+        if (wall.x + wall.width < 0) powerWalls.splice(i, 1);
+      }
+
+      // Cegueira
+      if (player.blindTime > 0) {
+        ctx.save();
+        const gradient = ctx.createRadialGradient(
+          player.x + player.width / 2, player.y + player.height / 2, 50,
+          player.x + player.width / 2, player.y + player.height / 2, 140
+        );
+        gradient.addColorStop(0, 'rgba(0,0,0,0)');
+        gradient.addColorStop(1, 'rgba(0,0,0,0.98)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
       }
 
       requestAnimationFrame(gameLoop);
