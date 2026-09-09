@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo dos Alvos - 100% HTML & CSS</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    h1 {
+      margin-bottom: 6px;
+      color: #38bdf8;
+      text-align: center;
+    }
+
+    p.instructions {
+      color: #94a3b8;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      text-align: center;
+    }
+
+    /* Container Principal */
+    .game-container {
+      counter-reset: score;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Oculta os Checkboxes nativos */
+    .target-input {
+      display: none;
+    }
+
+    /* Placar de Pontos usando CSS Counters */
+    .score-board {
+      font-size: 1.25rem;
+      font-weight: bold;
+      background: #1e293b;
+      padding: 10px 24px;
+      border-radius: 30px;
+      border: 1px solid #334155;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Incrementa a pontuação quando um checkbox é marcado */
+    .target-input:checked {
+      counter-increment: score;
+    }
+
+    .score-board .current-score::after {
+      content: counter(score);
+      color: #4ade80;
+    }
+
+    /* Arena do Jogo */
+    .game-board {
+      position: relative;
+      width: 500px;
+      height: 350px;
+      background: #1e293b;
+      border: 3px solid #334155;
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: crosshair;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Estilização dos Alvos */
+    .target {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: crosshair;
+      transition: transform 0.1s ease;
+    }
+
+    .target:hover {
+      transform: scale(1.2);
+    }
+
+    .target:active {
+      transform: scale(0.8);
+    }
+
+    /* Animações de Movimento Independente */
+    .target1 { animation: float1 4s infinite alternate ease-in-out; }
+    .target2 { animation: float2 3s infinite alternate ease-in-out; }
+    .target3 { animation: float3 5s infinite alternate ease-in-out; }
+    .target4 { animation: float4 3.5s infinite alternate ease-in-out; }
+    .target5 { animation: float5 4.5s infinite alternate ease-in-out; }
+
+    @keyframes float1 {
+      0% { top: 10%; left: 10%; }
+      100% { top: 75%; left: 80%; }
+    }
+    @keyframes float2 {
+      0% { top: 70%; left: 15%; }
+      100% { top: 15%; left: 75%; }
+    }
+    @keyframes float3 {
+      0% { top: 40%; left: 85%; }
+      100% { top: 50%; left: 10%; }
+    }
+    @keyframes float4 {
+      0% { top: 20%; left: 50%; }
+      100% { top: 75%; left: 35%; }
+    }
+    @keyframes float5 {
+      0% { top: 60%; left: 60%; }
+      100% { top: 10%; left: 20%; }
+    }
+
+    /* Esconde o alvo acertado ao ser clicado */
+    #t1:checked ~ .game-board .target1,
+    #t2:checked ~ .game-board .target2,
+    #t3:checked ~ .game-board .target3,
+    #t4:checked ~ .game-board .target4,
+    #t5:checked ~ .game-board .target5 {
+      display: none;
+    }
+
+    /* Tela de Vitória */
+    .win-screen {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(4px);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .win-screen h2 {
+      color: #4ade80;
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px rgba(74, 222, 128, 0.4);
+    }
+
+    .win-screen p {
+      color: #cbd5e1;
+      margin-bottom: 20px;
+    }
+
+    /* Exibe a Tela de Vitória quando TODOS os 5 alvos estiverem marcados */
+    #t1:checked ~ #t2:checked ~ #t3:checked ~ #t4:checked ~ #t5:checked ~ .game-board .win-screen {
+      display: flex;
+    }
+
+    /* Botão de Reiniciar sem usar JS */
+    .reset-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .reset-btn:hover {
+      background: #dc2626;
+    }
+
+    .reset-btn:active {
+      transform: scale(0.95);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎯 Jogo do Tiro ao Alvo</h1>
+  <p class="instructions">Acerte todos os 5 alvos em movimento para vencer!</p>
+
+  <form class="game-container">
+    <!-- Checkboxes invisíveis para gerenciar o estado -->
+    <input type="checkbox" id="t1" class="target-input">
+    <input type="checkbox" id="t2" class="target-input">
+    <input type="checkbox" id="t3" class="target-input">
+    <input type="checkbox" id="t4" class="target-input">
+    <input type="checkbox" id="t5" class="target-input">
+
+    <!-- Placar -->
+    <div class="score-board">
+      Pontos: <span class="current-score"></span> / 5
+    </div>
+
+    <!-- Arena -->
+    <div class="game-board">
+      <label for="t1" class="target target1">🎯</label>
+      <label for="t2" class="target target2">🎯</label>
+      <label for="t3" class="target target3">🎯</label>
+      <label for="t4" class="target target4">🎯</label>
+      <label for="t5" class="target target5">🎯</label>
+
+      <!-- Mensagem de Vitória -->
+      <div class="win-screen">
+        <h2>🏆 VOCÊ VENCEU! 🏆</h2>
+        <p>Você destruiu todos os alvos sem usar 1 linha de JS!</p>
+        <input type="reset" value="Jogar Novamente" class="reset-btn">
+      </div>
+    </div>
+  </form>
+
+</body>
+</html>
