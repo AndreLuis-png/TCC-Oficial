@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cyber Runner - Balanced Chaos</title>
+  <title>Cyber Runner - Stealth Jumpers</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -70,7 +70,7 @@
 
     <div id="overlay" class="overlay">
       <h2 id="overlayTitle">CYBER RUNNER</h2>
-      <p id="overlayMessage">Atravesse os portais azuis para receber poderes misteriosos sem repetição exagerada!</p>
+      <p id="overlayMessage">Cuidado com os obstáculos saltitantes disfarçados de blocos normais!</p>
       <button id="startBtn" class="btn">JOGAR</button>
     </div>
   </div>
@@ -131,7 +131,6 @@
     let highScore = localStorage.getItem('cyber_runner_hi') || 0;
     let frameCount = 0;
     
-    // Controle de cadência
     let wallCooldown = 0;
     let lastEffect = null;
 
@@ -242,8 +241,6 @@
 
     function applyRandomEffect() {
       const allEffects = ['shield', 'invert', 'slow', 'speed', 'flip', 'superJump', 'blind', 'heavy'];
-      
-      // Evita aplicar o mesmo efeito duas vezes seguidas
       const available = allEffects.filter(e => e !== lastEffect);
       let selected = available[Math.floor(Math.random() * available.length)];
       lastEffect = selected;
@@ -266,27 +263,24 @@
       obstacles.push({
         x: canvas.width,
         y: isFlying ? GROUND_Y - 75 : GROUND_Y - 45,
-        width: isFlying ? 35 : (isJumper ? 30 : 25),
+        width: isFlying ? 35 : (isJumper ? 28 : 25),
         height: isFlying ? 25 : 45,
         vy: 0,
         isJumper: isJumper,
         hasJumped: false,
-        color: isFlying ? '#d946ef' : (isJumper ? '#eab308' : '#f43f5e')
+        // Tom de vermelho sutilmente diferente para enganar jogadores distraídos
+        color: isFlying ? '#d946ef' : (isJumper ? '#e11d48' : '#f43f5e')
       });
     }
 
     function spawnEntities() {
-      // Cadência reduzida: intervalo de spawn aumentado para dar mais respiro
       if (frameCount % Math.max(50, Math.floor(100 - gameSpeed * 2)) === 0) {
-        
-        // Garante um espaço mínimo de 3 obstáculos comuns antes de gerar outra parede
         if (wallCooldown > 0) {
           wallCooldown--;
           spawnObstacle();
           return;
         }
 
-        // 80% de chance para obstáculo normal, 20% para portal azul
         if (Math.random() < 0.8) {
           spawnObstacle();
         } else {
@@ -296,7 +290,7 @@
             width: 14,
             height: GROUND_Y
           });
-          wallCooldown = 3; // Cooldown ativado
+          wallCooldown = 3;
         }
       }
     }
@@ -336,7 +330,7 @@
 
       frameCount++;
       score++;
-      if (frameCount % 400 === 0) gameSpeed += 0.3; // Aceleração do jogo mais suave
+      if (frameCount % 400 === 0) gameSpeed += 0.3;
 
       let currentSpeed = gameSpeed;
       if (player.slowTime > 0) currentSpeed *= 0.55;
@@ -345,7 +339,6 @@
       scoreText.innerText = String(score).padStart(5, '0');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Chão
       ctx.strokeStyle = '#334155';
       ctx.beginPath();
       ctx.moveTo(0, GROUND_Y);
@@ -362,12 +355,15 @@
         obs.x -= currentSpeed;
 
         if (obs.isJumper) {
-          if (!obs.hasJumped && obs.x - player.x < 160) {
-            obs.vy = -9;
+          // Pulo com força moderada para flutuar a uma altura baixa/média
+          if (!obs.hasJumped && obs.x - player.x < 210) {
+            obs.vy = -6.5; 
             obs.hasJumped = true;
           }
-          obs.vy += 0.6;
+          // Gravidade bem fraca faz com que o bloco fique suspenso no ar por mais tempo
+          obs.vy += 0.18; 
           obs.y += obs.vy;
+
           if (obs.y >= GROUND_Y - obs.height) {
             obs.y = GROUND_Y - obs.height;
             obs.vy = 0;
