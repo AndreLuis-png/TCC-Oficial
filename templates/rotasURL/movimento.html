@@ -3,15 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cyber Runner - Jogo Offline</title>
+  <title>Cyber Runner - Power-ups</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
       background-color: #080b10;
       color: #00f3ff;
@@ -23,120 +17,19 @@
       justify-content: center;
       overflow: hidden;
     }
-
-    .game-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: 800px;
-      padding: 10px;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .title {
-      font-size: 1.5rem;
-      font-weight: 800;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
-    }
-
-    .score-board {
-      font-family: monospace;
-      font-size: 1.2rem;
-      color: #f43f5e;
-      background: #111827;
-      padding: 6px 16px;
-      border-radius: 8px;
-      border: 1px solid #1f2937;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    }
-
-    .score-board span {
-      color: #00f3ff;
-      margin-left: 10px;
-    }
-
-    canvas {
-      width: 100%;
-      height: auto;
-      background: #0f172a;
-      border: 2px solid #00f3ff;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
-      display: block;
-    }
-
-    /* Modal de Menu / Game Over */
-    .overlay {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(15, 23, 42, 0.92);
-      border: 2px solid #00f3ff;
-      backdrop-filter: blur(8px);
-      padding: 30px;
-      border-radius: 16px;
-      text-align: center;
-      box-shadow: 0 0 30px rgba(0, 243, 255, 0.4);
-      width: 85%;
-      max-width: 420px;
-      z-index: 10;
-    }
-
-    .overlay h2 {
-      font-size: 2rem;
-      margin-bottom: 10px;
-      color: #f43f5e;
-      text-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
-    }
-
-    .overlay p {
-      color: #94a3b8;
-      margin-bottom: 20px;
-      font-size: 0.95rem;
-    }
-
-    .btn {
-      background: #00f3ff;
-      color: #080b10;
-      border: none;
-      padding: 12px 28px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: all 0.2s ease;
-      box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
-    }
-
-    .btn:hover {
-      transform: scale(1.05);
-      background: #38bdf8;
-      box-shadow: 0 0 25px rgba(0, 243, 255, 0.8);
-    }
-
-    .controls-info {
-      margin-top: 12px;
-      text-align: center;
-      color: #64748b;
-      font-size: 0.85rem;
-    }
-
-    .controls-info span {
-      color: #cbd5e1;
-      background: #1e293b;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
+    .game-wrapper { position: relative; width: 100%; max-width: 800px; padding: 10px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .title { font-size: 1.5rem; font-weight: 800; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0, 243, 255, 0.6); }
+    .score-board { font-family: monospace; font-size: 1.2rem; color: #f43f5e; background: #111827; padding: 6px 16px; border-radius: 8px; border: 1px solid #1f2937; }
+    .score-board span { color: #00f3ff; margin-left: 10px; }
+    canvas { width: 100%; height: auto; background: #0f172a; border: 2px solid #00f3ff; border-radius: 12px; box-shadow: 0 0 20px rgba(0, 243, 255, 0.2); display: block; }
+    .overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(15, 23, 42, 0.95); border: 2px solid #00f3ff; backdrop-filter: blur(8px); padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 0 30px rgba(0, 243, 255, 0.4); width: 85%; max-width: 420px; z-index: 10; }
+    .overlay h2 { font-size: 2rem; margin-bottom: 10px; color: #f43f5e; }
+    .overlay p { color: #94a3b8; margin-bottom: 20px; font-size: 0.95rem; }
+    .btn { background: #00f3ff; color: #080b10; border: none; padding: 12px 28px; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }
+    .btn:hover { transform: scale(1.05); background: #38bdf8; }
+    .status-bar { display: flex; gap: 10px; margin-top: 8px; font-size: 0.85rem; font-weight: bold; height: 20px; }
+    .status-tag { padding: 2px 8px; border-radius: 4px; display: none; }
   </style>
 </head>
 <body>
@@ -144,22 +37,22 @@
   <div class="game-wrapper">
     <div class="header">
       <div class="title">⚡ CYBER RUNNER</div>
-      <div class="score-board">
-        HI <span id="hiScoreText">00000</span> | <span id="scoreText">00000</span>
-      </div>
+      <div class="score-board">HI <span id="hiScoreText">00000</span> | <span id="scoreText">00000</span></div>
     </div>
 
     <canvas id="gameCanvas" width="800" height="300"></canvas>
 
-    <!-- Overlay de Start / Game Over -->
-    <div id="overlay" class="overlay">
-      <h2 id="overlayTitle">PRONTO?</h2>
-      <p id="overlayMessage">Desvie dos obstáculos e colete escudos para sobreviver!</p>
-      <button id="startBtn" class="btn">JOGAR</button>
+    <div class="status-bar">
+      <div id="tagShield" class="status-tag" style="background: #ffd700; color: #000;">ESCUDO</div>
+      <div id="tagInvert" class="status-tag" style="background: #22c55e; color: #000;">CONTROLES INVERTIDOS</div>
+      <div id="tagSlow" class="status-tag" style="background: #3b82f6; color: #fff;">CÂMERA LENTA</div>
+      <div id="tagSpeed" class="status-tag" style="background: #a855f7; color: #fff;">HIPERVELOCIDADE</div>
     </div>
 
-    <div class="controls-info">
-      <span>ESPAÇO</span> / <span>Seta Cima</span> = Pular | <span>Seta Baixo</span> = Agachar
+    <div id="overlay" class="overlay">
+      <h2 id="overlayTitle">PRONTO?</h2>
+      <p id="overlayMessage">Cuidado com as bolinhas verdes, roxas e multicoloridas!</p>
+      <button id="startBtn" class="btn">JOGAR</button>
     </div>
   </div>
 
@@ -173,14 +66,12 @@
     const scoreText = document.getElementById('scoreText');
     const hiScoreText = document.getElementById('hiScoreText');
 
-    // Web Audio API para Efeitos Sonoros sem arquivos MP3
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
 
     function playSound(type) {
       if (!audioCtx) audioCtx = new AudioContext();
       if (audioCtx.state === 'suspended') audioCtx.resume();
-
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.connect(gain);
@@ -188,41 +79,32 @@
       const now = audioCtx.currentTime;
 
       if (type === 'jump') {
-        osc.type = 'sine';
         osc.frequency.setValueAtTime(180, now);
         osc.frequency.exponentialRampToValueAtTime(600, now + 0.12);
         gain.gain.setValueAtTime(0.2, now);
         gain.gain.linearRampToValueAtTime(0, now + 0.12);
-        osc.start(now);
-        osc.stop(now + 0.12);
-      } else if (type === 'shield') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(300, now);
+      } else if (type === 'good') {
+        osc.frequency.setValueAtTime(400, now);
         osc.frequency.exponentialRampToValueAtTime(800, now + 0.2);
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.linearRampToValueAtTime(0, now + 0.2);
-        osc.start(now);
-        osc.stop(now + 0.2);
-      } else if (type === 'star') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(523, now); // C5
-        osc.frequency.setValueAtTime(659, now + 0.08); // E5
         gain.gain.setValueAtTime(0.2, now);
         gain.gain.linearRampToValueAtTime(0, now + 0.2);
-        osc.start(now);
-        osc.stop(now + 0.2);
+      } else if (type === 'bad') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.linearRampToValueAtTime(150, now + 0.25);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.25);
       } else if (type === 'hit') {
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(150, now);
         osc.frequency.exponentialRampToValueAtTime(40, now + 0.3);
-        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.setValueAtTime(0.3, now);
         gain.gain.linearRampToValueAtTime(0, now + 0.3);
-        osc.start(now);
-        osc.stop(now + 0.3);
       }
+      osc.start(now);
+      osc.stop(now + 0.25);
     }
 
-    // Variáveis Globais de Estado
     const GROUND_Y = 240;
     let gameRunning = false;
     let gameSpeed = 6;
@@ -231,24 +113,20 @@
     let frameCount = 0;
 
     hiScoreText.innerText = String(highScore).padStart(5, '0');
+    const rawKeys = { jump: false, duck: false };
 
-    // Teclas Pressionadas
-    const keys = { jump: false, duck: false };
-
-    // Jogador
     const player = {
-      x: 80,
-      y: GROUND_Y - 50,
-      width: 32,
-      height: 50,
-      normalHeight: 50,
-      duckHeight: 26,
-      vy: 0,
-      gravity: 0.8,
-      jumpForce: -13,
-      isGrounded: false,
-      isDucking: false,
-      shieldTime: 0, // Duração do escudo em frames
+      x: 80, y: GROUND_Y - 50,
+      width: 32, height: 50,
+      normalHeight: 50, duckHeight: 26,
+      vy: 0, gravity: 0.8, jumpForce: -13,
+      isGrounded: false, isDucking: false,
+      
+      // Efeitos ativos (em frames)
+      shieldTime: 0,
+      invertTime: 0,
+      slowTime: 0,
+      speedTime: 0,
 
       reset() {
         this.y = GROUND_Y - this.normalHeight;
@@ -257,11 +135,18 @@
         this.isGrounded = true;
         this.isDucking = false;
         this.shieldTime = 0;
+        this.invertTime = 0;
+        this.slowTime = 0;
+        this.speedTime = 0;
       },
 
       update() {
+        // Aplicação do efeito de Inversão de Controles
+        const wantJump = this.invertTime > 0 ? rawKeys.duck : rawKeys.jump;
+        const wantDuck = this.invertTime > 0 ? rawKeys.jump : rawKeys.duck;
+
         // Agachar
-        if (keys.duck && this.isGrounded) {
+        if (wantDuck && this.isGrounded) {
           if (!this.isDucking) {
             this.isDucking = true;
             this.height = this.duckHeight;
@@ -274,102 +159,105 @@
         }
 
         // Pular
-        if (keys.jump && this.isGrounded && !this.isDucking) {
+        if (wantJump && this.isGrounded && !this.isDucking) {
           this.vy = this.jumpForce;
           this.isGrounded = false;
           playSound('jump');
-          createParticles(this.x + this.width / 2, this.y + this.height, '#00f3ff', 8);
         }
 
-        // Gravidade
         this.vy += this.gravity;
         this.y += this.vy;
 
-        // Tocar o Chão
         if (this.y + this.height >= GROUND_Y) {
           this.y = GROUND_Y - this.height;
           this.vy = 0;
           this.isGrounded = true;
         }
 
+        // Decrementar timers dos poderes
         if (this.shieldTime > 0) this.shieldTime--;
+        if (this.invertTime > 0) this.invertTime--;
+        if (this.slowTime > 0) this.slowTime--;
+        if (this.speedTime > 0) this.speedTime--;
+
+        // Atualizar Tags Visuais
+        document.getElementById('tagShield').style.display = this.shieldTime > 0 ? 'block' : 'none';
+        document.getElementById('tagInvert').style.display = this.invertTime > 0 ? 'block' : 'none';
+        document.getElementById('tagSlow').style.display = this.slowTime > 0 ? 'block' : 'none';
+        document.getElementById('tagSpeed').style.display = this.speedTime > 0 ? 'block' : 'none';
       },
 
       draw() {
         ctx.save();
-        // Efeito de iluminação (Glow)
-        ctx.shadowBlur = this.shieldTime > 0 ? 20 : 10;
-        ctx.shadowColor = this.shieldTime > 0 ? '#ffd700' : '#00f3ff';
+        let glowColor = '#00f3ff';
+        if (this.shieldTime > 0) glowColor = '#ffd700';
+        else if (this.invertTime > 0) glowColor = '#22c55e';
+        else if (this.speedTime > 0) glowColor = '#a855f7';
 
-        // Desenhar Jogador
-        ctx.fillStyle = this.shieldTime > 0 ? '#ffd700' : '#00f3ff';
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = glowColor;
+        ctx.fillStyle = glowColor;
         ctx.fillRect(this.x, this.y, this.width, this.height);
 
-        // Olhos/Visor
         ctx.fillStyle = '#080b10';
-        if (this.isDucking) {
-          ctx.fillRect(this.x + 18, this.y + 6, 10, 6);
-        } else {
-          ctx.fillRect(this.x + 18, this.y + 10, 10, 8);
-        }
-
+        ctx.fillRect(this.x + 18, this.y + (this.isDucking ? 6 : 10), 10, 6);
         ctx.restore();
       }
     };
 
-    // Arrays de Entidades
     let obstacles = [];
     let powerups = [];
-    let particles = [];
 
-    // Gerador de Partículas
-    function createParticles(x, y, color, count = 5) {
-      for (let i = 0; i < count; i++) {
-        particles.push({
-          x, y,
-          vx: (Math.random() - 0.5) * 4,
-          vy: (Math.random() - 0.5) * 4,
-          size: Math.random() * 4 + 2,
-          color,
-          life: 20
-        });
+    function applyEffect(type) {
+      const effects = ['shield', 'invert', 'slow', 'speed'];
+      let selectedEffect = type === 'random' ? effects[Math.floor(Math.random() * effects.length)] : type;
+
+      if (selectedEffect === 'shield') {
+        player.shieldTime = 300; // Amarela (Bom)
+        playSound('good');
+      } else if (selectedEffect === 'invert') {
+        player.invertTime = 240; // Verde (Ruim)
+        playSound('bad');
+      } else if (selectedEffect === 'slow') {
+        player.slowTime = 240;   // Azul (Bom: Câmera Lenta)
+        player.speedTime = 0;
+        playSound('good');
+      } else if (selectedEffect === 'speed') {
+        player.speedTime = 240;  // Roxa (Ruim: Aceleração)
+        player.slowTime = 0;
+        playSound('bad');
       }
     }
 
-    // Loop de Spawn de Obstáculos e Power-ups
     function spawnEntities() {
-      if (frameCount % Math.max(45, Math.floor(100 - gameSpeed * 3)) === 0) {
-        if (Math.random() < 0.75) {
-          // Criar Obstáculo
-          const isFlying = Math.random() < 0.35 && score > 200;
+      if (frameCount % Math.max(40, Math.floor(90 - gameSpeed * 2)) === 0) {
+        if (Math.random() < 0.7) {
+          const isFlying = Math.random() < 0.35 && score > 150;
           obstacles.push({
             x: canvas.width,
             y: isFlying ? GROUND_Y - 75 : GROUND_Y - 45,
             width: isFlying ? 35 : 25,
             height: isFlying ? 25 : 45,
-            type: isFlying ? 'drone' : 'spike',
             color: isFlying ? '#d946ef' : '#f43f5e'
           });
         } else {
-          // Criar Power-up (Escudo ou Estrela)
-          const isShield = Math.random() < 0.4;
+          // Tipos: shield (amarela), invert (verde), slow (azul), speed (roxa), random (rainbow)
+          const types = ['shield', 'invert', 'slow', 'speed', 'random'];
+          const chosenType = types[Math.floor(Math.random() * types.length)];
           powerups.push({
             x: canvas.width,
             y: GROUND_Y - (Math.random() < 0.5 ? 40 : 85),
-            size: 20,
-            type: isShield ? 'shield' : 'star',
-            color: isShield ? '#ffd700' : '#4ade80'
+            size: 22,
+            type: chosenType
           });
         }
       }
     }
 
-    // Iniciar o Jogo
     function startGame() {
       player.reset();
       obstacles = [];
       powerups = [];
-      particles = [];
       score = 0;
       gameSpeed = 6;
       frameCount = 0;
@@ -378,7 +266,6 @@
       requestAnimationFrame(gameLoop);
     }
 
-    // Game Over
     function gameOver() {
       gameRunning = false;
       playSound('hit');
@@ -395,55 +282,40 @@
       overlay.style.display = 'block';
     }
 
-    // Main Game Loop
     function gameLoop() {
       if (!gameRunning) return;
 
       frameCount++;
-      score += 1;
-      if (frameCount % 300 === 0) gameSpeed += 0.5; // Aumenta a velocidade gradualmente
+      score++;
+      if (frameCount % 300 === 0) gameSpeed += 0.4;
+
+      // Calcular velocidade atual considerando os efeitos
+      let currentSpeed = gameSpeed;
+      if (player.slowTime > 0) currentSpeed *= 0.5;
+      if (player.speedTime > 0) currentSpeed *= 1.6;
 
       scoreText.innerText = String(score).padStart(5, '0');
-
-      // Limpar Tela
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Desenhar Chão
+      // Chão
       ctx.strokeStyle = '#334155';
-      ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(0, GROUND_Y);
       ctx.lineTo(canvas.width, GROUND_Y);
       ctx.stroke();
 
-      // Linhas de Velocidade no Chão
-      ctx.fillStyle = '#1e293b';
-      for (let i = 0; i < canvas.width; i += 40) {
-        let xPos = (i - (frameCount * gameSpeed) % 40);
-        ctx.fillRect(xPos, GROUND_Y + 5, 20, 3);
-      }
-
-      // Atualizar / Desenhar Jogador
       player.update();
       player.draw();
-
-      // Spawn de Entidades
       spawnEntities();
 
-      // Gerenciar Obstáculos
+      // Obstáculos
       for (let i = obstacles.length - 1; i >= 0; i--) {
         let obs = obstacles[i];
-        obs.x -= gameSpeed;
+        obs.x -= currentSpeed;
 
-        // Desenhar Obstáculo
-        ctx.save();
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = obs.color;
         ctx.fillStyle = obs.color;
         ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-        ctx.restore();
 
-        // Checagem de Colisão
         if (
           player.x < obs.x + obs.width &&
           player.x + player.width > obs.x &&
@@ -451,51 +323,45 @@
           player.y + player.height > obs.y
         ) {
           if (player.shieldTime > 0) {
-            // Destruir obstáculo se estiver com escudo ativo
-            createParticles(obs.x, obs.y, obs.color, 12);
             obstacles.splice(i, 1);
             playSound('hit');
-            continue;
           } else {
             gameOver();
             return;
           }
         }
 
-        // Remover obstáculos fora da tela
         if (obs.x + obs.width < 0) obstacles.splice(i, 1);
       }
 
-      // Gerenciar Power-ups
+      // Power-ups
       for (let i = powerups.length - 1; i >= 0; i--) {
         let p = powerups[i];
-        p.x -= gameSpeed;
+        p.x -= currentSpeed;
 
-        // Desenhar Power-up
         ctx.save();
-        ctx.shadowBlur = 12;
-        ctx.shadowColor = p.color;
-        ctx.fillStyle = p.color;
+        if (p.type === 'shield') ctx.fillStyle = '#ffd700';       // Amarela
+        else if (p.type === 'invert') ctx.fillStyle = '#22c55e';   // Verde
+        else if (p.type === 'slow') ctx.fillStyle = '#3b82f6';     // Azul
+        else if (p.type === 'speed') ctx.fillStyle = '#a855f7';    // Roxa
+        else if (p.type === 'random') {
+          ctx.fillStyle = `hsl(${(frameCount * 12) % 360}, 100%, 60%)`; // Multicolorida
+        }
+
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = ctx.fillStyle;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
 
-        // Colisão com Power-up
         if (
           player.x < p.x + p.size &&
           player.x + player.width > p.x &&
           player.y < p.y + p.size &&
           player.y + player.height > p.y
         ) {
-          createParticles(p.x, p.y, p.color, 10);
-          if (p.type === 'shield') {
-            player.shieldTime = 300; // 5 segundos de escudo
-            playSound('shield');
-          } else {
-            score += 150; // Bônus de Pontos
-            playSound('star');
-          }
+          applyEffect(p.type);
           powerups.splice(i, 1);
           continue;
         }
@@ -503,52 +369,17 @@
         if (p.x + p.size < 0) powerups.splice(i, 1);
       }
 
-      // Processar Partículas Visuais
-      for (let i = particles.length - 1; i >= 0; i--) {
-        let pt = particles[i];
-        pt.x += pt.vx;
-        pt.y += pt.vy;
-        pt.life--;
-        ctx.fillStyle = pt.color;
-        ctx.fillRect(pt.x, pt.y, pt.size, pt.size);
-        if (pt.life <= 0) particles.splice(i, 1);
-      }
-
       requestAnimationFrame(gameLoop);
     }
 
-    // Eventos de Teclado
     window.addEventListener('keydown', (e) => {
-      if (['Space', 'ArrowUp', 'KeyW'].includes(e.code)) {
-        e.preventDefault();
-        keys.jump = true;
-      }
-      if (['ArrowDown', 'KeyS'].includes(e.code)) {
-        e.preventDefault();
-        keys.duck = true;
-      }
+      if (['Space', 'ArrowUp', 'KeyW'].includes(e.code)) rawKeys.jump = true;
+      if (['ArrowDown', 'KeyS'].includes(e.code)) rawKeys.duck = true;
     });
 
     window.addEventListener('keyup', (e) => {
-      if (['Space', 'ArrowUp', 'KeyW'].includes(e.code)) keys.jump = false;
-      if (['ArrowDown', 'KeyS'].includes(e.code)) keys.duck = false;
-    });
-
-    // Eventos de Toque (Celular)
-    canvas.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      const touchY = e.touches[0].clientY;
-      const canvasRect = canvas.getBoundingClientRect();
-      if (touchY > canvasRect.top + canvasRect.height / 2) {
-        keys.duck = true;
-      } else {
-        keys.jump = true;
-      }
-    });
-
-    canvas.addEventListener('touchend', () => {
-      keys.jump = false;
-      keys.duck = false;
+      if (['Space', 'ArrowUp', 'KeyW'].includes(e.code)) rawKeys.jump = false;
+      if (['ArrowDown', 'KeyS'].includes(e.code)) rawKeys.duck = false;
     });
 
     startBtn.addEventListener('click', startGame);
