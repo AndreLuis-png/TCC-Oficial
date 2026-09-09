@@ -1,6 +1,6 @@
 CREATE DATABASE IF NOT EXISTS almoxarifado_db
-CHARACTER SET ascii
-COLLATE ascii_general_ci;
+CHARACTER SET utf8mb4 
+COLLATE utf8mb4_unicode_ci;
 
 USE almoxarifado_db;
 
