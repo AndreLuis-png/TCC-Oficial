@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tabela</title>
 
     <style>
@@ -10,57 +11,111 @@
             --primary-blue: #192A6B;
         }
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background: var(--primary-blue) url('../../static/home.png')
-                        center/cover no-repeat;
-            font-family: Arial, sans-serif;
-        }
-        .titulo-grande {
-            font-size: 24px;
+        * {
+            box-sizing: border-box;
         }
 
-        /* ÁREA DA TABELA */
+        body {
+            margin: 0;
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+
+            background: var(--primary-blue) url('../../static/home.png')
+                        top left / 1920px 1080px no-repeat;
+
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+
+        /* PESQUISA */
+        .caixa-pesquisa {
+            position: absolute;
+            left: 623px;
+            top: 215px;
+
+            width: 675px;
+            height: 59px;
+
+            padding: 0 22px;
+            border: none;
+            border-radius: 30px;
+            outline: none;
+
+            background: #E5E5E5;
+            font-size: 18px;
+        }
+
+        /* BOTÕES */
+        .botoes {
+            position: absolute;
+            left: 1140px;
+            top: 300px;
+
+            display: flex;
+            gap: 10px;
+        }
+
+        .botao {
+            width: 194px;
+            height: 70px;
+
+            border: none;
+            border-radius: 18px;
+            background: transparent;
+
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+
+            cursor: pointer;
+        }
+
+        .botao span {
+            font-size: 23px;
+        }
+
+        /* TABELA */
         .tabela-area {
             position: absolute;
             left: 10%;
-            top: 38%;
+            top: 39%;
             width: 80%;
             height: 58vh;
         }
 
-        /* ÁREA DO SCROLL */
         .tabela-scroll {
             width: 100%;
-            height: 100%;
+            height: 99%;
             overflow: auto;
 
             border: 2px solid black;
             border-radius: 10px;
         }
 
-        /* TABELA */
         table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
         }
 
-        /* CÉLULAS */
         th,
         td {
             border: 2px solid black;
-            padding: 20px 70px;
+            padding: 20px 65px;
             white-space: nowrap;
+            text-align: center;
         }
 
-        /* DADOS */
         td {
-            font-size: 16px;
+            font-size: 18px;
         }
 
-        /* CABEÇALHO FIXO */
         th {
             position: sticky;
             top: 0;
@@ -74,6 +129,31 @@
 
 <body>
 
+    <!-- PESQUISA -->
+    <input
+        type="text"
+        class="caixa-pesquisa"
+        placeholder="Pesquise"
+    >
+
+    <!-- BOTÕES -->
+    <div class="botoes">
+
+        <button class="botao">
+            <span>🔧</span> Uso Geral
+        </button>
+
+        <button class="botao">
+            <span>⚙️</span> Mecânica
+        </button>
+
+        <button class="botao">
+            <span>⚡</span> Elétrica
+        </button>
+
+    </div>
+
+    <!-- TABELA -->
     <div class="tabela-area">
 
         <div class="tabela-scroll">
@@ -82,11 +162,11 @@
 
                 <thead>
                     <tr>
-                        <th class="titulo-grande">Id</th>
+                        <th>Id</th>
                         <th>Produto</th>
-                        <th class="titulo-grande">Área de Uso</th>
+                        <th>Área de Uso</th>
                         <th>Quantidade</th>
-                        <th class="titulo-grande">Preço</th>
+                        <th>Preço</th>
                         <th>Descrição</th>
                         <th>Imagem</th>
                     </tr>
@@ -104,26 +184,7 @@
                         <td>Imagem</td>
                     </tr>
 
-                    <tr>
-                        <td>2</td>
-                        <td>Produto 2</td>
-                        <td>São Paulo</td>
-                        <td>2</td>
-                        <td>R$ 20,00</td>
-                        <td>Produto exemplo</td>
-                        <td>Imagem</td>
-                    </tr>
-
-                    <tr>
-                        <td>1</td>
-                        <td>Produto 1</td>
-                        <td>Curitiba</td>
-                        <td>1</td>
-                        <td>R$ 10,00</td>
-                        <td>Produto exemplo</td>
-                        <td>Imagem</td>
-                    </tr>
-
+                    
                     <tr>
                         <td>2</td>
                         <td>Produto 2</td>
@@ -143,37 +204,16 @@
                         <td>Produto exemplo</td>
                         <td>Imagem</td>
                     </tr>
-                       <tr>
-                        <td>1</td>
-                        <td>Produto 1</td>
-                        <td>Curitiba</td>
-                        <td>1</td>
-                        <td>R$ 10,00</td>
-                        <td>Produto exemplo</td>
-                        <td>Imagem</td>
-                    </tr>
 
                     <tr>
-                        <td>2</td>
-                        <td>Produto 2</td>
+                        <td>4</td>
+                        <td>Produto 4</td>
                         <td>São Paulo</td>
                         <td>2</td>
                         <td>R$ 20,00</td>
                         <td>Produto exemplo</td>
                         <td>Imagem</td>
-                    </tr>
-
-                    <tr>
-                        <td>1</td>
-                        <td>Produto 1</td>
-                        <td>Curitiba</td>
-                        <td>1</td>
-                        <td>R$ 10,00</td>
-                        <td>Produto exemplo</td>
-                        <td>Imagem</td>
-                    </tr>
-
-                    <tr>
+                    </tr><tr>
                         <td>2</td>
                         <td>Produto 2</td>
                         <td>São Paulo</td>
@@ -192,19 +232,10 @@
                         <td>Produto exemplo</td>
                         <td>Imagem</td>
                     </tr>
-                       <tr>
-                        <td>1</td>
-                        <td>Produto 1</td>
-                        <td>Curitiba</td>
-                        <td>1</td>
-                        <td>R$ 10,00</td>
-                        <td>Produto exemplo</td>
-                        <td>Imagem</td>
-                    </tr>
 
                     <tr>
-                        <td>2</td>
-                        <td>Produto 2</td>
+                        <td>4</td>
+                        <td>Produto 4</td>
                         <td>São Paulo</td>
                         <td>2</td>
                         <td>R$ 20,00</td>
@@ -213,8 +244,8 @@
                     </tr>
 
                     <tr>
-                        <td>1</td>
-                        <td>Produto 1</td>
+                        <td>5</td>
+                        <td>Produto 5</td>
                         <td>Curitiba</td>
                         <td>1</td>
                         <td>R$ 10,00</td>
@@ -223,8 +254,8 @@
                     </tr>
 
                     <tr>
-                        <td>2</td>
-                        <td>Produto 2</td>
+                        <td>6</td>
+                        <td>Produto 6</td>
                         <td>São Paulo</td>
                         <td>2</td>
                         <td>R$ 20,00</td>
@@ -233,17 +264,8 @@
                     </tr>
 
                     <tr>
-                        <td>3</td>
-                        <td>Produto 3</td>
-                        <td>Curitiba</td>
-                        <td>1</td>
-                        <td>R$ 10,00</td>
-                        <td>Produto exemplo</td>
-                        <td>Imagem</td>
-                    </tr>
-                       <tr>
-                        <td>1</td>
-                        <td>Produto 1</td>
+                        <td>7</td>
+                        <td>Produto 7</td>
                         <td>Curitiba</td>
                         <td>1</td>
                         <td>R$ 10,00</td>
@@ -252,8 +274,8 @@
                     </tr>
 
                     <tr>
-                        <td>2</td>
-                        <td>Produto 2</td>
+                        <td>8</td>
+                        <td>Produto 8</td>
                         <td>São Paulo</td>
                         <td>2</td>
                         <td>R$ 20,00</td>
@@ -261,86 +283,8 @@
                         <td>Imagem</td>
                     </tr>
 
-                    <tr>
-                        <td>1</td>
-                        <td>Produto 1</td>
-                        <td>Curitiba</td>
-                        <td>1</td>
-                        <td>R$ 10,00</td>
-                        <td>Produto exemplo</td>
-                        <td>Imagem</td>
-                    </tr>
+                </tbody>
 
-                    <tr>
-                        <td>2</td>
-                        <td>Produto 2</td>
-                        <td>São Paulo</td>
-                        <td>2</td>
-                        <td>R$ 20,00</td>
-                        <td>Produto exemplo</td>
-                        <td>Imagem</td>
-                    </tr>
-
-                    <tr>
-                        <td>3</td>
-                        <td>Produto 3</td>
-                        <td>Curitiba</td>
-                        <td>1</td>
-                        <td>R$ 10,00</td>
-                        <td>Produto exemplo</td>
-                        <td>Imagem</td>
-                    </tr>
-                       <tr>
-                        <td>1</td>
-                        <td>Produto 1</td>
-                        <td>Curitiba</td>
-                        <td>1</td>
-                        <td>R$ 10,00</td>
-                        <td>Produto exemplo</td>
-                        <td>Imagem</td>
-                    </tr>
-
-                    <tr>
-                        <td>2</td>
-                        <td>Produto 2</td>
-                        <td>São Paulo</td>
-                        <td>2</td>
-                        <td>R$ 20,00</td>
-                        <td>Produto exemplo</td>
-                        <td>Imagem</td>
-                    </tr>
-
-                    <tr>
-                        <td>1</td>
-                        <td>Produto 1</td>
-                        <td>Curitiba</td>
-                        <td>1</td>
-                        <td>R$ 10,00</td>
-                        <td>Produto exemplo</td>
-                        <td>Imagem</td>
-                    </tr>
-
-                    <tr>
-                        <td>2</td>
-                        <td>Produto 2</td>
-                        <td>São Paulo</td>
-                        <td>2</td>
-                        <td>R$ 20,00</td>
-                        <td>Produto exemplo</td>
-                        <td>Imagem</td>
-                    </tr>
-
-                    <tr>
-                        <td>3</td>
-                        <td>Produto 3</td>
-                        <td>Curitiba</td>
-                        <td>1</td>
-                        <td>R$ 10,00</td>
-                        <td>Produto exemplo</td>
-                        <td>Imagem</td>
-                    </tr>
-                    <thead>
-                 
             </table>
 
         </div>
