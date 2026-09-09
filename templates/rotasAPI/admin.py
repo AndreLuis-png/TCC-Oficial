@@ -1,8 +1,8 @@
 import bcrypt
 import MySQLdb.cursors
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
-from rotasAPI.home import checar_bloqueio
-from rotasAPI.movimento import registrar_log
+from templates.rotasAPI.home import checar_bloqueio
+from templates.rotasAPI.movimento import registrar_log
 
 admin_bp = Blueprint('admin_bp', __name__)
 

@@ -1,7 +1,7 @@
 import unicodedata
 import MySQLdb.cursors
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from rotasAPI.home import checar_bloqueio
+from templates.rotasAPI.home import checar_bloqueio
 
 movimento_bp = Blueprint('movimento_bp', __name__)
 
