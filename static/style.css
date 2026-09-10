@@ -1,31 +1,286 @@
 /* ==========================================
-   VARIÁVEIS GLOBAIS (DESIGN SYSTEM)
+   VARIÁVEIS GLOBAIS
    ========================================== */
 :root {
-    /* Cores Principais: Definem a identidade visual da aplicação (Azul, Laranja, Branco e Cinza) */
     --primary-blue: #192A6B;
     --accent-orange: #FF9500;
+    --orange-shadow: #f28c00;
     --pure-white: #FFFFFF;
-    --gray-muted: #9BA2B0;
+    --gray-bg: #E5E5E5;
+    --border-black: #000000;
+}
 
-    /* Cores de Fundo Secundárias e Variações Escuras: Usadas no fundo da página, cartões e bordas */
-    --bg-main: #f1f5f9;
-    --bg-card: var(--pure-white);
-    --border-color: #cbd5e1;
-    
-    /* Variações de Tons Escuros (Filtros e Painéis): Usadas para diferenciar seções como painel admin ou barra de busca */
-    --dark-blue-gray: #19436B;
-    --deep-purple: #23196B;
-    --teal-dark: #195D6B;
-    --plum-dark: #3E196B;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-    /* Tons de Alerta, Categorias e Destaques (Amarelos/Laranjas): Usados principalmente nas "badges" (etiquetas) das áreas */
-    --orange-bright: #FF6800;
-    --yellow-gold: #FFB400;
-    --yellow-bright: #FFD200;
-    --yellow-light: #FFD262;
-    
-    /* Cores de Estado Funcional: Verde para sucesso, Vermelho para erro/perigo */
-    --error: #ef4444;
-    --success: #22c55e;
+body {
+    width: 100vw;
+    min-height: 100vh;
+    background-color: var(--primary-blue);
+    font-family: Arial, Helvetica, sans-serif;
+    color: #000;
+    overflow-x: hidden;
+}
+
+/* === CABEÇALHO INTEGRADO COM MENOS MARGEM === */
+header {
+    width: 100%;
+    background-color: var(--primary-blue);
+    color: var(--pure-white);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 30px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.menu-hamburguer {
+    font-size: 32px;
+    color: var(--pure-white);
+    cursor: pointer;
+}
+
+.logo {
+    font-size: 30px;
+    font-weight: 900;
+    color: var(--pure-white);
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.logo span {
+    font-weight: 400;
+    font-size: 20px;
+    margin-left: 8px;
+}
+
+.user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 3px solid var(--pure-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pure-white);
+    font-size: 24px;
+}
+
+/* === NAV BAR === */
+nav.top-nav {
+    width: 100%;
+    background-color: var(--primary-blue);
+    padding: 8px 30px 14px 30px;
+    display: flex;
+    gap: 25px;
+}
+
+nav.top-nav a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 18px; /* Fonte Ampliada */
+    transition: color 0.2s ease;
+}
+
+nav.top-nav a:hover, 
+nav.top-nav a.active {
+    color: var(--accent-orange);
+}
+
+/* === MAIN CONTAINER COM MARGENS REDUZIDAS === */
+main {
+    width: 96%;
+    max-width: 1800px;
+    margin: 15px auto;
+    padding: 20px 25px;
+    background-color: #f4f6f9;
+    border-radius: 20px;
+    min-height: 82vh;
+}
+
+/* === TÍTULOS E SUBTÍTULOS COM FONTES MAIORES === */
+.page-title {
+    color: var(--primary-blue);
+    font-size: 42px; /* Fonte Ampliada */
+    font-weight: 900;
+    margin-bottom: 2px;
+}
+
+.page-subtitle {
+    color: var(--orange-shadow);
+    font-size: 18px; /* Fonte Ampliada */
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* === PESQUISA E BOTÕES FIXOS/ESTILIZADOS === */
+.caixa-pesquisa {
+    width: 100%;
+    max-width: 600px;
+    height: 52px;
+    padding: 0 22px;
+    border: none;
+    border-radius: 30px;
+    outline: none;
+    background: var(--gray-bg);
+    font-size: 20px; /* Fonte Ampliada */
+    color: #000;
+}
+
+.botoes-grupo {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.botao-filtro {
+    height: 52px;
+    padding: 0 24px;
+    border: none;
+    border-radius: 18px;
+    background: var(--accent-orange);
+    color: white;
+    font-size: 18px; /* Fonte Ampliada */
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 3px 0px var(--orange-shadow);
+}
+
+.botao-filtro span {
+    font-size: 24px;
+}
+
+/* === TABELA ESTILIZADA CONFORME O SEU CÓDIGO === */
+.tabela-area {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.tabela-scroll {
+    width: 100%;
+    max-height: 580px;
+    overflow: auto;
+    border: 3px solid var(--border-black);
+    border-radius: 12px;
+    background: white;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+th, td {
+    border: 2px solid var(--border-black);
+    padding: 16px 20px;
+    white-space: nowrap;
+    text-align: center;
+}
+
+td {
+    font-size: 20px; /* Fonte Ampliada */
+    font-weight: 500;
+}
+
+th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--accent-orange);
+    font-size: 20px; /* Fonte Ampliada */
+    font-weight: bold;
+    color: black;
+}
+
+/* === CARDS DE DADOS E FORMULÁRIOS === */
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 25px;
+}
+
+.card-painel {
+    background: white;
+    border: 3px solid var(--border-black);
+    border-radius: 20px;
+    padding: 25px;
+}
+
+.campo-form {
+    margin-bottom: 16px;
+}
+
+.campo-form label {
+    display: block;
+    font-size: 18px; /* Fonte Ampliada */
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #000;
+}
+
+.input-padrao {
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    border: 2px solid var(--border-black);
+    border-radius: 20px;
+    font-size: 18px; /* Fonte Ampliada */
+    outline: none;
+    background: #fff;
+}
+
+/* === TELA DE LOGIN ESTILIZADA E CENTRALIZADA === */
+.login-body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-blue) url('../../static/Almoxarifado.png') center/cover no-repeat;
+}
+
+.login-box {
+    width: 520px;
+    background: white;
+    border-radius: 30px;
+    padding: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.login-box h1 {
+    margin: 0 0 20px;
+    text-align: center;
+    color: #f28c00;
+    font-size: 64px; /* Fonte Ampliada */
+    text-shadow: 3px 3px #000;
+}
+
+.botao-menu {
+    display: block;
+    width: 160px;
+    margin: 20px auto 0;
+    padding: 12px 0;
+    background: var(--primary-blue);
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 20px; /* Fonte Ampliada */
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
 }
