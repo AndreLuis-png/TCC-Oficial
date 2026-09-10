@@ -1,91 +1,28 @@
-<style>
-:root {
-    --primary-blue: #192A6B;
-}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SENAI Almoxarifado</title>
+    <link rel="stylesheet" href="../../static/style.css">
+</head>
+<body class="login-body">
 
-body {
-    margin: 0;
-    min-height: 100vh;
-    background: var(--primary-blue) url('../../static/Almoxarifado.png') center/cover no-repeat;
-    font-family: Arial, sans-serif;
-}
+    <div class="login-box">
+        <h1>Login</h1>
 
-/* CAIXA DO LOGIN */
-.login-box {
-    position: absolute;
-    top: 49%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+        <div class="campo-form">
+            <label for="usuario">Usuário:</label>
+            <input type="text" id="usuario" name="usuario" class="input-padrao">
+        </div>
 
-    width: 510px;
-    height: 298px;
-    background: white;
-    border-radius: 30 px;
-    padding: 20px 0;
-}
+        <div class="campo-form">
+            <label for="senha">Senha:</label>
+            <input type="password" id="senha" name="senha" class="input-padrao">
+        </div>
 
-/* TÍTULO */
-.login-box h1 {
-    margin: 0 0 15px;
-    text-align: center;
-    color: #f28c00;
-    font-size: 60px;
-    text-shadow: 3px 3px #000;
-}
-
-/* CAMPOS */
-.campo {
-    margin-left: 82px;
-    margin-bottom: 10px;
-}
-
-.campo label {
-    display: block;
-    font-size: 13px;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.campo input {
-    width: 390px;
-    height: 32px;
-    margin-left: -1px;
-    padding: 0 12px;
-    border: 2px solid #000;
-    border-radius: 20px;
-    box-sizing: border-box;
-}
-
-/* BOTÃO */
-.botao-menu {
-    display: block;
-    width: 120px;
-    margin: 14px auto 0;
-    padding: 10px 0;
-
-    background: #192A6B;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 20px;
-    font-weight: bold;
-}
-</style>
-
-<div class="login-box">
-
-    <h1>Login</h1>
-
-    <div class="campo">
-        <label for="usuario">Usuário:</label>
-        <input type="text" id="usuario" name="usuario">
+        <a href="home.html" class="botao-menu">Entrar</a>
     </div>
 
-    <div class="campo">
-        <label for="senha">Senha:</label>
-        <input type="password" id="senha" name="senha">
-    </div>
-
-    <a href="home.html" class="botao-menu">Entrar</a>
-
-</div>
+</body>
+</html>
