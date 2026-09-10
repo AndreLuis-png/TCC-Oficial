@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cyber Runner</title>
+  <title>Projeto Seth - Bem-vindo ao Chaos</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -16,46 +16,101 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      padding: 20px;
     }
-    .game-wrapper { position: relative; width: 100%; max-width: 800px; padding: 10px; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .title { font-size: 1.5rem; font-weight: 800; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0, 243, 255, 0.6); }
-    .score-board { font-family: monospace; font-size: 1.2rem; color: #f43f5e; background: #111827; padding: 6px 16px; border-radius: 8px; border: 1px solid #1f2937; }
+    .game-wrapper { 
+      position: relative; 
+      width: 100%; 
+      max-width: 1400px; 
+    }
+    .header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 15px; 
+    }
+    .title { 
+      font-size: 2.2rem; 
+      font-weight: 800; 
+      letter-spacing: 3px; 
+      text-shadow: 0 0 15px rgba(0, 243, 255, 0.6); 
+    }
+    .score-board { 
+      font-family: monospace; 
+      font-size: 1.8rem; 
+      color: #f43f5e; 
+      background: #111827; 
+      padding: 10px 24px; 
+      border-radius: 8px; 
+      border: 1px solid #1f2937; 
+    }
     .score-board span { color: #00f3ff; margin-left: 10px; }
     
     canvas {
       width: 100%;
       height: auto;
+      max-height: 75vh;
       background: #0f172a;
-      border: 2px solid #00f3ff;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+      border: 3px solid #00f3ff;
+      border-radius: 16px;
+      box-shadow: 0 0 35px rgba(0, 243, 255, 0.3);
       display: block;
-      transition: transform 0.5s ease;
-    }
-    canvas.flipped {
-      transform: rotate(180deg);
+      transition: transform 0.5s ease, border-color 0.8s ease, filter 0.3s ease;
     }
 
-    .overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(15, 23, 42, 0.95); border: 2px solid #00f3ff; backdrop-filter: blur(8px); padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 0 30px rgba(0, 243, 255, 0.4); width: 85%; max-width: 420px; z-index: 10; }
-    .overlay h2 { font-size: 2rem; margin-bottom: 10px; color: #f43f5e; }
-    .overlay p { color: #94a3b8; margin-bottom: 20px; font-size: 0.95rem; }
-    .btn { background: #00f3ff; color: #080b10; border: none; padding: 12px 28px; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }
+    .overlay { 
+      position: absolute; 
+      top: 50%; 
+      left: 50%; 
+      transform: translate(-50%, -50%); 
+      background: rgba(15, 23, 42, 0.95); 
+      border: 2px solid #00f3ff; 
+      backdrop-filter: blur(10px); 
+      padding: 40px; 
+      border-radius: 20px; 
+      text-align: center; 
+      box-shadow: 0 0 40px rgba(0, 243, 255, 0.4); 
+      width: 90%; 
+      max-width: 550px; 
+      z-index: 10; 
+    }
+    .overlay h2 { font-size: 2.5rem; margin-bottom: 10px; color: #f43f5e; }
+    .overlay p { color: #94a3b8; margin-bottom: 25px; font-size: 1.2rem; font-weight: bold; }
+    .btn { 
+      background: #00f3ff; 
+      color: #080b10; 
+      border: none; 
+      padding: 16px 40px; 
+      font-size: 1.3rem; 
+      font-weight: bold; 
+      border-radius: 10px; 
+      cursor: pointer; 
+      text-transform: uppercase; 
+      transition: all 0.2s; 
+    }
     .btn:hover { transform: scale(1.05); background: #38bdf8; }
     
-    .status-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; font-size: 0.75rem; font-weight: bold; min-height: 24px; }
-    .status-tag { padding: 3px 8px; border-radius: 4px; display: none; }
+    .status-bar { 
+      display: flex; 
+      flex-wrap: wrap; 
+      gap: 10px; 
+      margin-top: 15px; 
+      font-size: 0.95rem; 
+      font-weight: bold; 
+      min-height: 32px; 
+    }
+    .status-tag { padding: 6px 14px; border-radius: 6px; display: none; }
   </style>
 </head>
 <body>
 
   <div class="game-wrapper">
     <div class="header">
-      <div class="title">⚡ CYBER RUNNER</div>
+      <div class="title">⚡ PROJETO SETH</div>
       <div class="score-board">HI <span id="hiScoreText">00000</span> | <span id="scoreText">00000</span></div>
     </div>
 
-    <canvas id="gameCanvas" width="800" height="300"></canvas>
+    <canvas id="gameCanvas" width="1400" height="500"></canvas>
 
     <div class="status-bar">
       <div id="tagShield" class="status-tag" style="background: #ffd700; color: #000;">ESCUDO</div>
@@ -63,14 +118,15 @@
       <div id="tagSlow" class="status-tag" style="background: #3b82f6; color: #fff;">LENTO</div>
       <div id="tagSpeed" class="status-tag" style="background: #a855f7; color: #fff;">HIPERVELOZ</div>
       <div id="tagFlip" class="status-tag" style="background: #ec4899; color: #fff;">CABEÇA P/ BAIXO</div>
+      <div id="tagMirror" class="status-tag" style="background: #38bdf8; color: #000;">LADOS INVERTIDOS</div>
       <div id="tagSuperJump" class="status-tag" style="background: #f97316; color: #fff;">SUPER PULO</div>
       <div id="tagBlind" class="status-tag" style="background: #dc2626; color: #fff;">CEGUEIRA</div>
-      <div id="tagHeavy" class="status-tag" style="background: #64748b; color: #fff;">PULO PESADO</div>
+      <div id="tagBW" class="status-tag" style="background: #6b7280; color: #fff;">PRETO & BRANCO</div>
     </div>
 
     <div id="overlay" class="overlay">
-      <h2 id="overlayTitle">CYBER RUNNER</h2>
-      <p id="overlayMessage">Efeitos agora duram 4 obstáculos ultrapassados!</p>
+      <h2 id="overlayTitle">PROJETO SETH</h2>
+      <p id="overlayMessage">Bem-vindo ao Chaos</p>
       <button id="startBtn" class="btn">JOGAR</button>
     </div>
   </div>
@@ -124,45 +180,62 @@
       osc.stop(now + 0.25);
     }
 
-    const GROUND_Y = 240;
+    const GROUND_Y = 410;
     let gameRunning = false;
-    let gameSpeed = 5.5;
+    let gameSpeed = 8;
     let score = 0;
-    let highScore = localStorage.getItem('cyber_runner_hi') || 0;
+    let highScore = localStorage.getItem('seth_runner_hi') || 0;
     let frameCount = 0;
+    let bgGridOffset = 0;
     
     let wallCooldown = 0;
     let lastEffect = null;
     let activeEffect = null;
     let obstaclesRemainingForEffect = 0;
 
+    const bgThemes = [
+      { bg: '#0f172a', grid: 'rgba(0, 243, 255, 0.12)', ground: '#00f3ff', sun: '#00f3ff' },
+      { bg: '#1e102d', grid: 'rgba(217, 70, 239, 0.15)', ground: '#d946ef', sun: '#f43f5e' },
+      { bg: '#0a1f18', grid: 'rgba(34, 197, 94, 0.15)', ground: '#22c55e', sun: '#10b981' },
+      { bg: '#1c1917', grid: 'rgba(249, 115, 22, 0.15)', ground: '#f97316', sun: '#eab308' },
+      { bg: '#180e29', grid: 'rgba(168, 85, 247, 0.15)', ground: '#a855f7', sun: '#ec4899' }
+    ];
+
     hiScoreText.innerText = String(highScore).padStart(5, '0');
     const rawKeys = { jump: false, duck: false };
 
     const player = {
-      x: 80, y: GROUND_Y - 50,
-      width: 32, height: 50,
-      normalHeight: 50, duckHeight: 26,
-      vy: 0, gravity: 0.8, jumpForce: -13,
+      x: 140, y: GROUND_Y - 72,
+      width: 44, height: 72,
+      normalHeight: 72, duckHeight: 36,
+      vy: 0, gravity: 0.95, jumpForce: -16.5,
       isGrounded: false, isDucking: false,
 
       reset() {
         this.y = GROUND_Y - this.normalHeight;
+        this.width = 44;
+        this.normalHeight = 72;
+        this.duckHeight = 36;
         this.height = this.normalHeight;
         this.vy = 0;
         this.isGrounded = true;
         this.isDucking = false;
         activeEffect = null;
         obstaclesRemainingForEffect = 0;
-        canvas.classList.remove('flipped');
+        canvas.style.transform = 'none';
+        canvas.style.filter = 'none';
       },
 
       update() {
+        this.width = 44;
+        this.normalHeight = 72;
+        this.duckHeight = 36;
+
         const wantJump = activeEffect === 'invert' ? rawKeys.duck : rawKeys.jump;
         const wantDuck = activeEffect === 'invert' ? rawKeys.jump : rawKeys.duck;
 
-        let currentGravity = activeEffect === 'heavy' ? 1.5 : 0.8;
-        let currentJumpForce = activeEffect === 'superJump' ? -16 : (activeEffect === 'heavy' ? -10 : -13);
+        let currentGravity = 0.95;
+        let currentJumpForce = activeEffect === 'superJump' ? -21 : -16.5;
 
         if (wantDuck && this.isGrounded) {
           if (!this.isDucking) {
@@ -192,9 +265,17 @@
         }
 
         if (activeEffect === 'flip') {
-          canvas.classList.add('flipped');
+          canvas.style.transform = 'rotate(180deg)';
+        } else if (activeEffect === 'mirror') {
+          canvas.style.transform = 'scaleX(-1)';
         } else {
-          canvas.classList.remove('flipped');
+          canvas.style.transform = 'none';
+        }
+
+        if (activeEffect === 'bw') {
+          canvas.style.filter = 'grayscale(100%) contrast(12%) brightness(40%)';
+        } else {
+          canvas.style.filter = 'none';
         }
 
         document.getElementById('tagShield').style.display = activeEffect === 'shield' ? 'block' : 'none';
@@ -202,9 +283,10 @@
         document.getElementById('tagSlow').style.display = activeEffect === 'slow' ? 'block' : 'none';
         document.getElementById('tagSpeed').style.display = activeEffect === 'speed' ? 'block' : 'none';
         document.getElementById('tagFlip').style.display = activeEffect === 'flip' ? 'block' : 'none';
+        document.getElementById('tagMirror').style.display = activeEffect === 'mirror' ? 'block' : 'none';
         document.getElementById('tagSuperJump').style.display = activeEffect === 'superJump' ? 'block' : 'none';
         document.getElementById('tagBlind').style.display = activeEffect === 'blind' ? 'block' : 'none';
-        document.getElementById('tagHeavy').style.display = activeEffect === 'heavy' ? 'block' : 'none';
+        document.getElementById('tagBW').style.display = activeEffect === 'bw' ? 'block' : 'none';
       },
 
       draw() {
@@ -212,15 +294,19 @@
         let glowColor = '#00f3ff';
         if (activeEffect === 'shield') glowColor = '#ffd700';
         else if (activeEffect === 'superJump') glowColor = '#f97316';
-        else if (activeEffect === 'heavy') glowColor = '#64748b';
+        else if (activeEffect === 'bw') glowColor = '#ffffff';
 
-        ctx.shadowBlur = 12;
+        ctx.shadowBlur = 18;
         ctx.shadowColor = glowColor;
         ctx.fillStyle = glowColor;
         ctx.fillRect(this.x, this.y, this.width, this.height);
 
         ctx.fillStyle = '#080b10';
-        ctx.fillRect(this.x + 18, this.y + (this.isDucking ? 6 : 10), 10, 6);
+        const eyeWidth = 14;
+        const eyeHeight = 8;
+        const eyeOffsetX = 24;
+        const eyeOffsetY = this.isDucking ? 6 : 14;
+        ctx.fillRect(this.x + eyeOffsetX, this.y + eyeOffsetY, eyeWidth, eyeHeight);
         ctx.restore();
       }
     };
@@ -229,12 +315,12 @@
     let powerWalls = [];
 
     function applyRandomEffect() {
-      const allEffects = ['shield', 'invert', 'slow', 'speed', 'flip', 'superJump', 'blind', 'heavy'];
+      const allEffects = ['shield', 'invert', 'slow', 'speed', 'flip', 'mirror', 'superJump', 'blind', 'bw'];
       const available = allEffects.filter(e => e !== lastEffect);
       let selected = available[Math.floor(Math.random() * available.length)];
       lastEffect = selected;
       activeEffect = selected;
-      obstaclesRemainingForEffect = 4;
+      obstaclesRemainingForEffect = 3;
 
       if (['shield', 'slow', 'superJump'].includes(selected)) {
         playSound('good');
@@ -253,69 +339,90 @@
     }
 
     function spawnObstacle() {
-      let isFlying = false;
-      let isJumper = false;
-
-      if (activeEffect === 'heavy') {
-        // Quando em Pulo Pesado, gera apenas obstáculos que pulam ou que requerem se abaixar
-        if (Math.random() < 0.5) {
-          isFlying = true;
-        } else {
-          isJumper = true;
-        }
-      } else {
-        const rand = Math.random();
-        isFlying = rand < 0.35 && score > 120;
-        isJumper = rand > 0.75 && score > 180;
-      }
-
-      // Chance de cair durante a passagem se for voador
-      const isFalling = isFlying && Math.random() < 0.45;
+      const rand = Math.random();
+      const isFlying = rand < 0.35 && score > 120;
+      const isJumper = rand > 0.75 && score > 180;
+      const isFalling = isFlying && Math.random() < 0.5;
 
       let obsColor = '#f43f5e';
       if (isFlying) {
-        obsColor = isFalling ? '#a21caf' : '#d946ef'; // Tom de roxo sutilmente mais escuro para os que caem
+        obsColor = isFalling ? '#a21caf' : '#d946ef';
       } else if (isJumper) {
         obsColor = '#e11d48';
       }
 
       obstacles.push({
         x: canvas.width,
-        // Rebaixado (GROUND_Y - 58) para obrigar o jogador a se abaixar
-        y: isFlying ? GROUND_Y - 58 : GROUND_Y - 45,
-        width: isFlying ? 35 : (isJumper ? 28 : 25),
-        height: isFlying ? 28 : 45,
+        y: isFlying ? GROUND_Y - 95 : GROUND_Y - 68,
+        width: isFlying ? 48 : (isJumper ? 38 : 36),
+        height: isFlying ? 38 : 68,
         vy: 0,
         isJumper: isJumper,
         isFlying: isFlying,
         isFalling: isFalling,
         hasFallen: false,
         hasJumped: false,
+        hangTime: 0,
         passed: false,
         color: obsColor
       });
     }
 
     function spawnEntities() {
-      if (frameCount % Math.max(50, Math.floor(100 - gameSpeed * 2)) === 0) {
+      if (frameCount % Math.max(35, Math.floor(75 - gameSpeed * 2)) === 0) {
         if (wallCooldown > 0) {
           wallCooldown--;
           spawnObstacle();
           return;
         }
 
-        if (Math.random() < 0.8) {
+        if (Math.random() < 0.6) {
           spawnObstacle();
         } else {
           powerWalls.push({
             x: canvas.width,
             y: 0,
-            width: 14,
+            width: 20,
             height: GROUND_Y
           });
-          wallCooldown = 3;
+          wallCooldown = 2;
         }
       }
+    }
+
+    function drawBackground(currentSpeed, theme) {
+      canvas.style.backgroundColor = theme.bg;
+      canvas.style.borderColor = theme.ground;
+
+      ctx.save();
+      ctx.fillStyle = theme.sun;
+      ctx.shadowBlur = 35;
+      ctx.shadowColor = theme.sun;
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, 90, 65, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      ctx.strokeStyle = theme.grid;
+      ctx.lineWidth = 2;
+
+      bgGridOffset = (bgGridOffset + currentSpeed * 0.5) % 50;
+
+      for (let x = -bgGridOffset; x < canvas.width; x += 50) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, GROUND_Y);
+        ctx.stroke();
+      }
+
+      for (let y = 30; y < GROUND_Y; y += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+      ctx.restore();
     }
 
     function startGame() {
@@ -323,7 +430,7 @@
       obstacles = [];
       powerWalls = [];
       score = 0;
-      gameSpeed = 5.5;
+      gameSpeed = 8;
       frameCount = 0;
       wallCooldown = 0;
       lastEffect = null;
@@ -338,7 +445,7 @@
 
       if (score > highScore) {
         highScore = score;
-        localStorage.setItem('cyber_runner_hi', highScore);
+        localStorage.setItem('seth_runner_hi', highScore);
         hiScoreText.innerText = String(highScore).padStart(5, '0');
       }
 
@@ -353,7 +460,10 @@
 
       frameCount++;
       score++;
-      if (frameCount % 400 === 0) gameSpeed += 0.3;
+      
+      const speedTier = Math.floor(score / 1500);
+      gameSpeed = 8 + speedTier * 0.4;
+      const currentTheme = bgThemes[speedTier % bgThemes.length];
 
       let currentSpeed = gameSpeed;
       if (activeEffect === 'slow') currentSpeed *= 0.55;
@@ -362,29 +472,45 @@
       scoreText.innerText = String(score).padStart(5, '0');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      ctx.strokeStyle = '#334155';
+      drawBackground(currentSpeed, currentTheme);
+
+      ctx.save();
+      ctx.strokeStyle = currentTheme.ground;
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = currentTheme.ground;
+      ctx.lineWidth = 4;
       ctx.beginPath();
       ctx.moveTo(0, GROUND_Y);
       ctx.lineTo(canvas.width, GROUND_Y);
       ctx.stroke();
+      ctx.restore();
 
       player.update();
       player.draw();
       spawnEntities();
 
-      // Obstáculos
       for (let i = obstacles.length - 1; i >= 0; i--) {
         let obs = obstacles[i];
         obs.x -= currentSpeed;
 
-        // Lógica do saltitante
         if (obs.isJumper) {
-          if (!obs.hasJumped && obs.x - player.x < 210) {
-            obs.vy = -6.5; 
+          if (!obs.hasJumped && obs.x - player.x < 320) {
+            obs.vy = -7.5; 
             obs.hasJumped = true;
+            obs.hangTime = 120;
           }
-          obs.vy += 0.18; 
-          obs.y += obs.vy;
+
+          if (obs.hasJumped) {
+            if (obs.vy < 0) {
+              obs.vy += 0.25;
+            } else if (obs.hangTime > 0) {
+              obs.vy = 0;
+              obs.hangTime--;
+            } else {
+              obs.vy += 0.32;
+            }
+            obs.y += obs.vy;
+          }
 
           if (obs.y >= GROUND_Y - obs.height) {
             obs.y = GROUND_Y - obs.height;
@@ -392,12 +518,11 @@
           }
         }
 
-        // Lógica do voador que cai
-        if (obs.isFlying && obs.isFalling && !obs.hasFallen && obs.x < 420) {
-          obs.vy = 3.5;
+        if (obs.isFlying && obs.isFalling && !obs.hasFallen && (obs.x - player.x < 220)) {
+          obs.vy = 8.5;
           obs.hasFallen = true;
         }
-        if (obs.isFalling && obs.vy > 0) {
+        if (obs.isFalling && obs.hasFallen && obs.vy > 0) {
           obs.y += obs.vy;
           if (obs.y >= GROUND_Y - obs.height) {
             obs.y = GROUND_Y - obs.height;
@@ -408,7 +533,6 @@
         ctx.fillStyle = obs.color;
         ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
 
-        // Checa se o jogador ultrapassou o obstáculo
         if (!obs.passed && obs.x + obs.width < player.x) {
           obs.passed = true;
           onObstacleCleared();
@@ -433,20 +557,19 @@
         if (obs.x + obs.width < 0) obstacles.splice(i, 1);
       }
 
-      // Paredes Azuis
       for (let i = powerWalls.length - 1; i >= 0; i--) {
         let wall = powerWalls[i];
         wall.x -= currentSpeed;
 
         ctx.save();
         ctx.fillStyle = '#00f3ff';
-        ctx.shadowBlur = 18;
+        ctx.shadowBlur = 22;
         ctx.shadowColor = '#00f3ff';
         
         ctx.fillRect(wall.x, wall.y, wall.width, wall.height);
         
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(wall.x + 4, wall.y, 6, wall.height);
+        ctx.fillRect(wall.x + 6, wall.y, 8, wall.height);
         ctx.restore();
 
         if (
@@ -463,12 +586,11 @@
         if (wall.x + wall.width < 0) powerWalls.splice(i, 1);
       }
 
-      // Cegueira
       if (activeEffect === 'blind') {
         ctx.save();
         const gradient = ctx.createRadialGradient(
-          player.x + player.width / 2, player.y + player.height / 2, 50,
-          player.x + player.width / 2, player.y + player.height / 2, 140
+          player.x + player.width / 2, player.y + player.height / 2, 110,
+          player.x + player.width / 2, player.y + player.height / 2, 280
         );
         gradient.addColorStop(0, 'rgba(0,0,0,0)');
         gradient.addColorStop(1, 'rgba(0,0,0,0.98)');
