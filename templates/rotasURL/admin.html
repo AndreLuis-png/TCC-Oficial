@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
     <title>Tabela</title>
 
    <style>
@@ -64,10 +64,14 @@
             font-size: 18px;
         }
     </style> 
+=======
+    <title>Gerenciamento - SENAI Almoxarifado</title>
+    <link rel="stylesheet" href="../../static/style.css">
+>>>>>>> 3d77f30 (modo fds: Ativo)
 </head>
-
 <body>
 
+<<<<<<< HEAD
     <input
         type="text"
         class="caixa-pesquisa"
@@ -79,7 +83,74 @@
         class="caixa-pesquisa2"
         placeholder="Pesquise"
     >
+=======
+    <header>
+        <div class="header-left">
+            <span class="menu-hamburguer">&#9776;</span>
+            <a href="/home" class="logo">SENAI <span>Almoxarifado</span></a>
+        </div>
+        <div class="user-avatar">&#128100;</div>
+    </header>
+
+    <nav class="top-nav">
+        <a href="/home">Estoque</a>
+        <a href="/movimento">Movimentação</a>
+        <a href="/admin" class="active">Gerenciamento</a>
+        <a href="/login">Cadastrar Usuário</a>
+    </nav>
+
+    <main>
+        <h1 class="page-title">Gerenciamento de usuários</h1>
+        <p class="page-subtitle">Visualize o histórico e gerencie os usuários do sistema</p>
+
+        <div class="grid-2">
+            <div class="card-painel">
+                <h2 style="color: var(--primary-blue); margin-bottom: 15px; font-size: 24px;">Histórico de ações</h2>
+                
+                <div class="campo-form">
+                    <label>Usuário:</label>
+                    <input type="text" class="input-padrao">
+                </div>
+
+                <button class="botao-filtro" style="margin-bottom: 15px;">Filtrar</button>
+
+                <div class="tabela-scroll" style="max-height: 250px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>Ação</th>
+                                <th>Usuário</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>10/09 16:00</td>
+                                <td>Entrada</td>
+                                <td>Admin</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-painel">
+                <h2 style="color: var(--primary-blue); margin-bottom: 15px; font-size: 24px;">Gerenciar Usuário</h2>
+                
+                <div class="campo-form">
+                    <label>Selecionar Usuário:</label>
+                    <input type="text" class="input-padrao">
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 30px;">
+                    <button class="botao-filtro" style="width: 100%;">Bloquear</button>
+                    <button class="botao-filtro" style="width: 100%;">Desbloquear</button>
+                    <button class="botao-filtro" style="width: 100%; background: #ef4444; box-shadow: 0 3px 0 #b91c1c;">Excluir</button>
+                </div>
+            </div>
+        </div>
+    </main>
+>>>>>>> 3d77f30 (modo fds: Ativo)
 
 </body>
-
 </html>
