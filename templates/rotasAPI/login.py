@@ -1,4 +1,3 @@
-import unicodedata
 import bcrypt
 import MySQLdb.cursors
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
@@ -7,7 +6,6 @@ login_bp = Blueprint('login_bp', __name__)
 
 @login_bp.route('/', methods=['GET', 'POST'])
 def login():
-    # Importação local do mysql para evitar importação circular
     from app import mysql
     
     if request.method == 'POST':
@@ -30,7 +28,7 @@ def login():
                 session['is_admin'] = (account['role'] == 'admin')
                 return redirect(url_for('home_bp.home'))
         
-        flash("login inválido, tente novamente", "error")
+        flash("Login inválido, tente novamente", "error")
             
     return render_template('rotasURL/login.html')
 

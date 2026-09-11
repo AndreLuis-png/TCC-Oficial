@@ -1,42 +1,49 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <link rel="icon" type="image/png" href="/static/çennay.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movimentação - SENAI Almoxarifado</title>
-    <link rel="stylesheet" href="../../static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
     <header>
         <div class="header-left">
             <span class="menu-hamburguer">&#9776;</span>
-            <a href="/home" class="logo">SENAI <span>Almoxarifado</span></a>
+            <a href="{{ url_for('home_bp.home') }}" class="logo">SENAI <span>Almoxarifado</span></a>
         </div>
         <div class="user-avatar">&#128100;</div>
     </header>
 
     <nav class="top-nav">
-        <a href="/home">Estoque</a>
-        <a href="/movimento" class="active">Movimentação</a>
-        <a href="/admin">Gerenciamento</a>
-        <a href="/login">Cadastrar Usuário</a>
+        <a href="{{ url_for('home_bp.home') }}">Estoque</a>
+        <a href="{{ url_for('movimento_bp.movimento') }}" class="active">Movimentação</a>
+        <a href="{{ url_for('admin_bp.admin') }}">Gerenciamento</a>
+        <a href="{{ url_for('login_bp.login') }}">Cadastrar Usuário</a>
     </nav>
 
     <main>
         <h1 class="page-title">Movimentação de estoque</h1>
         <p class="page-subtitle">Registre entradas, saídas e alterações nos itens do estoque</p>
 
-        <form action="#" method="POST" class="grid-2">
+        <form action="{{ url_for('movimento_bp.movimento') }}" method="POST" class="grid-2">
+            <input type="hidden" name="acao_tipo" value="inserir">
+
             <div class="card-painel">
                 <div class="campo-form">
                     <label>Item</label>
-                    <input type="text" name="item" class="input-padrao">
+                    <input type="text" name="produto" class="input-padrao" required>
                 </div>
 
                 <div class="campo-form">
-                    <label>Categoria:</label>
-                    <input type="text" name="categoria" class="input-padrao">
+                    <label>Categoria / Área de Uso:</label>
+                    <select name="area_uso" class="input-padrao" required>
+                        <option value="Geral">Uso Geral</option>
+                        <option value="Mecanica">Mecânica</option>
+                        <option value="Eletrica">Elétrica</option>
+                    </select>
                 </div>
                 
                 <div class="campo-form">
@@ -47,26 +54,22 @@
 
             <div class="card-painel">
                 <div class="campo-form">
-                    <label>Tipo de movimentação:</label>
-                    <div class="botoes-grupo">
-                        <button type="button" class="botao-filtro" style="flex:1;">Entrada</button>
-                        <button type="button" class="botao-filtro" style="flex:1;">Saída</button>
-                        <button type="button" class="botao-filtro" style="flex:1;">Ajuste</button>
-                    </div>
-                </div>
-
-                <div class="campo-form">
-                    <label>Quantidade</label>
-                    <input type="number" name="quantidade" class="input-padrao">
+                    <label>Quantidade Inicial</label>
+                    <input type="number" name="quantidade" class="input-padrao" value="1" required>
                 </div>
 
                 <div class="campo-form">
                     <label>Preço (R$)</label>
-                    <input type="text" name="preco" class="input-padrao">
+                    <input type="text" name="preco" class="input-padrao" placeholder="0.00" required>
+                </div>
+
+                <div class="campo-form">
+                    <label>Link da Imagem (Opcional)</label>
+                    <input type="url" name="link_imagem" class="input-padrao">
                 </div>
 
                 <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                    <a href="/home" class="botao-menu" style="margin:0; background: #888;">Cancelar</a>
+                    <a href="{{ url_for('home_bp.home') }}" class="botao-menu" style="margin:0; background: #888;">Cancelar</a>
                     <button type="submit" class="botao-filtro" style="height: 50px;">Confirmar</button>
                 </div>
             </div>

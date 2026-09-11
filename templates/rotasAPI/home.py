@@ -43,8 +43,10 @@ def home(categoria='Todos'):
     cursor.execute(query, tuple(params))
     itens = cursor.fetchall()
     
-    return render_template('rotasURL/home.html', 
-                           estoque=itens, 
-                           categoria_atual=categoria, 
-                           termo_pesquisa=termo,
-                           is_admin=session.get('is_admin', False))
+    return render_template(
+        'rotasURL/home.html', 
+        estoque=itens, 
+        categoria_atual=categoria, 
+        termo_pesquisa=termo,
+        is_admin=session.get('is_admin', False)
+    )

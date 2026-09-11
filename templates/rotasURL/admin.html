@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='çennay.png') }}">    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciamento - SENAI Almoxarifado</title>
-    <link rel="stylesheet" href="../../static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
     <header>
         <div class="header-left">
             <span class="menu-hamburguer">&#9776;</span>
-            <a href="/home" class="logo">SENAI <span>Almoxarifado</span></a>
+            <a href="{{ url_for('home_bp.home') }}" class="logo">SENAI <span>Almoxarifado</span></a>
         </div>
         <div class="user-avatar">&#128100;</div>
     </header>
 
     <nav class="top-nav">
-        <a href="/home">Estoque</a>
-        <a href="/movimento">Movimentação</a>
-        <a href="/admin" class="active">Gerenciamento</a>
-        <a href="/login">Cadastrar Usuário</a>
+        <a href="{{ url_for('home_bp.home') }}">Estoque</a>
+        <a href="{{ url_for('movimento_bp.movimento') }}">Movimentação</a>
+        <a href="{{ url_for('admin_bp.admin') }}" class="active">Gerenciamento</a>
+        <a href="{{ url_for('login_bp.login') }}">Cadastrar Usuário</a>
     </nav>
 
     <main>
@@ -31,12 +32,13 @@
             <div class="card-painel">
                 <h2 style="color: var(--primary-blue); margin-bottom: 15px; font-size: 24px;">Histórico de ações</h2>
                 
-                <div class="campo-form">
-                    <label>Usuário:</label>
-                    <input type="text" class="input-padrao">
-                </div>
-
-                <button class="botao-filtro" style="margin-bottom: 15px;">Filtrar</button>
+                <form method="GET" action="{{ url_for('admin_bp.admin') }}">
+                    <div class="campo-form">
+                        <label>Usuário:</label>
+                        <input type="text" name="filtro_usuario" class="input-padrao" value="{{ request.args.get('filtro_usuario', '') }}">
+                    </div>
+                    <button type="submit" class="botao-filtro" style="margin-bottom: 15px;">Filtrar</button>
+                </form>
 
                 <div class="tabela-scroll" style="max-height: 250px;">
                     <table>
@@ -48,11 +50,17 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% for log in logs %}
                             <tr>
-                                <td>10/09 16:00</td>
-                                <td>Entrada</td>
-                                <td>Admin</td>
+                                <td>{{ log.data_registro }}</td>
+                                <td>{{ log.acao }}</td>
+                                <td>{{ log.usuario }}</td>
                             </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="3">Nenhum registro encontrado.</td>
+                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -61,16 +69,27 @@
             <div class="card-painel">
                 <h2 style="color: var(--primary-blue); margin-bottom: 15px; font-size: 24px;">Gerenciar Usuário</h2>
                 
-                <div class="campo-form">
-                    <label>Selecionar Usuário:</label>
-                    <input type="text" class="input-padrao">
-                </div>
+                <form method="POST" action="{{ url_for('admin_bp.admin') }}">
+                    <div class="campo-form">
+                        <label>Selecionar Usuário:</label>
+                        <select name="usuario_alvo" class="input-padrao">
+                            {% for u in usuarios %}
+                            <option value="{{ u.login }}">{{ u.login }} ({{ u.status }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 30px;">
-                    <button class="botao-filtro" style="width: 100%;">Bloquear</button>
-                    <button class="botao-filtro" style="width: 100%;">Desbloquear</button>
-                    <button class="botao-filtro" style="width: 100%; background: #ef4444; box-shadow: 0 3px 0 #b91c1c;">Excluir</button>
-                </div>
+                    <div class="campo-form" style="margin-top: 10px;">
+                        <label>Chave Mestra:</label>
+                        <input type="password" name="chave_mestra" class="input-padrao" required>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
+                        <button type="submit" name="action" value="bloquear" class="botao-filtro" style="width: 100%;">Bloquear</button>
+                        <button type="submit" name="action" value="desbloquear" class="botao-filtro" style="width: 100%;">Desbloquear</button>
+                        <button type="submit" name="action" value="deletar_usuario" class="botao-filtro" style="width: 100%; background: #ef4444; box-shadow: 0 3px 0 #b91c1c;">Excluir</button>
+                    </div>
+                </form>
             </div>
         </div>
     </main>

@@ -52,8 +52,10 @@ def admin():
                 flash("Erro: Usuário já cadastrado!", "error")
             else:
                 hashed = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt(12)).decode('utf-8')
-                cursor.execute("INSERT INTO usuarios (login, senha, status, role) VALUES (%s, %s, 'ativo', %s)", 
-                               (novo_user, hashed, role))
+                cursor.execute(
+                    "INSERT INTO usuarios (login, senha, status, role) VALUES (%s, %s, 'ativo', %s)", 
+                    (novo_user, hashed, role)
+                )
                 registrar_log(session['usuario'], 'Admin - Criar Usuário', f"Criou '{novo_user}'")
                 mysql.connection.commit()
                 flash(f"Usuário '{novo_user}' cadastrado!", "success")

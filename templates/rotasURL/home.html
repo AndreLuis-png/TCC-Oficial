@@ -1,43 +1,45 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='çennay.png') }}">    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estoque - SENAI Almoxarifado</title>
-    <link rel="stylesheet" href="../../static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
     <header>
         <div class="header-left">
             <span class="menu-hamburguer">&#9776;</span>
-            <a href="/home" class="logo">SENAI <span>Almoxarifado</span></a>
+            <a href="{{ url_for('home_bp.home') }}" class="logo">SENAI <span>Almoxarifado</span></a>
         </div>
         <div class="user-avatar">&#128100;</div>
     </header>
 
     <nav class="top-nav">
-        <a href="/home" class="active">Estoque</a>
-        <a href="/movimento">Movimentação</a>
-        <a href="/admin">Gerenciamento</a>
-        <a href="/login">Cadastrar Usuário</a>
+        <a href="{{ url_for('home_bp.home') }}" class="active">Estoque</a>
+        <a href="{{ url_for('movimento_bp.movimento') }}">Movimentação</a>
+        <a href="{{ url_for('admin_bp.admin') }}">Gerenciamento</a>
+        <a href="{{ url_for('login_bp.login') }}">Cadastrar Usuário</a>
     </nav>
 
     <main>
         <h1 class="page-title">Estoque</h1>
         <p class="page-subtitle">Lista de todos os itens cadastrados</p>
 
-        <div style="display: flex; gap: 20px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-            <input type="text" class="caixa-pesquisa" placeholder="Pesquise">
+        <form method="GET" action="{{ url_for('home_bp.home') }}" style="display: flex; gap: 20px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+            <input type="text" name="pesquisa" class="caixa-pesquisa" placeholder="Pesquise" value="{{ termo_pesquisa }}">
             
             <div class="botoes-grupo">
-                <button class="botao-filtro"><span>🔧</span> Uso Geral</button>
-                <button class="botao-filtro"><span>⚙️</span> Mecânica</button>
-                <button class="botao-filtro"><span>⚡</span> Elétrica</button>
+                <a href="{{ url_for('home_bp.home', categoria='Geral') }}" class="botao-filtro"><span>🔧</span> Uso Geral</a>
+                <a href="{{ url_for('home_bp.home', categoria='Mecanica') }}" class="botao-filtro"><span>⚙️</span> Mecânica</a>
+                <a href="{{ url_for('home_bp.home', categoria='Eletrica') }}" class="botao-filtro"><span>⚡</span> Elétrica</a>
+                <a href="{{ url_for('home_bp.home') }}" class="botao-filtro">Todos</a>
             </div>
-        </div>
+        </form>
 
-        <div class="tabela-area">
+        <div class="tabela-area" style="margin-top: 20px;">
             <div class="tabela-scroll">
                 <table>
                     <thead>
@@ -52,33 +54,27 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {% for item in estoque %}
                         <tr>
-                            <td>1</td>
-                            <td>Produto 1</td>
-                            <td>Curitiba</td>
-                            <td>1</td>
-                            <td>R$ 10,00</td>
-                            <td>Produto exemplo</td>
-                            <td>Imagem</td>
+                            <td>{{ item.id }}</td>
+                            <td>{{ item.produto }}</td>
+                            <td>{{ item.area_uso }}</td>
+                            <td>{{ item.quantidade }}</td>
+                            <td>R$ {{ "%.2f"|format(item.preco|float) }}</td>
+                            <td>{{ item.descricao }}</td>
+                            <td>
+                                {% if item.link_imagem %}
+                                <a href="{{ item.link_imagem }}" target="_blank">Ver Imagem</a>
+                                {% else %}
+                                Sem Imagem
+                                {% endif %}
+                            </td>
                         </tr>
+                        {% else %}
                         <tr>
-                            <td>2</td>
-                            <td>Produto 2</td>
-                            <td>São Paulo</td>
-                            <td>2</td>
-                            <td>R$ 20,00</td>
-                            <td>Produto exemplo</td>
-                            <td>Imagem</td>
+                            <td colspan="7">Nenhum item cadastrado.</td>
                         </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Produto 3</td>
-                            <td>Curitiba</td>
-                            <td>1</td>
-                            <td>R$ 10,00</td>
-                            <td>Produto exemplo</td>
-                            <td>Imagem</td>
-                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
