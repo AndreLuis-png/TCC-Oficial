@@ -291,14 +291,24 @@
 
       draw() {
         ctx.save();
-        let glowColor = '#00f3ff';
-        if (activeEffect === 'shield') glowColor = '#ffd700';
-        else if (activeEffect === 'superJump') glowColor = '#f97316';
-        else if (activeEffect === 'bw') glowColor = '#ffffff';
+        
+        // Define a cor do jogador conforme o efeito ativo
+        let playerColor = '#00f3ff'; // Cor padrão (Azul Neon)
+        switch (activeEffect) {
+          case 'shield': playerColor = '#ffd700'; break;    // Dourado
+          case 'invert': playerColor = '#22c55e'; break;    // Verde
+          case 'slow': playerColor = '#3b82f6'; break;      // Azul
+          case 'speed': playerColor = '#a855f7'; break;     // Roxo
+          case 'flip': playerColor = '#ec4899'; break;      // Rosa
+          case 'mirror': playerColor = '#38bdf8'; break;    // Azul Claro
+          case 'superJump': playerColor = '#f97316'; break; // Laranja
+          case 'blind': playerColor = '#dc2626'; break;     // Vermelho
+          case 'bw': playerColor = '#ffffff'; break;        // Branco
+        }
 
         ctx.shadowBlur = 18;
-        ctx.shadowColor = glowColor;
-        ctx.fillStyle = glowColor;
+        ctx.shadowColor = playerColor;
+        ctx.fillStyle = playerColor;
         ctx.fillRect(this.x, this.y, this.width, this.height);
 
         ctx.fillStyle = '#080b10';
