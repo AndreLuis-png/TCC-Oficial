@@ -26,7 +26,7 @@ def home(categoria='Todos'):
     termo = request.args.get('pesquisa', '').strip()
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     
-    query = "SELECT id, produto, area_uso, quantidade, preco, descricao, link_imagem FROM estoque WHERE 1=1"
+    query = "SELECT LPAD(id, 5, '0') AS id, produto, area_uso, quantidade, preco, descricao, link_imagem FROM estoque WHERE 1=1"
     params = []
     
     if categoria != 'Todos':

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <link rel="icon" type="image/png" href="/static/çennay.png">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='çennay.png') }}">    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movimentação - SENAI Almoxarifado</title>
@@ -14,17 +14,48 @@
             <span class="menu-hamburguer">&#9776;</span>
             <a href="{{ url_for('home_bp.home') }}" class="logo">SENAI <span>Almoxarifado</span></a>
         </div>
-        <div class="user-avatar">&#128100;</div>
+        
+        <!-- Menu do Usuário (Dropdown) -->
+        <div class="user-dropdown-container">
+            <div class="user-avatar" id="userAvatarBtn" onclick="toggleUserMenu()">&#128100;</div>
+            <div class="user-menu" id="userMenu">
+                <div class="user-menu-header">
+                    <strong>{{ session.get('usuario', 'Usuário') }}</strong>
+                </div>
+                <hr>
+                <a href="#">🔒 Alterar Senha</a>
+                <a href="#" onclick="alert('Em breve: Customização de ícone!')">🎨 Customizar Ícone</a>
+                <hr>
+                <a href="{{ url_for('login_bp.login') }}" class="logout-btn">🚪 Sair da Conta</a>
+            </div>
+        </div>
     </header>
 
     <nav class="top-nav">
         <a href="{{ url_for('home_bp.home') }}">Estoque</a>
         <a href="{{ url_for('movimento_bp.movimento') }}" class="active">Movimentação</a>
-        <a href="{{ url_for('admin_bp.admin') }}">Gerenciamento</a>
-        <a href="{{ url_for('login_bp.login') }}">Cadastrar Usuário</a>
+        
+        {# Oculta caminhos se não for admin #}
+        {% if is_admin %}
+            <a href="{{ url_for('admin_bp.admin') }}">Gerenciamento</a>
+            <a href="{{ url_for('admin_bp.cadastrar_usuario') }}">Cadastrar Usuário</a>
+        {% endif %}
     </nav>
 
     <main>
+        <!-- Exibição de Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">
+                <span>{% if category == 'success' %}✅{% else %}⚠️{% endif %} {{ message }}</span>
+                <button class="flash-close" onclick="this.parentElement.style.display='none';">&times;</button>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
         <h1 class="page-title">Movimentação de estoque</h1>
         <p class="page-subtitle">Registre entradas, saídas e alterações nos itens do estoque</p>
 
@@ -33,12 +64,20 @@
 
             <div class="card-painel">
                 <div class="campo-form">
-                    <label>Item</label>
-                    <input type="text" name="produto" class="input-padrao" required>
+                    <label>Tipo de Movimentação</label>
+                    <select name="tipo_movimentacao" class="input-padrao" required>
+                        <option value="entrada">Entrada (+ Adicionar Estoque)</option>
+                        <option value="saida">Saída (- Remover Estoque)</option>
+                    </select>
                 </div>
 
                 <div class="campo-form">
-                    <label>Categoria / Área de Uso:</label>
+                    <label>Nome do Item (Identificador)</label>
+                    <input type="text" name="produto" class="input-padrao" placeholder="Ex: Chave de fenda" required>
+                </div>
+
+                <div class="campo-form">
+                    <label>Categoria / Área de Uso</label>
                     <select name="area_uso" class="input-padrao" required>
                         <option value="Geral">Uso Geral</option>
                         <option value="Mecanica">Mecânica</option>
@@ -47,20 +86,20 @@
                 </div>
                 
                 <div class="campo-form">
-                    <label>Descrição</label>
-                    <textarea name="descricao" class="input-padrao" style="height: 110px; padding: 12px; resize: none;"></textarea>
+                    <label>Descrição (Atualizará apenas se alterada)</label>
+                    <textarea name="descricao" class="input-padrao" style="height: 80px; padding: 12px; resize: none;"></textarea>
                 </div>
             </div>
 
             <div class="card-painel">
                 <div class="campo-form">
-                    <label>Quantidade Inicial</label>
-                    <input type="number" name="quantidade" class="input-padrao" value="1" required>
+                    <label>Quantidade</label>
+                    <input type="number" name="quantidade" class="input-padrao" value="1" min="0" required>
                 </div>
 
                 <div class="campo-form">
-                    <label>Preço (R$)</label>
-                    <input type="text" name="preco" class="input-padrao" placeholder="0.00" required>
+                    <label>Preço Unitário (R$)</label>
+                    <input type="text" name="preco" class="input-padrao" placeholder="0.00">
                 </div>
 
                 <div class="campo-form">
@@ -70,11 +109,46 @@
 
                 <div style="display: flex; justify-content: space-between; margin-top: 20px;">
                     <a href="{{ url_for('home_bp.home') }}" class="botao-menu" style="margin:0; background: #888;">Cancelar</a>
-                    <button type="submit" class="botao-filtro" style="height: 50px;">Confirmar</button>
+                    <button type="submit" class="botao-filtro" style="height: 50px;">Confirmar Movimentação</button>
                 </div>
             </div>
         </form>
+
+        {% if is_admin %}
+        <div class="card-painel" style="margin-top: 20px; border: 1px solid #ef4444;">
+            <h2 style="color: #ef4444; font-size: 18px; margin-bottom: 10px;">Excluir Registro de Estoque (Apenas Admin)</h2>
+            <form action="{{ url_for('movimento_bp.movimento') }}" method="POST" style="display: flex; gap: 15px; align-items: flex-end;">
+                <input type="hidden" name="acao_tipo" value="deletar">
+                <div class="campo-form" style="flex: 1; margin: 0;">
+                    <label>Selecione o Item para Excluir:</label>
+                    <select name="id" class="input-padrao" required>
+                        {% for item in itens %}
+                        <option value="{{ item.id }}">{{ "%05d"|format(item.id|int) }} - {{ item.produto }} (Qtd: {{ item.quantidade }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="botao-filtro" style="background: #ef4444; box-shadow: 0 3px 0 #b91c1c;">Excluir do Estoque</button>
+            </form>
+        </div>
+        {% endif %}
     </main>
 
+    <script>
+        function toggleUserMenu() {
+            document.getElementById("userMenu").classList.toggle("show");
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('#userAvatarBtn')) {
+                var dropdowns = document.getElementsByClassName("user-menu");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
 </body>
 </html>

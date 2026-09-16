@@ -10,19 +10,76 @@
     --border-black: #000000;
 }
 
+:root {
+    /* Cores de Estado Funcional: Verde para sucesso, Vermelho para erro/perigo */
+    --error: #ef4444;
+    --success: #22c55e;
+}
+
+/* Container de Alertas Flash Centralizado no topo da página */
+.flash-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    width: 90%;
+    max-width: 450px;
+}
+
+.flash-message {
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+}
+
+.flash-message.success {
+    background-color: rgba(220, 252, 231, 0.95);
+    color: #15803d;
+    border-left: 5px solid var(--success);
+}
+
+.flash-message.error {
+    background-color: rgba(254, 226, 226, 0.95);
+    color: #b91c1c;
+    border-left: 5px solid var(--error);
+}
+
+.flash-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.7;
+    margin-left: 10px;
+}
+
+.flash-close:hover {
+    opacity: 1;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-body {
-    width: 100vw;
-    min-height: 100vh;
-    background-color: var(--primary-blue);
-    font-family: Arial, Helvetica, sans-serif;
-    color: #000;
-    overflow-x: hidden;
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow-y: hidden;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif; /* Restaura a fonte moderna do sistema */
+    background-color: #f4f6f9;
 }
 
 /* === CABEÇALHO INTEGRADO COM MENOS MARGEM === */
@@ -101,11 +158,13 @@ nav.top-nav a.active {
 main {
     width: 96%;
     max-width: 1800px;
-    margin: 15px auto;
+    max-height: calc(100vh - 100px); /* Limita o tamanho à tela descontando o topo */
+    margin: 10px auto;
     padding: 20px 25px;
     background-color: #f4f6f9;
     border-radius: 20px;
-    min-height: 82vh;
+    overflow-y: auto; /* Mantém a rolagem interna funcional */
+    box-sizing: border-box;
 }
 
 /* === TÍTULOS E SUBTÍTULOS COM FONTES MAIORES === */
@@ -283,4 +342,68 @@ th {
     font-weight: bold;
     border: none;
     cursor: pointer;
+}
+
+/* Container do Usuário */
+.user-dropdown-container {
+    position: relative;
+    display: inline-block;
+}
+
+.user-avatar {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Menu Dropdown */
+.user-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 45px;
+    background-color: #ffffff;
+    min-width: 180px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 10px 0;
+    z-index: 1000;
+    border: 1px solid #ddd;
+}
+
+.user-menu-header {
+    padding: 8px 16px;
+    color: #1e3a8a;
+    font-size: 14px;
+}
+
+.user-menu hr {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 5px 0;
+}
+
+.user-menu a {
+    color: #333;
+    padding: 10px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.user-menu a:hover {
+    background-color: #f4f6f9;
+}
+
+.user-menu a.logout-btn {
+    color: #ef4444;
+}
+
+.user-menu a.logout-btn:hover {
+    background-color: #fef2f2;
+}
+
+/* Classe de exibição via JS */
+.user-menu.show {
+    display: block;
 }

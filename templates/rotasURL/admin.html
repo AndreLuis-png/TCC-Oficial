@@ -14,28 +14,57 @@
             <span class="menu-hamburguer">&#9776;</span>
             <a href="{{ url_for('home_bp.home') }}" class="logo">SENAI <span>Almoxarifado</span></a>
         </div>
-        <div class="user-avatar">&#128100;</div>
+        
+        <div class="user-dropdown-container">
+            <div class="user-avatar" id="userAvatarBtn" onclick="toggleUserMenu()">&#128100;</div>
+            <div class="user-menu" id="userMenu">
+                <div class="user-menu-header">
+                    <strong>{{ session.get('usuario', 'Usuário') }}</strong>
+                </div>
+                <hr>
+                <a href="#">🔒 Alterar Senha</a>
+                <a href="#" onclick="alert('Em breve: Customização de ícone!')">🎨 Customizar Ícone</a>
+                <hr>
+                <a href="{{ url_for('login_bp.login') }}" class="logout-btn">🚪 Sair da Conta</a>
+            </div>
+        </div>
     </header>
 
     <nav class="top-nav">
         <a href="{{ url_for('home_bp.home') }}">Estoque</a>
         <a href="{{ url_for('movimento_bp.movimento') }}">Movimentação</a>
-        <a href="{{ url_for('admin_bp.admin') }}" class="active">Gerenciamento</a>
-        <a href="{{ url_for('login_bp.login') }}">Cadastrar Usuário</a>
+        {% if is_admin %}
+            <a href="{{ url_for('admin_bp.admin') }}" class="active">Gerenciamento</a>
+            <a href="{{ url_for('admin_bp.cadastrar_usuario') }}">Cadastrar Usuário</a>
+        {% endif %}
     </nav>
 
     <main>
+                <!-- Exibição de Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">
+                <span>{% if category == 'success' %}✅{% else %}⚠️{% endif %} {{ message }}</span>
+                <button class="flash-close" onclick="this.parentElement.style.display='none';">&times;</button>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
         <h1 class="page-title">Gerenciamento de usuários</h1>
         <p class="page-subtitle">Visualize o histórico e gerencie os usuários do sistema</p>
 
         <div class="grid-2">
+            <!-- Painel de Histórico -->
             <div class="card-painel">
                 <h2 style="color: var(--primary-blue); margin-bottom: 15px; font-size: 24px;">Histórico de ações</h2>
                 
                 <form method="GET" action="{{ url_for('admin_bp.admin') }}">
                     <div class="campo-form">
                         <label>Usuário:</label>
-                        <input type="text" name="filtro_usuario" class="input-padrao" value="{{ request.args.get('filtro_usuario', '') }}">
+                        <input type="text" name="filtro_usuario" class="input-padrao" placeholder="Buscar histórico por nome..." value="{{ request.args.get('filtro_usuario', '') }}">
                     </div>
                     <button type="submit" class="botao-filtro" style="margin-bottom: 15px;">Filtrar</button>
                 </form>
@@ -58,7 +87,7 @@
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="3">Nenhum registro encontrado.</td>
+                                <td colspan="3">Nenhum histórico registrado.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -66,33 +95,55 @@
                 </div>
             </div>
 
+            <!-- Painel Gerenciar Usuário Reestruturado -->
             <div class="card-painel">
                 <h2 style="color: var(--primary-blue); margin-bottom: 15px; font-size: 24px;">Gerenciar Usuário</h2>
                 
                 <form method="POST" action="{{ url_for('admin_bp.admin') }}">
                     <div class="campo-form">
                         <label>Selecionar Usuário:</label>
-                        <select name="usuario_alvo" class="input-padrao">
+                        <select name="usuario_alvo" class="input-padrao" required>
                             {% for u in usuarios %}
-                            <option value="{{ u.login }}">{{ u.login }} ({{ u.status }})</option>
+                            <option value="{{ u.login }}">{{ u.login }} [Status: {{ u.status }} | Perfil: {{ u.role }}]</option>
                             {% endfor %}
                         </select>
                     </div>
 
-                    <div class="campo-form" style="margin-top: 10px;">
-                        <label>Chave Mestra:</label>
-                        <input type="password" name="chave_mestra" class="input-padrao" required>
+                    <div class="campo-form" style="margin-top: 15px;">
+                        <label>Chave Mestra de Confirmação:</label>
+                        <input type="password" name="chave_mestra" class="input-padrao" required placeholder="Digite a chave mestra">
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
-                        <button type="submit" name="action" value="bloquear" class="botao-filtro" style="width: 100%;">Bloquear</button>
-                        <button type="submit" name="action" value="desbloquear" class="botao-filtro" style="width: 100%;">Desbloquear</button>
-                        <button type="submit" name="action" value="deletar_usuario" class="botao-filtro" style="width: 100%; background: #ef4444; box-shadow: 0 3px 0 #b91c1c;">Excluir</button>
+                    <!-- Botões de Ação de Bloqueio/Desbloqueio e Exclusão -->
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="submit" name="action" value="bloquear" class="botao-filtro" style="flex: 1; background: #f59e0b; box-shadow: 0 3px 0 #d97706;">🔒 Bloquear</button>
+                        <button type="submit" name="action" value="desbloquear" class="botao-filtro" style="flex: 1; background: #10b981; box-shadow: 0 3px 0 #059669;">🔓 Desbloquear</button>
+                    </div>
+
+                    <div style="margin-top: 10px;">
+                        <button type="submit" name="action" value="deletar_usuario" class="botao-filtro" style="width: 100%; background: #ef4444; box-shadow: 0 3px 0 #b91c1c;">🗑️ Excluir Usuário</button>
                     </div>
                 </form>
             </div>
         </div>
     </main>
 
+    <script>
+        function toggleUserMenu() {
+            document.getElementById("userMenu").classList.toggle("show");
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('#userAvatarBtn')) {
+                var dropdowns = document.getElementsByClassName("user-menu");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
 </body>
 </html>

@@ -74,7 +74,20 @@
     </style>
 </head>
 <body>
-
+    <main>
+                <!-- Exibição de Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">
+                <span>{% if category == 'success' %}✅{% else %}⚠️{% endif %} {{ message }}</span>
+                <button class="flash-close" onclick="this.parentElement.style.display='none';">&times;</button>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
     <form class="login-box" method="POST" action="{{ url_for('login_bp.login') }}">
         <h1>Login</h1>
 
@@ -91,5 +104,6 @@
         <button type="submit" class="botao-entrar">Entrar</button>
     </form>
 
+        <main>
 </body>
 </html>

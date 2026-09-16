@@ -1,114 +1,141 @@
-import bcrypt
 import MySQLdb.cursors
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
-from templates.rotasAPI.home import checar_bloqueio
-from templates.rotasAPI.movimento import registrar_log
+import bcrypt
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 
 admin_bp = Blueprint('admin_bp', __name__)
 
-def verificar_chave_mestra(chave_digitada):
+def registrar_log(usuario, acao, detalhe):
     from app import mysql
-    if not chave_digitada:
-        return False
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT chave_mestra FROM config_admin ORDER BY id ASC LIMIT 1")
-    reg = cursor.fetchone()
-    
-    if not reg or not reg.get('chave_mestra'):
-        return False
-        
     try:
-        return bcrypt.checkpw(chave_digitada.encode('utf-8'), reg['chave_mestra'].encode('utf-8'))
-    except (ValueError, TypeError):
-        return False
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute(
+            "INSERT INTO historico_logs (usuario, acao, detalhe) VALUES (%s, %s, %s)",
+            (usuario, acao, detalhe)
+        )
+        mysql.connection.commit()
+    except Exception as e:
+        print(f"Erro ao registrar log: {e}")
 
 @admin_bp.route('/admin', methods=['GET', 'POST'])
 def admin():
     from app import mysql
-    
-    if 'logged_in' not in session or not checar_bloqueio():
-        return redirect(url_for('login_bp.login'))
-    if not session.get('is_admin'):
-        flash("Acesso restrito a administradores.", "error")
+
+    if 'logged_in' not in session or not session.get('is_admin'):
+        flash("Acesso restrito a administradores!", "error")
         return redirect(url_for('home_bp.home'))
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    
+
     if request.method == 'POST':
-        chave = request.form.get('chave_mestra')
-        action = request.form.get('action')
-        
-        if not verificar_chave_mestra(chave):
-            flash("Erro: Chave mestra incorreta!", "error")
+        usuario_alvo = request.form.get('usuario_alvo')
+        chave_mestra_informada = request.form.get('chave_mestra', '')
+        acao = request.form.get('action')
+
+        # 1. Verifica Chave Mestra
+        cursor.execute("SELECT chave_mestra FROM config_admin LIMIT 1")
+        config = cursor.fetchone()
+
+        if not config or not config.get('chave_mestra'):
+            flash("Erro de configuração: Chave mestra não cadastrada no banco!", "error")
             return redirect(url_for('admin_bp.admin'))
-            
-        if action == 'create_user':
-            novo_user = request.form.get('novo_usuario', '').strip()
-            senha = request.form.get('nova_senha', '')
-            role = request.form.get('role', 'user')
-            
-            cursor.execute("SELECT login FROM usuarios WHERE login = %s", (novo_user,))
-            if cursor.fetchone():
-                flash("Erro: Usuário já cadastrado!", "error")
-            else:
-                hashed = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt(12)).decode('utf-8')
-                cursor.execute(
-                    "INSERT INTO usuarios (login, senha, status, role) VALUES (%s, %s, 'ativo', %s)", 
-                    (novo_user, hashed, role)
-                )
-                registrar_log(session['usuario'], 'Admin - Criar Usuário', f"Criou '{novo_user}'")
+
+        # Valida a senha da chave mestra usando bcrypt
+        try:
+            chave_valida = bcrypt.checkpw(chave_mestra_informada.encode('utf-8'), config['chave_mestra'].encode('utf-8'))
+        except Exception:
+            chave_valida = False
+
+        if not chave_valida:
+            flash("Chave Mestra incorreta!", "error")
+            return redirect(url_for('admin_bp.admin'))
+
+        # 2. Executa a Ação Solicitada
+        try:
+            if acao == 'bloquear':
+                cursor.execute("UPDATE usuarios SET status = 'bloqueado' WHERE login = %s", (usuario_alvo,))
                 mysql.connection.commit()
-                flash(f"Usuário '{novo_user}' cadastrado!", "success")
                 
-        elif action in ['bloquear', 'desbloquear']:
-            alvo = request.form.get('usuario_alvo')
-            status = 'suspenso' if action == 'bloquear' else 'ativo'
-            
-            if alvo == 'admin':
-                flash("Erro: O usuário master não pode ser bloqueado!", "error")
-            else:
-                cursor.execute("UPDATE usuarios SET status = %s WHERE login = %s", (status, alvo))
-                registrar_log(session['usuario'], 'Admin - Status', f"'{alvo}' alterado para {status}")
+                if cursor.rowcount > 0:
+                    registrar_log(session['usuario'], 'Bloqueio de Usuário', f"Bloqueou o usuário '{usuario_alvo}'")
+                    flash(f"Usuário '{usuario_alvo}' foi bloqueado com sucesso!", "success")
+                else:
+                    flash(f"Usuário '{usuario_alvo}' não foi encontrado no banco de dados.", "error")
+
+            elif acao == 'desbloquear':
+                cursor.execute("UPDATE usuarios SET status = 'ativo' WHERE login = %s", (usuario_alvo,))
                 mysql.connection.commit()
-                flash(f"Status de '{alvo}' alterado para {status}.", "success")
-                
-        elif action == 'deletar_usuario':
-            alvo = request.form.get('usuario_alvo')
-            if alvo == 'admin':
-                flash("Erro: O usuário master não pode ser excluído!", "error")
-            else:
-                cursor.execute("DELETE FROM usuarios WHERE login = %s", (alvo,))
-                registrar_log(session['usuario'], 'Admin - Deletar', f"Excluiu '{alvo}'")
+
+                if cursor.rowcount > 0:
+                    registrar_log(session['usuario'], 'Desbloqueio de Usuário', f"Desbloqueou o usuário '{usuario_alvo}'")
+                    flash(f"Usuário '{usuario_alvo}' foi desbloqueado com sucesso!", "success")
+                else:
+                    flash(f"Usuário '{usuario_alvo}' não foi encontrado no banco de dados.", "error")
+
+            elif acao == 'deletar_usuario':
+                if usuario_alvo == session['usuario']:
+                    flash("Você não pode excluir sua própria conta enquanto estiver logado!", "error")
+                    return redirect(url_for('admin_bp.admin'))
+
+                cursor.execute("DELETE FROM usuarios WHERE login = %s", (usuario_alvo,))
                 mysql.connection.commit()
-                flash(f"Usuário '{alvo}' removido.", "success")
-                
-        elif action == 'alterar_senha':
-            alvo = request.form.get('usuario_alvo')
-            senha = request.form.get('nova_senha_usuario', '')
-            if senha:
-                hashed = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt(12)).decode('utf-8')
-                cursor.execute("UPDATE usuarios SET senha = %s WHERE login = %s", (hashed, alvo))
-                registrar_log(session['usuario'], 'Admin - Senha', f"Alterou senha de '{alvo}'")
-                mysql.connection.commit()
-                flash(f"Senha de '{alvo}' alterada!", "success")
+
+                if cursor.rowcount > 0:
+                    registrar_log(session['usuario'], 'Exclusão de Usuário', f"Excluiu o usuário '{usuario_alvo}'")
+                    flash(f"Usuário '{usuario_alvo}' removido do sistema!", "success")
+                else:
+                    flash(f"Usuário '{usuario_alvo}' não foi encontrado no banco de dados.", "error")
+
+        except Exception as err:
+            mysql.connection.rollback()
+            flash(f"Erro ao atualizar banco de dados: {err}", "error")
 
         return redirect(url_for('admin_bp.admin'))
-        
-    cursor.execute("SELECT login, status, role FROM usuarios WHERE login != %s", (session['usuario'],))
-    usuarios = cursor.fetchall()
-    
-    cursor.execute("SELECT usuario, acao, detalhe, data_registro FROM historico_logs ORDER BY data_registro DESC LIMIT 100")
-    logs = cursor.fetchall()
-    
-    return render_template('rotasURL/admin.html', usuarios=usuarios, logs=logs)
 
-@admin_bp.route('/api/admin/logs', methods=['GET'])
-def api_admin_logs():
-    from app import mysql
-    if 'logged_in' not in session or not checar_bloqueio() or not session.get('is_admin'):
-        return jsonify({'error': 'Acesso negado'}), 403
-        
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT id, usuario, acao, detalhe, data_registro FROM historico_logs ORDER BY data_registro DESC")
+    # Carrega a lista atualizada de histórico e usuários
+    filtro_usuario = request.args.get('filtro_usuario', '').strip()
+    if filtro_usuario:
+        cursor.execute("SELECT * FROM historico_logs WHERE usuario LIKE %s ORDER BY id DESC", (f"%{filtro_usuario}%",))
+    else:
+        cursor.execute("SELECT * FROM historico_logs ORDER BY id DESC")
     logs = cursor.fetchall()
-    return jsonify(logs)
+
+    cursor.execute("SELECT login, status, role FROM usuarios ORDER BY login ASC")
+    usuarios = cursor.fetchall()
+
+    return render_template('rotasURL/admin.html', logs=logs, usuarios=usuarios, is_admin=True)
+
+
+@admin_bp.route('/cadastrar_usuario', methods=['GET', 'POST'])
+def cadastrar_usuario():
+    from app import mysql
+
+    if 'logged_in' not in session or not session.get('is_admin'):
+        flash("Acesso restrito a administradores!", "error")
+        return redirect(url_for('home_bp.home'))
+
+    if request.method == 'POST':
+        novo_usuario = request.form.get('usuario', '').strip()
+        senha = request.form.get('senha', '')
+        role = 'admin' if request.form.get('is_admin') == 'on' else 'user'
+
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("SELECT * FROM usuarios WHERE login = %s", (novo_usuario,))
+        
+        if cursor.fetchone():
+            flash("Nome de usuário já cadastrado no sistema!", "error")
+            return redirect(url_for('admin_bp.cadastrar_usuario'))
+
+        salt = bcrypt.gensalt(12)
+        senha_hash = bcrypt.hashpw(senha.encode('utf-8'), salt).decode('utf-8')
+
+        cursor.execute(
+            "INSERT INTO usuarios (login, senha, role, status) VALUES (%s, %s, %s, 'ativo')",
+            (novo_usuario, senha_hash, role)
+        )
+        mysql.connection.commit()
+
+        registrar_log(session['usuario'], 'Novo Usuário', f"Cadastrou o usuário '{novo_usuario}' (Role: {role})")
+        flash(f"Usuário '{novo_usuario}' cadastrado com sucesso!", "success")
+        return redirect(url_for('admin_bp.admin'))
+
+    return render_template('rotasURL/cadastro.html', is_admin=True)

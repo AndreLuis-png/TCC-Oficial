@@ -14,17 +14,47 @@
             <span class="menu-hamburguer">&#9776;</span>
             <a href="{{ url_for('home_bp.home') }}" class="logo">SENAI <span>Almoxarifado</span></a>
         </div>
-        <div class="user-avatar">&#128100;</div>
+        <div class="user-dropdown-container">
+    <div class="user-avatar" id="userAvatarBtn" onclick="toggleUserMenu()">&#128100;</div>
+    
+    <div class="user-menu" id="userMenu">
+        <div class="user-menu-header">
+            <strong>{{ session.get('usuario', 'Usuário') }}</strong>
+        </div>
+        <hr>
+        <a href="{{ url_for('login_bp.alterar_senha') if 'alterar_senha' in config else '#' }}">🔒 Alterar Senha</a>
+        <a href="#" onclick="alert('Em breve: Customização de ícone!')">🎨 Customizar Ícone</a>
+        <hr>
+        <a href="{{ url_for('login_bp.logout') if 'logout' in config else '/logout' }}" class="logout-btn">🚪 Sair da Conta</a>
+    </div>
+</div>
     </header>
 
     <nav class="top-nav">
-        <a href="{{ url_for('home_bp.home') }}" class="active">Estoque</a>
-        <a href="{{ url_for('movimento_bp.movimento') }}">Movimentação</a>
+    <a href="{{ url_for('home_bp.home') }}" class="active">Estoque</a>
+    <a href="{{ url_for('movimento_bp.movimento') }}">Movimentação</a>
+    
+    {# Exibe os caminhos abaixo apenas se o usuário for administrador #}
+    {% if is_admin %}
         <a href="{{ url_for('admin_bp.admin') }}">Gerenciamento</a>
-        <a href="{{ url_for('login_bp.login') }}">Cadastrar Usuário</a>
-    </nav>
+        <a href="{{ url_for('admin_bp.cadastrar_usuario') }}">Cadastrar Usuário</a>
+    {% endif %}
+</nav>
 
     <main>
+        <!-- Exibição de Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">
+                <span>{% if category == 'success' %}✅{% else %}⚠️{% endif %} {{ message }}</span>
+                <button class="flash-close" onclick="this.parentElement.style.display='none';">&times;</button>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
         <h1 class="page-title">Estoque</h1>
         <p class="page-subtitle">Lista de todos os itens cadastrados</p>
 
@@ -81,5 +111,23 @@
         </div>
     </main>
 
+    <script>
+    function toggleUserMenu() {
+        document.getElementById("userMenu").classList.toggle("show");
+    }
+
+    // Fecha o menu caso o usuário clique em qualquer outro lugar fora dele
+    window.onclick = function(event) {
+        if (!event.target.matches('#userAvatarBtn')) {
+            var dropdowns = document.getElementsByClassName("user-menu");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+</script>
 </body>
 </html>

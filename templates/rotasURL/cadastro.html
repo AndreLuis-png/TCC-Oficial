@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='çennay.png') }}">    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Usuário - SENAI Almoxarifado</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <span class="menu-hamburguer">&#9776;</span>
+            <a href="{{ url_for('home_bp.home') }}" class="logo">SENAI <span>Almoxarifado</span></a>
+        </div>
+        
+        <div class="user-dropdown-container">
+            <div class="user-avatar" id="userAvatarBtn" onclick="toggleUserMenu()">&#128100;</div>
+            <div class="user-menu" id="userMenu">
+                <div class="user-menu-header">
+                    <strong>{{ session.get('usuario', 'Usuário') }}</strong>
+                </div>
+                <hr>
+                <a href="#">🔒 Alterar Senha</a>
+                <a href="#" onclick="alert('Em breve: Customização de ícone!')">🎨 Customizar Ícone</a>
+                <hr>
+                <a href="{{ url_for('login_bp.login') }}" class="logout-btn">🚪 Sair da Conta</a>
+            </div>
+        </div>
+    </header>
+
+    <nav class="top-nav">
+        <a href="{{ url_for('home_bp.home') }}">Estoque</a>
+        <a href="{{ url_for('movimento_bp.movimento') }}">Movimentação</a>
+        {% if is_admin %}
+            <a href="{{ url_for('admin_bp.admin') }}">Gerenciamento</a>
+            <a href="{{ url_for('admin_bp.cadastrar_usuario') }}" class="active">Cadastrar Usuário</a>
+        {% endif %}
+    </nav>
+
+    <main style="max-width: 600px; margin: 40px auto;">
+        <!-- Exibição de Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">
+                <span>{% if category == 'success' %}✅{% else %}⚠️{% endif %} {{ message }}</span>
+                <button class="flash-close" onclick="this.parentElement.style.display='none';">&times;</button>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+        <h1 class="page-title">Cadastrar Novo Usuário</h1>
+        <p class="page-subtitle">Crie um acesso para um novo operador ou administrador do sistema</p>
+
+        <div class="card-painel">
+            <form method="POST" action="{{ url_for('admin_bp.cadastrar_usuario') }}">
+                <div class="campo-form">
+                    <label>Nome de Usuário (Login)</label>
+                    <input type="text" name="usuario" class="input-padrao" required placeholder="Ex: joao.silva">
+                </div>
+
+                <div class="campo-form" style="margin-top: 15px;">
+                    <label>Senha Inicial</label>
+                    <input type="password" name="senha" class="input-padrao" required placeholder="********">
+                </div>
+
+                <div class="campo-form" style="margin-top: 15px; display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" name="is_admin" id="is_admin" style="width: 20px; height: 20px;">
+                    <label for="is_admin" style="margin: 0; cursor: pointer;">Conceder permissões de Administrador</label>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 25px;">
+                    <a href="{{ url_for('admin_bp.admin') }}" class="botao-menu" style="margin: 0; background: #888; text-align: center;">Cancelar</a>
+                    <button type="submit" class="botao-filtro" style="flex: 1; height: 45px;">Salvar Usuário</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        function toggleUserMenu() {
+            document.getElementById("userMenu").classList.toggle("show");
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('#userAvatarBtn')) {
+                var dropdowns = document.getElementsByClassName("user-menu");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
