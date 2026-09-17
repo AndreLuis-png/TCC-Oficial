@@ -17,6 +17,7 @@
             <span class="menu-hamburguer">&#9776;</span>
             <a href="{{ url_for('home_bp.home') }}" class="logo">SENAI <span>Almoxarifado</span></a>
         </div>
+        
         <div class="user-dropdown-container">
             <div class="user-avatar" id="userAvatarBtn" onclick="toggleUserMenu()">&#128100;</div>
             
@@ -37,7 +38,6 @@
         <a href="{{ url_for('home_bp.home') }}" class="active">Estoque</a>
         <a href="{{ url_for('movimento_bp.movimento') }}">Movimentação</a>
         
-        {# Exibe os caminhos abaixo apenas se o usuário for administrador #}
         {% if is_admin %}
             <a href="{{ url_for('admin_bp.admin') }}">Gerenciamento</a>
             <a href="{{ url_for('admin_bp.cadastrar_usuario') }}">Cadastrar Usuário</a>
@@ -51,13 +51,14 @@
             <div class="flash-container">
             {% for category, message in messages %}
                 <div class="flash-message {{ category }}">
-                <span>{% if category == 'success' %}✅{% else %}⚠️{% endif %} {{ message }}</span>
-                <button class="flash-close" onclick="this.parentElement.style.display='none';">&times;</button>
+                    <span>{% if category == 'success' %}✅{% else %}⚠️{% endif %} {{ message }}</span>
+                    <button class="flash-close" onclick="this.parentElement.style.display='none';">&times;</button>
                 </div>
             {% endfor %}
             </div>
         {% endif %}
         {% endwith %}
+
         <h1 class="page-title">Estoque</h1>
         <p class="page-subtitle">Lista de todos os itens cadastrados</p>
 
@@ -97,7 +98,11 @@
                             <td>{{ item.descricao }}</td>
                             <td>
                                 {% if item.link_imagem %}
-                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#imageModal" data-bs-src="{{ item.link_imagem }}" data-bs-title="{{ item.produto }}">
+                                    <button type="button" class="btn btn-sm btn-primary" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#imageModal" 
+                                            data-bs-src="{{ item.link_imagem }}" 
+                                            data-bs-title="{{ item.produto }}">
                                         Ver Imagem
                                     </button>
                                 {% else %}
@@ -116,9 +121,9 @@
         </div>
     </main>
 
-    <!-- Modal Bootstrap para Imagem -->
+    <!-- Modal Bootstrap Adaptado para Exibição de Imagens -->
     <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="imageModalLabel">Visualização do Item</h5>
@@ -127,10 +132,13 @@
                 <div class="modal-body text-center">
                     <img src="" id="modalImage" class="img-fluid rounded" alt="Imagem do produto">
                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
             </div>
         </div>
     </div>
-
+    
     <!-- JS do Bootstrap 5 -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -139,7 +147,7 @@
         document.getElementById("userMenu").classList.toggle("show");
     }
 
-    // Passa os dados dinâmicos do botão clicado para o modal Bootstrap
+    /* Script para carregar a imagem dinamicamente no Modal */
     const imageModal = document.getElementById('imageModal');
     if (imageModal) {
         imageModal.addEventListener('show.bs.modal', function (event) {
@@ -155,7 +163,7 @@
         });
     }
 
-    // Fecha o menu caso o usuário clique em qualquer outro lugar fora dele
+    /* Fecha o menu dropdown ao clicar fora */
     window.onclick = function(event) {
         if (!event.target.matches('#userAvatarBtn')) {
             var dropdowns = document.getElementsByClassName("user-menu");
