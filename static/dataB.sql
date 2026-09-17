@@ -69,7 +69,7 @@ INSERT INTO config_admin (usuario, chave_mestra); VALUES
 ('admin', '$2a$12$TyKbVE6G425lA7ko/IgwoOcR.Uc4RCbcvGj/ftZkopSNhhlelM8Zi'), #senha 'admin' para utilizar as funções do admin
 =======
 INSERT INTO config_admin (usuario, chave_mestra) VALUES 
-('admin', '$2a$12$TyKbVE6G425lA7ko/IgwoOcR.Uc4RCbcvGj/ftZkopSNhhlelM8Zi'), #senha 'admin' para utilizar as funções do admin
+('admin', '$2a$12$TyKbVE6G425lA7ko/IgwoOcR.Uc4RCbcvGj/ftZkopSNhhlelM8Zi'); #senha 'admin' para utilizar as funções do admin
 >>>>>>> 44943ec5d7f012e07667bb55ac1c938c31bd91aa
 
 -- --------------------------------------------------------

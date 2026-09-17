@@ -280,7 +280,7 @@ table td .btn-primary:hover {
     transform: translateY(-1px);
 }
 
-/* === CARDS DE DADOS E FORMULÁRIOS === */
+/* === CARDS DE DADOS E FORMULÁRIOS (MODERNOS) === */
 .grid-2 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
@@ -289,9 +289,10 @@ table td .btn-primary:hover {
 
 .card-painel {
     background: white;
-    border: 3px solid var(--border-black);
-    border-radius: 20px;
-    padding: 25px;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 16px !important;
+    padding: 30px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
 }
 
 .campo-form {
@@ -310,11 +311,17 @@ table td .btn-primary:hover {
     width: 100%;
     height: 48px;
     padding: 0 16px;
-    border: 2px solid var(--border-black);
-    border-radius: 20px;
+    border: 1px solid #ced4da !important;
+    border-radius: 12px !important;
     font-size: 18px;
     outline: none;
     background: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-padrao:focus {
+    border-color: var(--primary-blue) !important;
+    box-shadow: 0 0 0 3px rgba(25, 42, 107, 0.1) !important;
 }
 
 /* === TELA DE LOGIN === */
@@ -452,16 +459,15 @@ table td .btn-primary:hover {
     align-items: center;
 }
 
-/* Deixa o título centralizado e com espaço proporcional */
+/* Título centralizado no modal */
 #imageModal .modal-title {
     font-weight: 700;
     color: var(--primary-blue);
     font-size: 20px;
-    margin: 0 auto; /* Centraliza o texto */
+    margin: 0 auto;
     text-align: center;
 }
 
-/* Ajusta o posicionamento do botão X do Bootstrap se necessário */
 #imageModal .modal-header .btn-close {
     margin: 0;
     position: absolute;
@@ -488,10 +494,10 @@ table td .btn-primary:hover {
     border-top: 1px solid #eaeaea;
     padding: 15px 25px;
     display: flex;
-    justify-content: center; /* Centraliza o botão de fechar no rodapé */
+    justify-content: center;
 }
 
-/* Botão de fechar do rodapé alterado para o azul do SENAI */
+/* Botão de fechar do rodapé em azul SENAI */
 #imageModal .modal-footer .btn-secondary {
     background-color: var(--primary-blue) !important;
     border: none !important;
