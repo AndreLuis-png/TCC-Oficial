@@ -8,10 +8,6 @@
     --pure-white: #FFFFFF;
     --gray-bg: #E5E5E5;
     --border-black: #000000;
-}
-
-:root {
-    /* Cores de Estado Funcional: Verde para sucesso, Vermelho para erro/perigo */
     --error: #ef4444;
     --success: #22c55e;
 }
@@ -78,7 +74,7 @@ html, body {
     height: 100vh;
     overflow-y: hidden;
     box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif; /* Restaura a fonte moderna do sistema */
+    font-family: Arial, Helvetica, sans-serif;
     background-color: #f4f6f9;
 }
 
@@ -120,18 +116,6 @@ header {
     margin-left: 8px;
 }
 
-.user-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: 3px solid var(--pure-white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--pure-white);
-    font-size: 24px;
-}
-
 /* === NAV BAR === */
 nav.top-nav {
     width: 100%;
@@ -139,13 +123,15 @@ nav.top-nav {
     padding: 8px 30px 14px 30px;
     display: flex;
     gap: 25px;
+    border-bottom: none !important;
+    box-shadow: none !important;
 }
 
 nav.top-nav a {
     color: rgba(255, 255, 255, 0.85);
     text-decoration: none;
     font-weight: bold;
-    font-size: 18px; /* Fonte Ampliada */
+    font-size: 18px;
     transition: color 0.2s ease;
 }
 
@@ -158,31 +144,31 @@ nav.top-nav a.active {
 main {
     width: 96%;
     max-width: 1800px;
-    max-height: calc(100vh - 100px); /* Limita o tamanho à tela descontando o topo */
+    max-height: calc(100vh - 100px);
     margin: 10px auto;
     padding: 20px 25px;
     background-color: #f4f6f9;
     border-radius: 20px;
-    overflow-y: auto; /* Mantém a rolagem interna funcional */
+    overflow-y: auto;
     box-sizing: border-box;
 }
 
-/* === TÍTULOS E SUBTÍTULOS COM FONTES MAIORES === */
+/* === TÍTULOS E SUBTÍTULOS === */
 .page-title {
     color: var(--primary-blue);
-    font-size: 42px; /* Fonte Ampliada */
+    font-size: 42px;
     font-weight: 900;
     margin-bottom: 2px;
 }
 
 .page-subtitle {
     color: var(--orange-shadow);
-    font-size: 18px; /* Fonte Ampliada */
+    font-size: 18px;
     font-weight: bold;
     margin-bottom: 20px;
 }
 
-/* === PESQUISA E BOTÕES FIXOS/ESTILIZADOS === */
+/* === PESQUISA E BOTÕES DE FILTRO === */
 .caixa-pesquisa {
     width: 100%;
     max-width: 600px;
@@ -192,7 +178,7 @@ main {
     border-radius: 30px;
     outline: none;
     background: var(--gray-bg);
-    font-size: 20px; /* Fonte Ampliada */
+    font-size: 20px;
     color: #000;
 }
 
@@ -209,7 +195,7 @@ main {
     border-radius: 18px;
     background: var(--accent-orange);
     color: white;
-    font-size: 18px; /* Fonte Ampliada */
+    font-size: 18px;
     font-weight: bold;
     display: flex;
     align-items: center;
@@ -217,13 +203,17 @@ main {
     gap: 8px;
     cursor: pointer;
     box-shadow: 0 3px 0px var(--orange-shadow);
+    text-decoration: none !important;
+    border-bottom: none !important;
 }
 
 .botao-filtro span {
     font-size: 24px;
+    text-decoration: none !important;
+    border: none !important;
 }
 
-/* === TABELA ESTILIZADA CONFORME O SEU CÓDIGO === */
+/* === TABELA ESTILIZADA (MAIS LIMPA E MODERNA) === */
 .tabela-area {
     width: 100%;
     margin-top: 20px;
@@ -233,37 +223,61 @@ main {
     width: 100%;
     max-height: 580px;
     overflow: auto;
-    border: 3px solid var(--border-black);
+    border: 1px solid #dee2e6;
     border-radius: 12px;
     background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
 }
 
 table {
     width: 100%;
-    border-collapse: separate;
+    border-collapse: collapse;
     border-spacing: 0;
 }
 
 th, td {
-    border: 2px solid var(--border-black);
+    border: none;
+    border-bottom: 1px solid #eaeaea;
     padding: 16px 20px;
     white-space: nowrap;
     text-align: center;
 }
 
 td {
-    font-size: 20px; /* Fonte Ampliada */
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 400;
+    color: #333;
+}
+
+tbody tr:hover {
+    background-color: #f8f9fa;
 }
 
 th {
     position: sticky;
     top: 0;
     z-index: 10;
-    background: var(--accent-orange);
-    font-size: 20px; /* Fonte Ampliada */
+    background: var(--primary-blue);
+    font-size: 18px;
     font-weight: bold;
-    color: black;
+    color: white;
+    border-bottom: 2px solid var(--accent-orange);
+}
+
+/* === BOTÃO "VER IMAGEM" REESTILIZADO === */
+table td .btn-primary, 
+.btn-primary {
+    background-color: var(--primary-blue) !important;
+    border: none !important;
+    border-radius: 20px !important;
+    padding: 6px 16px !important;
+    font-weight: 600 !important;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+table td .btn-primary:hover {
+    background-color: var(--accent-orange) !important;
+    transform: translateY(-1px);
 }
 
 /* === CARDS DE DADOS E FORMULÁRIOS === */
@@ -286,7 +300,7 @@ th {
 
 .campo-form label {
     display: block;
-    font-size: 18px; /* Fonte Ampliada */
+    font-size: 18px;
     font-weight: bold;
     margin-bottom: 6px;
     color: #000;
@@ -298,12 +312,12 @@ th {
     padding: 0 16px;
     border: 2px solid var(--border-black);
     border-radius: 20px;
-    font-size: 18px; /* Fonte Ampliada */
+    font-size: 18px;
     outline: none;
     background: #fff;
 }
 
-/* === TELA DE LOGIN ESTILIZADA E CENTRALIZADA === */
+/* === TELA DE LOGIN === */
 .login-body {
     min-height: 100vh;
     display: flex;
@@ -324,7 +338,7 @@ th {
     margin: 0 0 20px;
     text-align: center;
     color: #f28c00;
-    font-size: 64px; /* Fonte Ampliada */
+    font-size: 64px;
     text-shadow: 3px 3px #000;
 }
 
@@ -338,7 +352,7 @@ th {
     text-align: center;
     text-decoration: none;
     border-radius: 20px;
-    font-size: 20px; /* Fonte Ampliada */
+    font-size: 20px;
     font-weight: bold;
     border: none;
     cursor: pointer;
@@ -351,6 +365,15 @@ th {
 }
 
 .user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 3px solid var(--pure-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pure-white);
+    font-size: 24px;
     cursor: pointer;
     user-select: none;
 }
@@ -403,33 +426,51 @@ th {
     background-color: #fef2f2;
 }
 
-/* Classe de exibição via JS (Menu de Usuário) */
 .user-menu.show {
     display: block;
 }
 
-/* Ajustes para o Modal Bootstrap de Imagens (Largura horizontal e botão X no canto) */
+/* === ESTILIZAÇÃO MODERNA PARA O MODAL (POP-UP) === */
 #imageModal .modal-dialog {
-    max-width: 750px; /* Garante o formato retangular horizontal amplo */
+    max-width: 750px;
+}
+
+#imageModal .modal-content {
+    border: none !important;
+    border-radius: 20px !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+    overflow: hidden;
+    background-color: #ffffff;
 }
 
 #imageModal .modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #eaeaea;
+    padding: 18px 25px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
 }
 
+/* Deixa o título centralizado e com espaço proporcional */
 #imageModal .modal-title {
-    margin: 0;
+    font-weight: 700;
+    color: var(--primary-blue);
+    font-size: 20px;
+    margin: 0 auto; /* Centraliza o texto */
+    text-align: center;
 }
 
-#imageModal .btn-close {
+/* Ajusta o posicionamento do botão X do Bootstrap se necessário */
+#imageModal .modal-header .btn-close {
     margin: 0;
+    position: absolute;
+    right: 25px;
 }
 
 #imageModal .modal-body {
-    padding: 25px;
+    padding: 30px;
+    background-color: #ffffff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -440,4 +481,28 @@ th {
     width: auto;
     max-width: 100%;
     object-fit: contain;
+}
+
+#imageModal .modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #eaeaea;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: center; /* Centraliza o botão de fechar no rodapé */
+}
+
+/* Botão de fechar do rodapé alterado para o azul do SENAI */
+#imageModal .modal-footer .btn-secondary {
+    background-color: var(--primary-blue) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 8px 25px !important;
+    font-weight: 600 !important;
+    color: white !important;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+#imageModal .modal-footer .btn-secondary:hover {
+    background-color: var(--accent-orange) !important;
+    transform: translateY(-1px);
 }

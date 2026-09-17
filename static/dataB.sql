@@ -64,7 +64,7 @@ INSERT INTO usuarios (login, senha, status, role) VALUES
 -- --------------------------------------------------------
 -- Inserções Iniciais: Configuração do Admin (Chave Mestra)
 -- --------------------------------------------------------
-INSERT INTO config_admin (usuario, chave_mestra) VALUES 
+INSERT INTO config_admin (usuario, chave_mestra); VALUES 
 ('admin', '$2a$12$TyKbVE6G425lA7ko/IgwoOcR.Uc4RCbcvGj/ftZkopSNhhlelM8Zi'), #senha 'admin' para utilizar as funções do admin
 
 -- --------------------------------------------------------
