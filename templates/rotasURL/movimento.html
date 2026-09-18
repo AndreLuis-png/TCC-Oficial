@@ -107,9 +107,9 @@
                     <input type="url" name="link_imagem" class="input-padrao">
                 </div>
 
-                <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                    <a href="{{ url_for('home_bp.home') }}" class="botao-menu" style="margin:0; background: #888;">Cancelar</a>
-                    <button type="submit" class="botao-filtro" style="height: 50px;">Confirmar Movimentação</button>
+                <div class="form-acoes" style="margin-top: 20px;">
+                    <a href="{{ url_for('home_bp.home') }}" class="botao-cancelar">Cancelar</a>
+                    <button type="submit" class="botao-filtro btn-salvar-usuario">Confirmar Movimentação</button>
                 </div>
             </div>
         </form>

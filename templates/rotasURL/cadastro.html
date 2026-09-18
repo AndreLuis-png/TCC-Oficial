@@ -39,7 +39,7 @@
         {% endif %}
     </nav>
 
-    <main style="max-width: 600px; margin: 40px auto;">
+    <main class="main-centralizado">
         <!-- Exibição de Mensagens Flash -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -53,6 +53,7 @@
             </div>
         {% endif %}
         {% endwith %}
+
         <h1 class="page-title">Cadastrar Novo Usuário</h1>
         <p class="page-subtitle">Crie um acesso para um novo operador ou administrador do sistema</p>
 
@@ -63,19 +64,19 @@
                     <input type="text" name="usuario" class="input-padrao" required placeholder="Ex: joao.silva">
                 </div>
 
-                <div class="campo-form" style="margin-top: 15px;">
+                <div class="campo-form">
                     <label>Senha Inicial</label>
                     <input type="password" name="senha" class="input-padrao" required placeholder="********">
                 </div>
 
-                <div class="campo-form" style="margin-top: 15px; display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" name="is_admin" id="is_admin" style="width: 20px; height: 20px;">
-                    <label for="is_admin" style="margin: 0; cursor: pointer;">Conceder permissões de Administrador</label>
+                <div class="campo-form checkbox-container">
+                    <input type="checkbox" name="is_admin" id="is_admin">
+                    <label for="is_admin" class="checkbox-label">Conceder permissões de Administrador</label>
                 </div>
 
-                <div style="display: flex; gap: 15px; margin-top: 25px;">
-                    <a href="{{ url_for('admin_bp.admin') }}" class="botao-menu" style="margin: 0; background: #888; text-align: center;">Cancelar</a>
-                    <button type="submit" class="botao-filtro" style="flex: 1; height: 45px;">Salvar Usuário</button>
+                <div class="form-acoes">
+                    <a href="{{ url_for('admin_bp.admin') }}" class="botao-cancelar">Cancelar</a>
+                    <button type="submit" class="botao-filtro btn-salvar-usuario">Salvar Usuário</button>
                 </div>
             </form>
         </div>
