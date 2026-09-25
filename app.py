@@ -7,7 +7,12 @@ app.secret_key = 'chave_secreta_almoxarifado'
 def conectar_banco():
 return mysql.connector.connect(
 host="db",
-user="root",
+user="mysql_root",
+password="mysql_root",
+port=3306,
+database="almox"
+)
+
 mysql = MySQL(app)
 
 # Importação e registro das Blueprints
