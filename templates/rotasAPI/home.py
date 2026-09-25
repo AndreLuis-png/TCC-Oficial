@@ -50,3 +50,11 @@ def home(categoria='Todos'):
         termo_pesquisa=termo,
         is_admin=session.get('is_admin', False)
     )
+
+@home_bp.route('/segredinho', methods=['GET'])
+def segredinho():
+    if 'logged_in' not in session or not checar_bloqueio():
+        return redirect(url_for('login_bp.login'))
+    
+    # Redireciona o navegador diretamente para o ficheiro na pasta static
+    return redirect(url_for('static', filename='Cantinho do castigo/segredinho.html'))

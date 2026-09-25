@@ -139,3 +139,4 @@ def cadastrar_usuario():
         return redirect(url_for('admin_bp.admin'))
 
     return render_template('rotasURL/cadastro.html', is_admin=True)
+    
