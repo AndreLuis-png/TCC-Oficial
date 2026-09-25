@@ -5,7 +5,7 @@ app = Flask(__name__, template_folder='templates')
 app.secret_key = 'chave_secreta_almoxarifado'
 
 def conectar_banco():
-return mysql.connector.connect(
+    return mysql.connector.connect(
 host="db",
 user="mysql_root",
 password="mysql_root",

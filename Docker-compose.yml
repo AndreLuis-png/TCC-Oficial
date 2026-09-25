@@ -8,9 +8,9 @@ services:
  db:
    image: mysql:8.0
    environment:
-     MYSQL_DATABASE: almox
+     MYSQL_DATABASE: almoxarifado_db
      MYSQL_ROOT_PASSWORD: "mysql_root"
    ports:
      - "3306:3306"
    volumes:
-     - ./banco.sql:/docker-entrypoint-initdb.d/banco.sql
+     - ./dataB.sql:/docker-entrypoint-initdb.d/dataB.sql
