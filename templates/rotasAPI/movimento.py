@@ -151,3 +151,4 @@ def movimento():
     cursor.execute("SELECT id, produto, quantidade FROM estoque ORDER BY id ASC")
     itens = cursor.fetchall()
     return render_template('rotasURL/movimento.html', itens=itens, is_admin=session.get('is_admin', False))
+
