@@ -4,16 +4,18 @@ from flask_mysqldb import MySQL
 app = Flask(__name__, template_folder='templates')
 app.secret_key = 'chave_secreta_almoxarifado'
 
-def conectar_banco():
-    return mysql.connector.connect(
-host="db",
-user="mysql_root",
-password="mysql_root",
-port=3306,
-database="almox"
-)
+# Configurações de conexão para a extensão Flask-MySQLdb
+app.config['MYSQL_HOST'] = 'db'               # Nome do serviço no docker-compose
+app.config['MYSQL_USER'] = 'root'             # Usuário root definido no MySQL
+app.config['MYSQL_PASSWORD'] = 'mysql_root'   # Senha definida no docker-compose
+app.config['MYSQL_DB'] = 'almoxarifado_db'   # Mesmo nome do banco no dataB.sql e docker-compose
+app.config['MYSQL_PORT'] = 3306
 
 mysql = MySQL(app)
+
+# Função utilitária para obter a conexão via Flask-MySQLdb (se necessário nos endpoints)
+def conectar_banco():
+    return mysql.connection
 
 # Importação e registro das Blueprints
 from templates.rotasAPI.login import login_bp

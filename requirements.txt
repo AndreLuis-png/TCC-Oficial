@@ -1,4 +1,14 @@
-#pip install -r requirements.txt
+#abrir o docker.desktop
+#docker build -t app .
+#docker compose up --build
+
+    #Datasheet de cagada
+        #Criar e iniciar os serviços -- docker compose up
+        #Verificar os serviços -- docker compose ps
+        #Ligar containers já existentes -- docker compose start
+        #Reconstruir a imagem e iniciar -- docker compose up --build
+        #Parar e remover os containers -- docker compose down 
+
 Flask>=3.0.0
 Flask-MySQLdb>=2.0.0
 mysqlclient>=2.2.0
