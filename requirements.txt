@@ -9,6 +9,11 @@
         #Reconstruir a imagem e iniciar -- docker compose up --build
         #Parar e remover os containers -- docker compose down 
 
+#Expo 
+    #set-ExecutionPolicy RemoteSigned -Scope CurrentUser 
+    #npx create-expo-app@latest Almoxarifadoapp --template blank
+    #npx expo start 
+
 Flask>=3.0.0
 Flask-MySQLdb>=2.0.0
 mysqlclient>=2.2.0
