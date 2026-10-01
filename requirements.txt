@@ -9,9 +9,9 @@
         #Reconstruir a imagem e iniciar -- docker compose up --build
         #Parar e remover os containers -- docker compose down 
 
-#Expo 
+#Expo -- Entrar na pasta app-almox
     #set-ExecutionPolicy RemoteSigned -Scope CurrentUser 
-    #npx create-expo-app@latest Almoxarifadoapp --template blank
+    #npm install expo
     #npx expo start 
 
 Flask>=3.0.0

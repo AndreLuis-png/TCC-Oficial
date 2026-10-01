@@ -73,7 +73,7 @@ INSERT INTO config_admin (usuario, chave_mestra) VALUES
 INSERT INTO estoque (id, produto, area_uso, quantidade, preco, descricao, link_imagem) VALUES 
 (00001, 'Alicate', 'Geral', 10, 20.00, 'Aperta umas coisa ai...', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS66xbAeYwltYSUHqGq4qKWALJX3lkY1ojqbRLkKs82Yw&s=10'),
 (00002, 'Chave philips', 'Geral', 7, 10.00, 'Enfia na fenda de X', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMOMqwTSGR4S2soHpfyq7s5czjFTB6h6zBHHycqd2ZRg&s=10'),
-(10001, 'Pregos', 'Mecanica', 200, 12.00, 'Entra reto', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuleVPCTMLQEhf4lkkzlW9AEMXDfDEqw4RAwsZjdZ-jw&s=10'),
+(10001, 'Pregos', 'Mecanica', 200, 0.60, 'Entra reto', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuleVPCTMLQEhf4lkkzlW9AEMXDfDEqw4RAwsZjdZ-jw&s=10'),
 (10002, 'Parafusos', 'Mecanica', 200, 0.40, 'Entra rodando', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlm_v8Khvn-wORVgWlbuepAl0Urz62I7pJCK2UQ3-nnQ&s=10'),
 (20001, 'Paineis fotovoltaicos', 'Eletrica', 2, 850.00, 'Deixa o wifi ligado', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMI9NnZ9OYWpmM1wtQ-M1_qA-3j2069zxWJkRJ1pBIew&s=10');
 
