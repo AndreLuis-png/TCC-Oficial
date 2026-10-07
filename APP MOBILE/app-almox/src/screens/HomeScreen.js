@@ -1,6 +1,4 @@
-/*--Página Home*/ 
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, 
   Text, 
@@ -9,19 +7,49 @@ import {
   TouchableOpacity, 
   FlatList, 
   Modal, 
-  Image 
+  Image,
+  ActivityIndicator,
+  Alert 
 } from 'react-native';
+import { API_URL } from '../services/api';
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation, route }) {
   const [pesquisa, setPesquisa] = useState('');
   const [categoriaSel, setCategoriaSel] = useState('Todos');
   const [imagemModal, setImagemModal] = useState(null);
+  const [estoque, setEstoque] = useState([]);
+  const [carregando, setCarregando] = useState(false);
 
-  // Exemplo de lista de produtos do estoque
-  const estoque = [
-    { id: '1', produto: 'Alicate', area_uso: 'Geral', quantidade: 10, preco: '20.00', descricao: 'Alicate universal', link_imagem: 'https://via.placeholder.com/150' },
-    { id: '2', produto: 'Chave philips', area_uso: 'Geral', quantidade: 7, preco: '10.00', descricao: 'Chave de fenda em X', link_imagem: null }
-  ];
+  const isAdmin = route?.params?.isAdmin || false;
+
+  const buscarEstoque = async (categoria = 'Todos', termo = '') => {
+    setCarregando(true);
+    try {
+      let url = `${API_URL}/api/estoque?pesquisa=${encodeURIComponent(termo)}`;
+      if (categoria !== 'Todos') {
+        url = `${API_URL}/home/${categoria}?pesquisa=${encodeURIComponent(termo)}`;
+      }
+
+      const response = await fetch(url, {
+        headers: { 'Accept': 'application/json' }
+      });
+      const data = await response.json();
+
+      if (response.ok && data.sucesso) {
+        setEstoque(data.estoque || []);
+      } else {
+        Alert.alert('Erro', 'Não foi possível carregar o estoque.');
+      }
+    } catch (error) {
+      Alert.alert('Erro de Conexão', 'Falha ao buscar dados do servidor.');
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  useEffect(() => {
+    buscarEstoque(categoriaSel, pesquisa);
+  }, [categoriaSel]);
 
   const renderItem = ({ item }) => (
     <View style={styles.linhaTabela}>
@@ -29,7 +57,7 @@ export default function HomeScreen() {
       <Text style={[styles.celula, { flex: 2, fontWeight: 'bold' }]}>{item.produto}</Text>
       <Text style={styles.celula}>{item.area_uso}</Text>
       <Text style={styles.celula}>{item.quantidade}</Text>
-      <Text style={styles.celula}>R$ {item.preco}</Text>
+      <Text style={styles.celula}>R$ {Number(item.preco).toFixed(2)}</Text>
       <TouchableOpacity 
         style={styles.btnAcaoTabela}
         onPress={() => item.link_imagem && setImagemModal({ url: item.link_imagem, produto: item.produto })}
@@ -41,16 +69,37 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.tituloPagina}>Estoque</Text>
-      <Text style={styles.subtituloPagina}>Lista de todos os itens cadastrados</Text>
+      {/* Menu Superior Simulado */}
+      <View style={styles.navBar}>
+        <TouchableOpacity style={styles.navBtnAtivo} onPress={() => navigation.navigate('Home')}>
+          <Text style={styles.navTxtAtivo}>Estoque</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Movimento')}>
+          <Text style={styles.navTxt}>Movimento</Text>
+        </TouchableOpacity>
+        {isAdmin && (
+          <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Admin')}>
+            <Text style={styles.navTxt}>Admin</Text>
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.navTxt}>Sair</Text>
+        </TouchableOpacity>
+      </View>
 
-      {/* Caixa de Pesquisa */}
-      <TextInput
-        style={styles.inputPesquisa}
-        placeholder="Pesquise..."
-        value={pesquisa}
-        onChangeText={setPesquisa}
-      />
+      <Text style={styles.tituloPagina}>Estoque</Text>
+
+      <View style={styles.pesquisaContainer}>
+        <TextInput
+          style={styles.inputPesquisa}
+          placeholder="Pesquise por produto ou ID..."
+          value={pesquisa}
+          onChangeText={setPesquisa}
+        />
+        <TouchableOpacity style={styles.btnBuscar} onPress={() => buscarEstoque(categoriaSel, pesquisa)}>
+          <Text style={{ color: '#FFF', fontWeight: 'bold' }}>Buscar</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Botões de Filtro */}
       <View style={styles.grupoFiltros}>
@@ -75,11 +124,15 @@ export default function HomeScreen() {
         <Text style={styles.celulaCabecalho}>Foto</Text>
       </View>
 
-      <FlatList
-        data={estoque}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+      {carregando ? (
+        <ActivityIndicator size="large" color="#192A6B" style={{ marginTop: 20 }} />
+      ) : (
+        <FlatList
+          data={estoque}
+          renderItem={renderItem}
+          keyExtractor={(item) => String(item.id)}
+        />
+      )}
 
       {/* Modal Nativo de Imagem */}
       <Modal visible={!!imagemModal} transparent animationType="fade">
@@ -99,9 +152,15 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8F9FA', padding: 15 },
-  tituloPagina: { fontSize: 24, fontWeight: 'bold', color: '#192A6B' },
-  subtituloPagina: { fontSize: 13, color: '#6B7280', marginBottom: 15 },
-  inputPesquisa: { borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 8, padding: 10, backgroundColor: '#FFF', marginBottom: 10 },
+  navBar: { flexDirection: 'row', backgroundColor: '#192A6B', borderRadius: 8, marginBottom: 15, padding: 5 },
+  navBtn: { flex: 1, paddingVertical: 8, alignItems: 'center' },
+  navBtnAtivo: { flex: 1, paddingVertical: 8, alignItems: 'center', backgroundColor: '#0284C7', borderRadius: 6 },
+  navTxt: { color: '#FFF', fontSize: 11 },
+  navTxtAtivo: { color: '#FFF', fontSize: 11, fontWeight: 'bold' },
+  tituloPagina: { fontSize: 24, fontWeight: 'bold', color: '#192A6B', marginBottom: 10 },
+  pesquisaContainer: { flexDirection: 'row', gap: 8, marginBottom: 10 },
+  inputPesquisa: { flex: 1, borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 8, padding: 8, backgroundColor: '#FFF' },
+  btnBuscar: { backgroundColor: '#192A6B', paddingHorizontal: 15, justifyContent: 'center', borderRadius: 8 },
   grupoFiltros: { flexDirection: 'row', gap: 5, marginBottom: 15 },
   btnFiltro: { flex: 1, paddingVertical: 8, backgroundColor: '#E5E7EB', borderRadius: 6, alignItems: 'center' },
   btnFiltroAtivo: { backgroundColor: '#192A6B' },
@@ -110,7 +169,7 @@ const styles = StyleSheet.create({
   cabecalhoTabela: { flexDirection: 'row', backgroundColor: '#192A6B', padding: 10, borderRadius: 6 },
   celulaCabecalho: { flex: 1, color: '#FFF', fontWeight: 'bold', fontSize: 12, textAlign: 'center' },
   linhaTabela: { flexDirection: 'row', padding: 10, borderBottomWidth: 1, borderColor: '#E5E7EB', alignItems: 'center' },
-  celula: { flex: 1, fontSize: 12, textAlign: 'center', color: '#374151' },
+  celula: { flex: 1, fontSize: 11, textAlign: 'center', color: '#374151' },
   btnAcaoTabela: { flex: 1, backgroundColor: '#0284C7', paddingVertical: 4, borderRadius: 4, alignItems: 'center' },
   txtBtnAcao: { color: '#FFF', fontSize: 10, fontWeight: 'bold' },
   containerModal: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center' },

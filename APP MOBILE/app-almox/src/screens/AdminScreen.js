@@ -1,5 +1,3 @@
-/*--Página Admin--*/ 
-
 import React, { useState } from 'react';
 import { 
   StyleSheet, 
@@ -8,60 +6,87 @@ import {
   TextInput, 
   TouchableOpacity, 
   ScrollView, 
-  Alert 
+  Alert,
+  ActivityIndicator 
 } from 'react-native';
+import { API_URL } from '../services/api';
 
-export default function AdminScreen() {
+export default function AdminScreen({ navigation, route }) {
   const [chaveMestra, setChaveMestra] = useState('');
-  const [filtroUsuario, setFiltroUsuario] = useState('');
+  const [usuarioAlvo, setUsuarioAlvo] = useState('');
+  const [carregando, setCarregando] = useState(false);
 
-  // Exemplo de logs
-  const logs = [
-    { id: '1', data: '30/09/2026 14:00', acao: 'Login', usuario: 'admin' },
-    { id: '2', data: '30/09/2026 14:05', acao: 'Saída Estoque', usuario: 'andre' },
-  ];
+  const usuarioLogado = route?.params?.usuario || 'admin';
 
-  const handleAcaoUser = (tipo) => {
-    if (!chaveMestra) {
+  const handleAcaoUser = async (tipoAcao) => {
+    if (!usuarioAlvo.trim()) {
+      Alert.alert('Atenção', 'Informe o nome do usuário alvo.');
+      return;
+    }
+    if (!chaveMestra.trim()) {
       Alert.alert('Atenção', 'Informe a chave mestra de confirmação.');
       return;
     }
-    Alert.alert('Ação realizada', `Ação: ${tipo}`);
+
+    setCarregando(true);
+    try {
+      const response = await fetch(`${API_URL}/admin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: tipoAcao,
+          usuario_alvo: usuarioAlvo,
+          chave_mestra: chaveMestra,
+          usuario: usuarioLogado
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.sucesso) {
+        Alert.alert('Sucesso', data.mensagem || `Ação ${tipoAcao} concluída!`);
+        setUsuarioAlvo('');
+        setChaveMestra('');
+      } else {
+        Alert.alert('Erro', data.mensagem || 'Falha ao executar a ação.');
+      }
+    } catch (error) {
+      Alert.alert('Erro de Conexão', 'Não foi possível conectar ao servidor Flask.');
+    } finally {
+      setCarregando(false);
+    }
   };
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Gerenciamento de usuários</Text>
-      <Text style={styles.subtitle}>Visualize o histórico e gerencie os acessos do sistema</Text>
-
-      {/* Histórico de Ações */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Histórico de Ações</Text>
-        <TextInput 
-          style={styles.input} 
-          placeholder="Buscar histórico por nome..." 
-          value={filtroUsuario} 
-          onChangeText={setFiltroUsuario} 
-        />
-
-        <View style={styles.tabelaHeader}>
-          <Text style={[styles.cellHeader, { flex: 2 }]}>Data/Hora</Text>
-          <Text style={styles.cellHeader}>Ação</Text>
-          <Text style={styles.cellHeader}>Usuário</Text>
-        </View>
-
-        {logs.map((log) => (
-          <View key={log.id} style={styles.tabelaLinha}>
-            <Text style={[styles.cell, { flex: 2 }]}>{log.data}</Text>
-            <Text style={styles.cell}>{log.acao}</Text>
-            <Text style={styles.cell}>{log.usuario}</Text>
-          </View>
-        ))}
+      {/* Menu Superior Simulado */}
+      <View style={styles.navBar}>
+        <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Home')}>
+          <Text style={styles.navTxt}>Estoque</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Movimento')}>
+          <Text style={styles.navTxt}>Movimento</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navBtnAtivo} onPress={() => navigation.navigate('Admin')}>
+          <Text style={styles.navTxtAtivo}>Admin</Text>
+        </TouchableOpacity>
       </View>
+
+      <Text style={styles.title}>Gerenciamento de usuários</Text>
+      <Text style={styles.subtitle}>Gerencie os acessos do sistema</Text>
 
       {/* Painel de Ações do Administrador */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Gerenciar Usuário</Text>
+
+        <Text style={styles.label}>Usuário Alvo</Text>
+        <TextInput 
+          style={styles.input} 
+          placeholder="Ex: joao.silva" 
+          value={usuarioAlvo} 
+          onChangeText={setUsuarioAlvo} 
+          autoCapitalize="none"
+        />
 
         <Text style={styles.label}>Chave Mestra de Confirmação</Text>
         <TextInput 
@@ -75,14 +100,16 @@ export default function AdminScreen() {
         <View style={styles.botoesLinha}>
           <TouchableOpacity 
             style={[styles.btnAcao, { backgroundColor: '#F59E0B' }]} 
-            onPress={() => handleAcaoUser('Bloquear')}
+            onPress={() => handleAcaoUser('bloquear')}
+            disabled={carregando}
           >
             <Text style={styles.txtBtn}>Bloquear</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={[styles.btnAcao, { backgroundColor: '#10B981' }]} 
-            onPress={() => handleAcaoUser('Desbloquear')}
+            onPress={() => handleAcaoUser('desbloquear')}
+            disabled={carregando}
           >
             <Text style={styles.txtBtn}>Desbloquear</Text>
           </TouchableOpacity>
@@ -90,10 +117,20 @@ export default function AdminScreen() {
 
         <TouchableOpacity 
           style={[styles.btnAcao, { backgroundColor: '#EF4444', marginTop: 10 }]} 
-          onPress={() => handleAcaoUser('Excluir')}
+          onPress={() => handleAcaoUser('deletar_usuario')}
+          disabled={carregando}
         >
           <Text style={styles.txtBtn}>Excluir Usuário</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[styles.btnAcao, { backgroundColor: '#192A6B', marginTop: 15 }]} 
+          onPress={() => navigation.navigate('Cadastro')}
+        >
+          <Text style={styles.txtBtn}>+ Cadastrar Novo Usuário</Text>
+        </TouchableOpacity>
+
+        {carregando && <ActivityIndicator size="small" color="#192A6B" style={{ marginTop: 10 }} />}
       </View>
     </ScrollView>
   );
@@ -101,18 +138,18 @@ export default function AdminScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F3F4F6', padding: 15 },
+  navBar: { flexDirection: 'row', backgroundColor: '#192A6B', borderRadius: 8, marginBottom: 15, padding: 5 },
+  navBtn: { flex: 1, paddingVertical: 8, alignItems: 'center' },
+  navBtnAtivo: { flex: 1, paddingVertical: 8, alignItems: 'center', backgroundColor: '#0284C7', borderRadius: 6 },
+  navTxt: { color: '#FFF', fontSize: 11 },
+  navTxtAtivo: { color: '#FFF', fontSize: 11, fontWeight: 'bold' },
   title: { fontSize: 22, fontWeight: 'bold', color: '#192A6B' },
   subtitle: { fontSize: 13, color: '#6B7280', marginBottom: 15 },
   card: { backgroundColor: '#FFF', padding: 15, borderRadius: 10, marginBottom: 15, elevation: 2 },
   cardTitle: { fontSize: 18, fontWeight: 'bold', color: '#192A6B', marginBottom: 10 },
   label: { fontSize: 13, fontWeight: 'bold', color: '#374151', marginTop: 10, marginBottom: 5 },
   input: { borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 6, padding: 8, marginBottom: 10 },
-  tabelaHeader: { flexDirection: 'row', backgroundColor: '#E5E7EB', padding: 8, borderRadius: 4, marginTop: 5 },
-  cellHeader: { flex: 1, fontWeight: 'bold', fontSize: 12, color: '#374151' },
-  tabelaLinha: { flexDirection: 'row', padding: 8, borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
-  cell: { flex: 1, fontSize: 11, color: '#4B5563' },
   botoesLinha: { flexDirection: 'row', gap: 10, marginTop: 10 },
   btnAcao: { flex: 1, padding: 10, borderRadius: 6, alignItems: 'center' },
   txtBtn: { color: '#FFF', fontWeight: 'bold' },
 });
-

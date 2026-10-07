@@ -1,4 +1,3 @@
-/*--Página de Movimentação--*/
 import React, { useState } from 'react';
 import { 
   StyleSheet, 
@@ -7,10 +6,12 @@ import {
   TextInput, 
   TouchableOpacity, 
   ScrollView, 
-  Alert 
+  Alert,
+  ActivityIndicator 
 } from 'react-native';
+import { API_URL } from '../services/api';
 
-export default function MovimentoScreen({ navigation }) {
+export default function MovimentoScreen({ navigation, route }) {
   const [tipoMovimentacao, setTipoMovimentacao] = useState('entrada');
   const [produto, setProduto] = useState('');
   const [areaUso, setAreaUso] = useState('Geral');
@@ -18,19 +19,65 @@ export default function MovimentoScreen({ navigation }) {
   const [quantidade, setQuantidade] = useState('1');
   const [preco, setPreco] = useState('');
   const [linkImagem, setLinkImagem] = useState('');
+  const [carregando, setCarregando] = useState(false);
 
-  const handleSalvar = () => {
-    if (!produto) {
+  const usuarioAtual = route?.params?.usuario || 'AppMobile';
+
+  const handleSalvar = async () => {
+    if (!produto.trim()) {
       Alert.alert('Erro', 'Por favor, informe o nome do item.');
       return;
     }
-    Alert.alert('Sucesso', 'Movimentação registrada com sucesso!');
+
+    setCarregando(true);
+    try {
+      const response = await fetch(`${API_URL}/movimento`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          acao_tipo: 'inserir',
+          produto: produto,
+          area_uso: areaUso,
+          tipo_movimentacao: tipoMovimentacao,
+          quantidade: quantidade,
+          preco: preco || 0,
+          descricao: descricao,
+          link_imagem: linkImagem,
+          usuario: usuarioAtual
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.sucesso) {
+        Alert.alert('Sucesso', data.mensagem || 'Movimentação realizada!');
+        navigation.navigate('Home');
+      } else {
+        Alert.alert('Atenção', data.mensagem || 'Não foi possível salvar a movimentação.');
+      }
+    } catch (error) {
+      Alert.alert('Erro de Conexão', 'Não foi possível conectar ao servidor.');
+    } finally {
+      setCarregando(false);
+    }
   };
 
   return (
     <ScrollView style={styles.container}>
+      {/* Menu Superior Simulado */}
+      <View style={styles.navBar}>
+        <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Home')}>
+          <Text style={styles.navTxt}>Estoque</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navBtnAtivo} onPress={() => navigation.navigate('Movimento')}>
+          <Text style={styles.navTxtAtivo}>Movimento</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Admin')}>
+          <Text style={styles.navTxt}>Admin</Text>
+        </TouchableOpacity>
+      </View>
+
       <Text style={styles.title}>Movimentação de estoque</Text>
-      <Text style={styles.subtitle}>Registre entradas, saídas e alterações nos itens do estoque</Text>
 
       {/* Painel 1: Identificação */}
       <View style={styles.card}>
@@ -109,11 +156,20 @@ export default function MovimentoScreen({ navigation }) {
         />
 
         <View style={styles.botoesContainer}>
-          <TouchableOpacity style={styles.btnCancelar} onPress={() => navigation.goBack()}>
+          <TouchableOpacity style={styles.btnCancelar} onPress={() => navigation.navigate('Home')}>
             <Text style={styles.txtCancelar}>Cancelar</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btnConfirmar} onPress={handleSalvar}>
-            <Text style={styles.txtConfirmar}>Confirmar</Text>
+
+          <TouchableOpacity 
+            style={styles.btnConfirmar} 
+            onPress={handleSalvar}
+            disabled={carregando}
+          >
+            {carregando ? (
+              <ActivityIndicator color="#FFF" />
+            ) : (
+              <Text style={styles.txtConfirmar}>Confirmar</Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>
@@ -123,8 +179,12 @@ export default function MovimentoScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F3F4F6', padding: 15 },
-  title: { fontSize: 22, fontWeight: 'bold', color: '#192A6B' },
-  subtitle: { fontSize: 13, color: '#6B7280', marginBottom: 15 },
+  navBar: { flexDirection: 'row', backgroundColor: '#192A6B', borderRadius: 8, marginBottom: 15, padding: 5 },
+  navBtn: { flex: 1, paddingVertical: 8, alignItems: 'center' },
+  navBtnAtivo: { flex: 1, paddingVertical: 8, alignItems: 'center', backgroundColor: '#0284C7', borderRadius: 6 },
+  navTxt: { color: '#FFF', fontSize: 11 },
+  navTxtAtivo: { color: '#FFF', fontSize: 11, fontWeight: 'bold' },
+  title: { fontSize: 22, fontWeight: 'bold', color: '#192A6B', marginBottom: 15 },
   card: { backgroundColor: '#FFF', padding: 15, borderRadius: 10, marginBottom: 15, elevation: 2 },
   label: { fontSize: 13, fontWeight: 'bold', color: '#374151', marginTop: 10, marginBottom: 5 },
   input: { borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 6, padding: 8, backgroundColor: '#FFF' },
@@ -136,6 +196,6 @@ const styles = StyleSheet.create({
   botoesContainer: { flexDirection: 'row', gap: 10, marginTop: 15 },
   btnCancelar: { flex: 1, padding: 12, backgroundColor: '#E5E7EB', borderRadius: 6, alignItems: 'center' },
   txtCancelar: { color: '#374151', fontWeight: 'bold' },
-  btnConfirmar: { flex: 1, padding: 12, backgroundColor: '#10B981', borderRadius: 6, alignItems: 'center' },
+  btnSalvar: { flex: 1, padding: 12, backgroundColor: '#10B981', borderRadius: 6, alignItems: 'center' },
   txtConfirmar: { color: '#FFF', fontWeight: 'bold' },
 });

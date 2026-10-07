@@ -1,5 +1,5 @@
 import MySQLdb.cursors
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 
 home_bp = Blueprint('home_bp', __name__)
 
@@ -15,13 +15,16 @@ def checar_bloqueio():
             return False
     return True
 
+@home_bp.route('/api/estoque', methods=['GET'])
 @home_bp.route('/home', methods=['GET'])
 @home_bp.route('/home/<categoria>', methods=['GET'])
 def home(categoria='Todos'):
     from app import mysql
     
-    if 'logged_in' not in session or not checar_bloqueio():
-        return redirect(url_for('login_bp.login'))
+    # Se for uma requisição de navegador web sem sessão ativa
+    if not request.is_json and not request.path.startswith('/api/'):
+        if 'logged_in' not in session or not checar_bloqueio():
+            return redirect(url_for('login_bp.login'))
         
     termo = request.args.get('pesquisa', '').strip()
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -42,7 +45,16 @@ def home(categoria='Todos'):
         
     cursor.execute(query, tuple(params))
     itens = cursor.fetchall()
-    
+
+    # Formata preços para valores float numéricos compatíveis com JSON
+    for item in itens:
+        item['preco'] = float(item['preco']) if item['preco'] is not None else 0.0
+
+    # Retorno para o aplicativo React Native
+    if request.is_json or request.path.startswith('/api/'):
+        return jsonify({"sucesso": True, "estoque": itens}), 200
+
+    # Retorno padrão para Navegador Web
     return render_template(
         'rotasURL/home.html', 
         estoque=itens, 
@@ -56,5 +68,4 @@ def segredinho():
     if 'logged_in' not in session or not checar_bloqueio():
         return redirect(url_for('login_bp.login'))
     
-    # Redireciona o navegador diretamente para o ficheiro na pasta static
     return redirect(url_for('static', filename='Cantinho do castigo/segredinho.html'))

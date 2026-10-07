@@ -1,6 +1,6 @@
 import unicodedata
 import MySQLdb.cursors
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 from templates.rotasAPI.home import checar_bloqueio
 
 movimento_bp = Blueprint('movimento_bp', __name__)
@@ -26,7 +26,6 @@ def gerar_proximo_id(cursor, area_uso):
     inicio_faixa = faixas.get(area_uso, 1)
     fim_faixa = inicio_faixa + 10000
 
-    # Busca todos os IDs atualmente cadastrados na faixa da área
     cursor.execute("""
         SELECT id FROM estoque 
         WHERE id >= %s AND id < %s 
@@ -34,10 +33,8 @@ def gerar_proximo_id(cursor, area_uso):
     """, (inicio_faixa, fim_faixa))
     
     resultados = cursor.fetchall()
-    # Armazena os IDs existentes em um conjunto para busca rápida
     ids_existentes = {int(row['id']) for row in resultados}
 
-    # Procura o menor ID disponível (reaproveita buracos deixados por exclusões)
     proximo_id = inicio_faixa
     while proximo_id in ids_existentes:
         proximo_id += 1
@@ -48,49 +45,47 @@ def gerar_proximo_id(cursor, area_uso):
 def movimento():
     from app import mysql
     
-    if 'logged_in' not in session or not checar_bloqueio():
+    # Verificação para Web
+    if not request.is_json and ('logged_in' not in session or not checar_bloqueio()):
         return redirect(url_for('login_bp.login'))
         
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     
     if request.method == 'POST':
-        tipo = request.form.get('acao_tipo')
-        
-        # INSERÇÃO OU ALTERAÇÃO PELO NOME DO PRODUTO
-        if tipo == 'inserir':
+        if request.is_json:
+            data = request.get_json() or {}
+            tipo = data.get('acao_tipo')
+            produto = padronizar_texto(data.get('produto'))
+            area = data.get('area_uso', 'Geral')
+            tipo_mov = data.get('tipo_movimentacao', 'entrada')
+            qtd_input = abs(int(data.get('quantidade', 0)))
+            preco_input = float(data.get('preco', 0))
+            desc_input = padronizar_texto(data.get('descricao', ''))
+            img_input = str(data.get('link_imagem', '')).strip()
+            usuario_atual = data.get('usuario', 'AppMobile')
+        else:
+            tipo = request.form.get('acao_tipo')
             produto = padronizar_texto(request.form.get('produto'))
             area = request.form.get('area_uso')
-            tipo_mov = request.form.get('tipo_movimentacao', 'entrada') # Entrada ou Saida
-            
-            try:
-                qtd_input = abs(int(request.form.get('quantidade', 0))) # Impede valores negativos
-            except ValueError:
-                qtd_input = 0
-                
-            try:
-                preco_input = float(str(request.form.get('preco', 0)).replace(',', '.'))
-            except ValueError:
-                preco_input = 0.0
-                
+            tipo_mov = request.form.get('tipo_movimentacao', 'entrada')
+            qtd_input = abs(int(request.form.get('quantidade', 0)))
+            preco_input = float(str(request.form.get('preco', 0)).replace(',', '.'))
             desc_input = padronizar_texto(request.form.get('descricao', ''))
             img_input = request.form.get('link_imagem', '').strip()
+            usuario_atual = session.get('usuario', 'Anônimo')
 
-            # Busca se o produto já existe pelo nome
+        # Inserção / Entrada / Saída
+        if tipo == 'inserir':
             cursor.execute("SELECT * FROM estoque WHERE LOWER(produto) = LOWER(%s)", (produto,))
             item_existente = cursor.fetchone()
 
             if item_existente:
-                # Produto já existe: atualiza a quantidade e metadados se alterados
                 qtd_atual = item_existente['quantidade']
-                if tipo_mov == 'saida':
-                    nova_qtd = max(0, qtd_atual - qtd_input)
-                else:
-                    nova_qtd = qtd_atual + qtd_input
+                nova_qtd = max(0, qtd_atual - qtd_input) if tipo_mov == 'saida' else qtd_atual + qtd_input
 
-                # Atualiza campos se novos valores válidos foram informados
-                novo_preco = preco_input if preco_input > 0 and preco_input != item_existente['preco'] else item_existente['preco']
-                nova_desc = desc_input if desc_input and desc_input != item_existente['descricao'] else item_existente['descricao']
-                nova_img = img_input if img_input and img_input != item_existente['link_imagem'] else item_existente['link_imagem']
+                novo_preco = preco_input if preco_input > 0 else float(item_existente['preco'])
+                nova_desc = desc_input if desc_input else item_existente['descricao']
+                nova_img = img_input if img_input else item_existente['link_imagem']
 
                 cursor.execute("""
                     UPDATE estoque 
@@ -98,23 +93,17 @@ def movimento():
                     WHERE id = %s
                 """, (nova_qtd, novo_preco, nova_desc, nova_img, item_existente['id']))
 
-                # =========================================================
-                # ALTERAÇÃO REALIZADA AQUI (Substituição da Opção 2)
-                # =========================================================
+                mysql.connection.commit()
                 acao_log = 'Saída' if tipo_mov == 'saida' else 'Entrada'
-                
-                registrar_log(
-                    session['usuario'], 
-                    f"Movimentação ({acao_log})", 
-                    f"Item '{produto}' (ID: {item_existente['id']}) - Qtd: {qtd_atual} -> {nova_qtd}"
-                )
-                
-                flash(f"Sucesso: {acao_log} de estoque registrada para o item '{produto}'!", "success")
-                # =========================================================
+                registrar_log(usuario_atual, f"Movimentação ({acao_log})", f"Item '{produto}' (ID: {item_existente['id']})")
+
+                if request.is_json:
+                    return jsonify({"sucesso": True, "mensagem": f"Movimentação de {acao_log} salva!"}), 200
 
             else:
-                # Produto não existe: cadastra novo item (impede saída se não existir)
                 if tipo_mov == 'saida':
+                    if request.is_json:
+                        return jsonify({"sucesso": False, "mensagem": f"O produto '{produto}' não existe para dar saída."}), 400
                     flash(f"Erro: O produto '{produto}' não existe no estoque para registrar saída.", "error")
                     return redirect(url_for('movimento_bp.movimento'))
 
@@ -124,31 +113,18 @@ def movimento():
                     VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """, (novo_id, produto, area, qtd_input, preco_input, desc_input, img_input if img_input else None))
 
-                registrar_log(session['usuario'], 'Novo Cadastro', f"Item '{produto}' criado (ID: {novo_id}) com {qtd_input} unidades.")
-                flash(f"Item '{produto}' cadastrado com o ID {novo_id}!", "success")
-
-            mysql.connection.commit()
-            return redirect(url_for('home_bp.home'))
-
-        # EXCLUSÃO RESTRITA AO ADMINISTRADOR
-        elif tipo == 'deletar':
-            if not session.get('is_admin'):
-                flash("Apenas administradores podem excluir itens do estoque!", "error")
-                return redirect(url_for('movimento_bp.movimento'))
-
-            id_item = request.form.get('id')
-            cursor.execute("SELECT produto FROM estoque WHERE id = %s", (id_item,))
-            item = cursor.fetchone()
-
-            if item:
-                cursor.execute("DELETE FROM estoque WHERE id = %s", (id_item,))
-                registrar_log(session['usuario'], 'Exclusão Estoque', f"Excluiu '{item['produto']}' (ID: {id_item})")
                 mysql.connection.commit()
-                flash("Item removido do estoque!", "success")
+                registrar_log(usuario_atual, 'Novo Cadastro', f"Item '{produto}' criado (ID: {novo_id}) com {qtd_input} unidades.")
+
+                if request.is_json:
+                    return jsonify({"sucesso": True, "mensagem": f"Item '{produto}' cadastrado com ID {novo_id}!"}), 201
 
             return redirect(url_for('home_bp.home'))
 
     cursor.execute("SELECT id, produto, quantidade FROM estoque ORDER BY id ASC")
     itens = cursor.fetchall()
-    return render_template('rotasURL/movimento.html', itens=itens, is_admin=session.get('is_admin', False))
 
+    if request.is_json:
+        return jsonify({"sucesso": True, "itens": itens}), 200
+
+    return render_template('rotasURL/movimento.html', itens=itens, is_admin=session.get('is_admin', False))

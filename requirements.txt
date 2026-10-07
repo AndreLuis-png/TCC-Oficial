@@ -1,3 +1,6 @@
+
+#LEMBRAR DE ALTERAR O IP DA MÁQUINA NA PÁGINA api.js EM /APP MOBILE/app-almox/src/services/api.js
+
 #abrir o docker.desktop
 #docker build -t app .
 #docker compose up --build
