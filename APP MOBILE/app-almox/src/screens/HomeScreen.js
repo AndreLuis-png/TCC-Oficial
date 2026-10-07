@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
   Alert 
 } from 'react-native';
-import { API_URL } from '../services/api';
+import { API_URL } from '../services/api.js';
 
 export default function HomeScreen({ navigation, route }) {
   const [pesquisa, setPesquisa] = useState('');

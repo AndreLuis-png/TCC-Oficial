@@ -8,7 +8,7 @@ import {
   Alert,
   ActivityIndicator 
 } from 'react-native';
-import { API_URL } from '../services/api';
+import { API_URL } from '../services/api.js';
 
 export default function LoginScreen({ navigation }) {
   const [usuario, setUsuario] = useState('');
