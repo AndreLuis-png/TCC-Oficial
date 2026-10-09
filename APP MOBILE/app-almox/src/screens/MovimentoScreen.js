@@ -63,127 +63,142 @@ export default function MovimentoScreen({ navigation, route }) {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      {/* Menu Superior Simulado */}
-      <View style={styles.navBar}>
-        <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Home')}>
-          <Text style={styles.navTxt}>Estoque</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navBtnAtivo} onPress={() => navigation.navigate('Movimento')}>
-          <Text style={styles.navTxtAtivo}>Movimento</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Admin')}>
-          <Text style={styles.navTxt}>Admin</Text>
-        </TouchableOpacity>
-      </View>
+    <View style={styles.containerPrincipal}>
+      {/* Formulário com Scroll que não conflita com a barra inferior */}
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Text style={styles.title}>Movimentação de estoque</Text>
 
-      <Text style={styles.title}>Movimentação de estoque</Text>
-
-      {/* Painel 1: Identificação */}
-      <View style={styles.card}>
-        <Text style={styles.label}>Tipo de Movimentação</Text>
-        <View style={styles.pickerSimulado}>
-          <TouchableOpacity 
-            style={[styles.btnOpcao, tipoMovimentacao === 'entrada' && styles.btnAtivo]} 
-            onPress={() => setTipoMovimentacao('entrada')}
-          >
-            <Text style={tipoMovimentacao === 'entrada' ? styles.txtAtivo : styles.txtInativo}>Entrada (+)</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.btnOpcao, tipoMovimentacao === 'saida' && styles.btnAtivo]} 
-            onPress={() => setTipoMovimentacao('saida')}
-          >
-            <Text style={tipoMovimentacao === 'saida' ? styles.txtAtivo : styles.txtInativo}>Saída (-)</Text>
-          </TouchableOpacity>
-        </View>
-
-        <Text style={styles.label}>Nome do Item (Identificador)</Text>
-        <TextInput 
-          style={styles.input} 
-          placeholder="Ex: Chave de fenda" 
-          value={produto} 
-          onChangeText={setProduto} 
-        />
-
-        <Text style={styles.label}>Área de Uso</Text>
-        <View style={styles.pickerSimulado}>
-          {['Geral', 'Mecanica', 'Eletrica'].map((item) => (
+        {/* Painel 1: Identificação */}
+        <View style={styles.card}>
+          <Text style={styles.label}>Tipo de Movimentação</Text>
+          <View style={styles.pickerSimulado}>
             <TouchableOpacity 
-              key={item} 
-              style={[styles.btnOpcao, areaUso === item && styles.btnAtivo]} 
-              onPress={() => setAreaUso(item)}
+              style={[styles.btnOpcao, tipoMovimentacao === 'entrada' && styles.btnAtivo]} 
+              onPress={() => setTipoMovimentacao('entrada')}
             >
-              <Text style={areaUso === item ? styles.txtAtivo : styles.txtInativo}>{item}</Text>
+              <Text style={tipoMovimentacao === 'entrada' ? styles.txtAtivo : styles.txtInativo}>Entrada (+)</Text>
             </TouchableOpacity>
-          ))}
+            <TouchableOpacity 
+              style={[styles.btnOpcao, tipoMovimentacao === 'saida' && styles.btnAtivo]} 
+              onPress={() => setTipoMovimentacao('saida')}
+            >
+              <Text style={tipoMovimentacao === 'saida' ? styles.txtAtivo : styles.txtInativo}>Saída (-)</Text>
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.label}>Nome do Item (Identificador)</Text>
+          <TextInput 
+            style={styles.input} 
+            placeholder="Ex: Chave de fenda" 
+            value={produto} 
+            onChangeText={setProduto} 
+          />
+
+          <Text style={styles.label}>Área de Uso</Text>
+          <View style={styles.pickerSimulado}>
+            {['Geral', 'Mecanica', 'Eletrica'].map((item) => (
+              <TouchableOpacity 
+                key={item} 
+                style={[styles.btnOpcao, areaUso === item && styles.btnAtivo]} 
+                onPress={() => setAreaUso(item)}
+              >
+                <Text style={areaUso === item ? styles.txtAtivo : styles.txtInativo}>{item}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <Text style={styles.label}>Descrição</Text>
+          <TextInput 
+            style={[styles.input, { height: 70, textAlignVertical: 'top' }]} 
+            multiline 
+            placeholder="Observações do item..." 
+            value={descricao} 
+            onChangeText={setDescricao} 
+          />
         </View>
 
-        <Text style={styles.label}>Descrição</Text>
-        <TextInput 
-          style={[styles.input, { height: 70, textAlignVertical: 'top' }]} 
-          multiline 
-          placeholder="Observações do item..." 
-          value={descricao} 
-          onChangeText={setDescricao} 
-        />
-      </View>
+        {/* Painel 2: Quantidades e Preço */}
+        <View style={styles.card}>
+          <Text style={styles.label}>Quantidade</Text>
+          <TextInput 
+            style={styles.input} 
+            keyboardType="numeric" 
+            value={quantidade} 
+            onChangeText={setQuantidade} 
+          />
 
-      {/* Painel 2: Quantidades e Preço */}
-      <View style={styles.card}>
-        <Text style={styles.label}>Quantidade</Text>
-        <TextInput 
-          style={styles.input} 
-          keyboardType="numeric" 
-          value={quantidade} 
-          onChangeText={setQuantidade} 
-        />
+          <Text style={styles.label}>Preço Unitário (R\$)</Text>
+          <TextInput 
+            style={styles.input} 
+            keyboardType="decimal-pad" 
+            placeholder="0.00" 
+            value={preco} 
+            onChangeText={setPreco} 
+          />
 
-        <Text style={styles.label}>Preço Unitário (R$)</Text>
-        <TextInput 
-          style={styles.input} 
-          keyboardType="decimal-pad" 
-          placeholder="0.00" 
-          value={preco} 
-          onChangeText={setPreco} 
-        />
+          <Text style={styles.label}>Link da Imagem (Opcional)</Text>
+          <TextInput 
+            style={styles.input} 
+            placeholder="https://..." 
+            value={linkImagem} 
+            onChangeText={setLinkImagem} 
+          />
 
-        <Text style={styles.label}>Link da Imagem (Opcional)</Text>
-        <TextInput 
-          style={styles.input} 
-          placeholder="https://..." 
-          value={linkImagem} 
-          onChangeText={setLinkImagem} 
-        />
+          <View style={styles.botoesContainer}>
+            <TouchableOpacity style={styles.btnCancelar} onPress={() => navigation.navigate('Home')}>
+              <Text style={styles.txtCancelar}>Cancelar</Text>
+            </TouchableOpacity>
 
-        <View style={styles.botoesContainer}>
-          <TouchableOpacity style={styles.btnCancelar} onPress={() => navigation.navigate('Home')}>
-            <Text style={styles.txtCancelar}>Cancelar</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.btnConfirmar} 
-            onPress={handleSalvar}
-            disabled={carregando}
-          >
-            {carregando ? (
-              <ActivityIndicator color="#FFF" />
-            ) : (
-              <Text style={styles.txtConfirmar}>Confirmar</Text>
-            )}
-          </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.btnConfirmar} 
+              onPress={handleSalvar}
+              disabled={carregando}
+            >
+              {carregando ? (
+                <ActivityIndicator color="#FFF" />
+              ) : (
+                <Text style={styles.txtConfirmar}>Confirmar</Text>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
+      </ScrollView>
+
+      {/* NOVO MENU INFERIOR FIXO (Bottom Navigation Bar) */}
+      <View style={styles.bottomTabBar}>
+        <TouchableOpacity style={styles.tabBtn} onPress={() => navigation.navigate('Home')}>
+          <Text style={styles.tabIcon}>📦</Text>
+          <Text style={styles.tabTxt}>Estoque</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.tabBtn, styles.tabBtnAtivo]}>
+          <Text style={[styles.tabIcon, styles.tabIconAtivo]}>🔄</Text>
+          <Text style={styles.tabTxtAtivo}>Movimento</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.tabBtn} onPress={() => navigation.navigate('Admin')}>
+          <Text style={styles.tabIcon}>⚙️</Text>
+          <Text style={styles.tabTxt}>Admin</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.tabBtn} onPress={() => navigation.navigate('Login')}>
+          <Text style={[styles.tabIcon, { color: '#EF4444' }]}>🚪</Text>
+          <Text style={[styles.tabTxt, { color: '#EF4444' }]}>Sair</Text>
+        </TouchableOpacity>
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F3F4F6', padding: 15 },
-  navBar: { flexDirection: 'row', backgroundColor: '#192A6B', borderRadius: 8, marginBottom: 15, padding: 5 },
-  navBtn: { flex: 1, paddingVertical: 8, alignItems: 'center' },
-  navBtnAtivo: { flex: 1, paddingVertical: 8, alignItems: 'center', backgroundColor: '#0284C7', borderRadius: 6 },
-  navTxt: { color: '#FFF', fontSize: 11 },
-  navTxtAtivo: { color: '#FFF', fontSize: 11, fontWeight: 'bold' },
+  containerPrincipal: { 
+    flex: 1, 
+    backgroundColor: '#F3F4F6' 
+  },
+  scrollContainer: { 
+    padding: 15, 
+    paddingBottom: 90 // Evita que o conteúdo final fique escondido sob a barra inferior
+  },
   title: { fontSize: 22, fontWeight: 'bold', color: '#192A6B', marginBottom: 15 },
   card: { backgroundColor: '#FFF', padding: 15, borderRadius: 10, marginBottom: 15, elevation: 2 },
   label: { fontSize: 13, fontWeight: 'bold', color: '#374151', marginTop: 10, marginBottom: 5 },
@@ -196,6 +211,53 @@ const styles = StyleSheet.create({
   botoesContainer: { flexDirection: 'row', gap: 10, marginTop: 15 },
   btnCancelar: { flex: 1, padding: 12, backgroundColor: '#E5E7EB', borderRadius: 6, alignItems: 'center' },
   txtCancelar: { color: '#374151', fontWeight: 'bold' },
-  btnSalvar: { flex: 1, padding: 12, backgroundColor: '#10B981', borderRadius: 6, alignItems: 'center' },
+  btnConfirmar: { flex: 1, padding: 12, backgroundColor: '#F28C00', borderRadius: 6, alignItems: 'center' }, // Cor alterada para Laranja SENAI
   txtConfirmar: { color: '#FFF', fontWeight: 'bold' },
+
+  /* ESTILOS DA BOTTOM BAR */
+  bottomTabBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 70,
+    backgroundColor: '#192A6B', // Azul SENAI do cabeçalho
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderTopColor: '#1E3A8A',
+    elevation: 10, // Sombra para o Android
+    shadowColor: '#000', // Sombra para o iOS
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    paddingBottom: 5,
+  },
+  tabBtn: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  tabBtnAtivo: {
+    borderTopWidth: 3,
+    borderTopColor: '#F28C00', // Linha indicadora superior em Laranja SENAI
+    backgroundColor: '#132154', // Tom levemente mais escuro para destacar o botão ativo
+  },
+  tabIcon: {
+    fontSize: 18,
+    marginBottom: 2,
+    opacity: 0.7,
+  },
+  tabIconAtivo: {
+    opacity: 1,
+  },
+  tabTxt: {
+    color: '#D1D5DB',
+    fontSize: 10,
+    fontWeight: '500',
+  },
+  tabTxtAtivo: {
+    color: '#FFF',
+    fontSize: 11,
+    fontWeight: 'bold',
+  },
 });

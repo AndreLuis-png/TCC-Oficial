@@ -65,9 +65,6 @@
                     <strong>{{ session.get('usuario', 'Usuário') }}</strong>
                 </div>
                 <hr>
-                <a href="{{ url_for('login_bp.alterar_senha') if 'alterar_senha' in config else '#' }}">Alterar Senha</a>
-                <a href="#" onclick="alert('Em breve: Customização de ícone!')">Customizar Ícone</a>
-                <hr>
                 <a href="{{ url_for('login_bp.logout') if 'logout' in config else '/logout' }}" class="logout-btn">Sair da Conta</a>
             </div>
         </div>
@@ -105,9 +102,9 @@
             <input type="text" name="pesquisa" class="caixa-pesquisa" placeholder="Pesquise" value="{{ termo_pesquisa }}">
             
             <div class="botoes-grupo">
-                <a href="{{ url_for('home_bp.home', categoria='Geral') }}" class="botao-filtro"><span>🔧</span> Uso Geral</a>
-                <a href="{{ url_for('home_bp.home', categoria='Mecanica') }}" class="botao-filtro"><span>⚙️</span> Mecânica</a>
-                <a href="{{ url_for('home_bp.home', categoria='Eletrica') }}" class="botao-filtro"><span>⚡</span> Elétrica</a>
+                <a href="{{ url_for('home_bp.home', categoria='Geral') }}" class="botao-filtro"><span></span> Uso Geral</a>
+                <a href="{{ url_for('home_bp.home', categoria='Mecanica') }}" class="botao-filtro"><span> </span> Mecânica</a>
+                <a href="{{ url_for('home_bp.home', categoria='Eletrica') }}" class="botao-filtro"><span></span> Elétrica</a>
                 <a href="{{ url_for('home_bp.home') }}" class="botao-filtro">Todos</a>
             </div>
         </form>
