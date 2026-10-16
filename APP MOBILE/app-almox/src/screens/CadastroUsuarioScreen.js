@@ -35,7 +35,8 @@ export default function CadastroUsuarioScreen({ navigation, route }) {
         body: JSON.stringify({
           usuario: usuario,
           senha: senha,
-          is_admin: isAdmin ? 'on' : ''
+          is_admin: isAdmin ? 'on' : '',
+          usuario_criador: usuarioLogado // Envia o operador logado para registrar no log do servidor
         })
       });
 
@@ -57,7 +58,7 @@ export default function CadastroUsuarioScreen({ navigation, route }) {
   return (
     <View style={styles.containerPrincipal}>
       
-      {/* 1. CABEÇALHO AZUL PRINCIPAL (Ajustado mais para baixo) */}
+      {/* 1. CABEÇALHO AZUL PRINCIPAL (Padronizado) */}
       <View style={styles.headerTop}>
         <View style={styles.logoContainer}>
           <Text style={styles.logoSenai}>SENAI</Text>
@@ -173,13 +174,13 @@ export default function CadastroUsuarioScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   containerPrincipal: { flex: 1, backgroundColor: '#F4F6F9' },
   headerTop: { 
-    height: 85, // Altura ajustada para descer o cabeçalho
+    height: 85, 
     backgroundColor: '#192A6B', 
     flexDirection: 'row', 
     alignItems: 'center', 
     justifyContent: 'space-between', 
     paddingHorizontal: 15,
-    paddingTop: 30, // Espaçamento superior maior para afastar da barra de status
+    paddingTop: 30, 
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
   iconePessoaTxt: { color: '#FFF', fontSize: 14, fontWeight: 'bold' },
   dropdownPerfil: {
     position: 'absolute',
-    top: 85, // Posicionado logo abaixo do novo cabeçalho
+    top: 85,
     right: 15,
     backgroundColor: '#FFF',
     borderRadius: 12,

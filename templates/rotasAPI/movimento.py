@@ -74,7 +74,7 @@ def movimento():
             img_input = request.form.get('link_imagem', '').strip()
             usuario_atual = session.get('usuario', 'Anônimo')
 
-        # Inserção / Entrada / Saída
+        # Inserção / Entrada / Saída de Estoque
         if tipo == 'inserir':
             cursor.execute("SELECT * FROM estoque WHERE LOWER(produto) = LOWER(%s)", (produto,))
             item_existente = cursor.fetchone()
@@ -95,7 +95,9 @@ def movimento():
 
                 mysql.connection.commit()
                 acao_log = 'Saída' if tipo_mov == 'saida' else 'Entrada'
-                registrar_log(usuario_atual, f"Movimentação ({acao_log})", f"Item '{produto}' (ID: {item_existente['id']})")
+                
+                # Regista rigorosamente quem executou a movimentação de itens
+                registrar_log(usuario_atual, f"Movimentação ({acao_log})", f"Item '{produto}' (ID: {item_existente['id']}) - Qtd: {qtd_input}")
 
                 if request.is_json:
                     return jsonify({"sucesso": True, "mensagem": f"Movimentação de {acao_log} salva!"}), 200
@@ -114,12 +116,33 @@ def movimento():
                 """, (novo_id, produto, area, qtd_input, preco_input, desc_input, img_input if img_input else None))
 
                 mysql.connection.commit()
-                registrar_log(usuario_atual, 'Novo Cadastro', f"Item '{produto}' criado (ID: {novo_id}) com {qtd_input} unidades.")
+                
+                # Regista rigorosamente quem adicionou o novo item ao estoque
+                registrar_log(usuario_atual, 'Novo Cadastro de Item', f"Item '{produto}' criado (ID: {novo_id}) com {qtd_input} unidades.")
 
                 if request.is_json:
                     return jsonify({"sucesso": True, "mensagem": f"Item '{produto}' cadastrado com ID {novo_id}!"}), 201
 
             return redirect(url_for('home_bp.home'))
+
+        # Exclusão de Item de Estoque
+        elif tipo == 'deletar':
+            identificador = data.get('produto') if request.is_json else request.form.get('produto')
+            cursor.execute("SELECT * FROM estoque WHERE id = %s OR LOWER(produto) = LOWER(%s)", (identificador, identificador))
+            item_alvo = cursor.fetchone()
+
+            if item_alvo:
+                cursor.execute("DELETE FROM estoque WHERE id = %s", (item_alvo['id'],))
+                mysql.connection.commit()
+                
+                # Regista rigorosamente quem excluiu o item do estoque
+                registrar_log(usuario_atual, 'Exclusão de Item', f"Removeu o item '{item_alvo['produto']}' (ID: {item_alvo['id']}) do estoque.")
+
+                if request.is_json:
+                    return jsonify({"sucesso": True, "mensagem": f"Item '{item_alvo['produto']}' excluído com sucesso!"}), 200
+            else:
+                if request.is_json:
+                    return jsonify({"sucesso": False, "mensagem": "Item não encontrado no estoque."}), 404
 
     cursor.execute("SELECT id, produto, quantidade FROM estoque ORDER BY id ASC")
     itens = cursor.fetchall()

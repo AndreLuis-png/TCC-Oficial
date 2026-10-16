@@ -20,7 +20,7 @@ export default function MovimentoScreen({ navigation, route }) {
   const [preco, setPreco] = useState('');
   const [linkImagem, setLinkImagem] = useState('');
   
-  // Estados para a exclusão de registro (bloco inferior da web)
+  // Estados para a exclusão de registro
   const [itemExcluir, setItemExcluir] = useState('');
   
   const [carregando, setCarregando] = useState(false);
@@ -50,7 +50,7 @@ export default function MovimentoScreen({ navigation, route }) {
           preco: preco || 0,
           descricao: descricao,
           link_imagem: linkImagem,
-          usuario: usuarioLogado
+          usuario: usuarioLogado // Envia o operador logado para registrar no log do servidor
         })
       });
 
@@ -83,7 +83,7 @@ export default function MovimentoScreen({ navigation, route }) {
         body: JSON.stringify({
           acao_tipo: 'deletar',
           produto: itemExcluir,
-          usuario: usuarioLogado
+          usuario: usuarioLogado // Envia o operador logado para registrar no log
         })
       });
 
@@ -105,7 +105,7 @@ export default function MovimentoScreen({ navigation, route }) {
   return (
     <View style={styles.containerPrincipal}>
       
-      {/* 1. CABEÇALHO AZUL PRINCIPAL */}
+      {/* 1. CABEÇALHO AZUL PRINCIPAL (Padronizado) */}
       <View style={styles.headerTop}>
         <View style={styles.logoContainer}>
           <Text style={styles.logoSenai}>SENAI</Text>
@@ -143,11 +143,11 @@ export default function MovimentoScreen({ navigation, route }) {
       {/* Conteúdo com Scroll */}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         
-        {/* 2. TÍTULO E SUBTÍTULO LARANJA DA WEB */}
+        {/* 2. TÍTULO E SUBTÍTULO LARANJA */}
         <Text style={styles.tituloPagina}>Movimentação de estoque</Text>
         <Text style={styles.subtituloPagina}>Registre entradas, saídas e alterações nos itens do estoque</Text>
 
-        {/* 3. NAV BAR SUPERIOR (Com 3 abas originais) */}
+        {/* 3. NAV BAR SUPERIOR */}
         <View style={styles.navBar}>
           <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Home')}>
             <Text style={styles.navTxt}>Estoque</Text>
