@@ -82,7 +82,7 @@ export default function HomeScreen({ navigation, route }) {
   return (
     <View style={styles.container}>
       
-      {/* 1. CABEÇALHO AZUL PRINCIPAL */}
+      {/* 1. CABEÇALHO AZUL PRINCIPAL (Padronizado) */}
       <View style={styles.headerTop}>
         <View style={styles.logoContainer}>
           <Text style={styles.logoSenai}>SENAI</Text>
@@ -157,7 +157,7 @@ export default function HomeScreen({ navigation, route }) {
               </TouchableOpacity>
             </View>
 
-            {/* 5. BOTÕES DE FILTRO LARANJA CORRIGIDOS */}
+            {/* 5. BOTÕES DE FILTRO (Inativos em tom intermediário, ativo forte) */}
             <View style={styles.grupoFiltros}>
               {['Uso Geral', 'Mecânica', 'Elétrica', 'Todos'].map((cat) => {
                 const catBanco = cat === 'Uso Geral' ? 'Geral' : cat === 'Mecânica' ? 'Mecanica' : cat === 'Elétrica' ? 'Eletrica' : 'Todos';
@@ -208,14 +208,18 @@ export default function HomeScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F4F6F9' },
   headerTop: { 
-    height: 65, 
+    height: 85, 
     backgroundColor: '#192A6B', 
     flexDirection: 'row', 
     alignItems: 'center', 
     justifyContent: 'space-between', 
     paddingHorizontal: 15,
-    paddingTop: 15, 
-    elevation: 4 
+    paddingTop: 30, 
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   logoContainer: { flexDirection: 'row', alignItems: 'center' },
   logoSenai: { color: '#FFF', fontSize: 20, fontWeight: 'bold' },
@@ -234,7 +238,7 @@ const styles = StyleSheet.create({
   iconePessoaTxt: { color: '#FFF', fontSize: 14, fontWeight: 'bold' },
   dropdownPerfil: {
     position: 'absolute',
-    top: 65,
+    top: 85,
     right: 15,
     backgroundColor: '#FFF',
     borderRadius: 12,
@@ -262,8 +266,28 @@ const styles = StyleSheet.create({
   inputPesquisa: { flex: 1, borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 8, paddingHorizontal: 12, height: 42, backgroundColor: '#FFF' },
   btnBuscar: { backgroundColor: '#192A6B', paddingHorizontal: 20, justifyContent: 'center', borderRadius: 8, height: 42 },
   grupoFiltros: { flexDirection: 'row', gap: 8, marginBottom: 25 },
-  btnFiltro: { flex: 1, height: 38, backgroundColor: '#F28C00', borderRadius: 8, alignItems: 'center', justifyContent: 'center', opacity: 0.5 },
-  btnFiltroAtivo: { opacity: 1, elevation: 2 },
+  
+  // Botões inativos em tom intermediário (equilibrado: nem muito claro, nem forte como o ativo)
+  btnFiltro: { 
+    flex: 1, 
+    height: 38, 
+    backgroundColor: '#F97316', 
+    borderRadius: 8, 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    opacity: 0.75,
+  },
+  // Botão ativo com o laranja forte padrão totalmente opaco
+  btnFiltroAtivo: { 
+    backgroundColor: '#F28C00', 
+    opacity: 1,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+  },
+
   txtFiltro: { color: '#FFF', fontWeight: 'bold', fontSize: 11 },
   cabecalhoTabela: { flexDirection: 'row', backgroundColor: '#192A6B', paddingVertical: 12, paddingHorizontal: 5, borderRadius: 6, marginBottom: 5 },
   celulaCabecalho: { flex: 1, color: '#FFF', fontWeight: 'bold', fontSize: 12, textAlign: 'center' },
@@ -290,4 +314,3 @@ const styles = StyleSheet.create({
   imagemModal: { width: 200, height: 200, borderRadius: 8, marginBottom: 15 },
   btnFecharModal: { backgroundColor: '#EF4444', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 6 },
 });
-

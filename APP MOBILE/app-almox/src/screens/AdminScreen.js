@@ -18,6 +18,7 @@ export default function AdminScreen({ navigation, route }) {
   
   // Lista local para registrar as alterações/ações salvas nesta sessão
   const [historicoLocal, setHistoricoLocal] = useState([]);
+  const [menuPerfilAberto, setMenuPerfilAberto] = useState(false);
 
   const usuarioLogado = route?.params?.usuario || 'andre';
   const isAdmin = route?.params?.isAdmin || true;
@@ -78,7 +79,7 @@ export default function AdminScreen({ navigation, route }) {
   return (
     <View style={styles.container}>
       
-      {/* 1. CABEÇALHO AZUL PRINCIPAL */}
+      {/* 1. CABEÇALHO AZUL PRINCIPAL (Padronizado) */}
       <View style={styles.headerTop}>
         <View style={styles.logoContainer}>
           <Text style={styles.logoSenai}>SENAI</Text>
@@ -87,7 +88,7 @@ export default function AdminScreen({ navigation, route }) {
         
         <TouchableOpacity 
           style={styles.btnPerfil} 
-          onPress={() => {}}
+          onPress={() => setMenuPerfilAberto(!menuPerfilAberto)}
         >
           <View style={styles.iconePessoaCirculo}>
             <Text style={styles.iconePessoaTxt}>
@@ -96,6 +97,22 @@ export default function AdminScreen({ navigation, route }) {
           </View>
         </TouchableOpacity>
       </View>
+
+      {/* Dropdown de Usuário / Sair */}
+      {menuPerfilAberto && (
+        <View style={styles.dropdownPerfil}>
+          <Text style={styles.dropdownUsuarioNom}>{usuarioLogado}</Text>
+          <TouchableOpacity 
+            style={styles.dropdownBtnSair} 
+            onPress={() => {
+              setMenuPerfilAberto(false);
+              navigation.navigate('Login');
+            }}
+          >
+            <Text style={styles.dropdownTxtSair}>Sair da Conta</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <ScrollView contentContainerStyle={styles.conteudoScroll}>
         
@@ -211,14 +228,18 @@ export default function AdminScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F4F6F9' },
   headerTop: { 
-    height: 65, 
+    height: 85, 
     backgroundColor: '#192A6B', 
     flexDirection: 'row', 
     alignItems: 'center', 
     justifyContent: 'space-between', 
     paddingHorizontal: 15,
-    paddingTop: 15, 
-    elevation: 4 
+    paddingTop: 30, 
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   logoContainer: { flexDirection: 'row', alignItems: 'center' },
   logoSenai: { color: '#FFF', fontSize: 20, fontWeight: 'bold' },
@@ -235,6 +256,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#0284C7',
   },
   iconePessoaTxt: { color: '#FFF', fontSize: 14, fontWeight: 'bold' },
+  dropdownPerfil: {
+    position: 'absolute',
+    top: 85,
+    right: 15,
+    backgroundColor: '#FFF',
+    borderRadius: 12,
+    padding: 15,
+    width: 160,
+    zIndex: 999,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+  },
+  dropdownUsuarioNom: { fontSize: 15, fontWeight: 'bold', color: '#192A6B', marginBottom: 12 },
+  dropdownBtnSair: { borderTopWidth: 1, borderColor: '#ECECEC', paddingTop: 8 },
+  dropdownTxtSair: { color: '#EF4444', fontSize: 13, fontWeight: '500' },
   conteudoScroll: { paddingHorizontal: 15, paddingTop: 20, paddingBottom: 40 },
   tituloPagina: { fontSize: 26, fontWeight: 'bold', color: '#192A6B' },
   subtituloPagina: { fontSize: 12, color: '#F28C00', fontWeight: '500', marginBottom: 20 },
