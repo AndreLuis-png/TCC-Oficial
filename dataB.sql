@@ -40,14 +40,14 @@ CREATE TABLE IF NOT EXISTS estoque (
 ) ENGINE=InnoDB;
 
 -- --------------------------------------------------------
--- Estrutura da Tabela: historico_logs
+-- Estrutura da Tabela: historico_logs (Corrigida sem o Default automático)
 -- --------------------------------------------------------
 CREATE TABLE IF NOT EXISTS historico_logs (
     id INT AUTO_INCREMENT,
     usuario VARCHAR(50) NOT NULL,
     acao VARCHAR(50) NOT NULL,
     detalhe TEXT NOT NULL,
-    data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_registro DATETIME NOT NULL,
     PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
@@ -65,7 +65,7 @@ INSERT INTO usuarios (login, senha, status, role) VALUES
 -- Inserções Iniciais: Configuração do Admin (Chave Mestra)
 -- --------------------------------------------------------
 INSERT INTO config_admin (usuario, chave_mestra) VALUES 
-('admin', '$2a$12$TyKbVE6G425lA7ko/IgwoOcR.Uc4RCbcvGj/ftZkopSNhhlelM8Zi'); #senha 'admin' para utilizar as funções do admin
+('admin', '$2a$12$TyKbVE6G425lA7ko/IgwoOcR.Uc4RCbcvGj/ftZkopSNhhlelM8Zi');
 
 -- --------------------------------------------------------
 -- Inserções Iniciais: Estoque
@@ -76,8 +76,3 @@ INSERT INTO estoque (id, produto, area_uso, quantidade, preco, descricao, link_i
 (10001, 'Pregos', 'Mecanica', 200, 0.60, 'Entra reto', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuleVPCTMLQEhf4lkkzlW9AEMXDfDEqw4RAwsZjdZ-jw&s=10'),
 (10002, 'Parafusos', 'Mecanica', 200, 0.40, 'Entra rodando', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlm_v8Khvn-wORVgWlbuepAl0Urz62I7pJCK2UQ3-nnQ&s=10'),
 (20001, 'Paineis fotovoltaicos', 'Eletrica', 2, 850.00, 'Deixa o wifi ligado', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMI9NnZ9OYWpmM1wtQ-M1_qA-3j2069zxWJkRJ1pBIew&s=10');
-
-SELECT * FROM usuarios;
-SELECT * FROM estoque;
-SELECT * FROM config_admin;
-SELECT * FROM historico_logs;

@@ -55,17 +55,17 @@
         <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
     </svg>
 </div>
-        
-        
+          
             <div class="user-menu" id="userMenu">
                 <div class="user-menu-header">
                     <strong>{{ session.get('usuario', 'Usuário') }}</strong>
                 </div>
                 <hr>
-                <a href="#">Alterar Senha</a>
+                <a href="{{ url_for('login_bp.logout') if 'logout' in config else '/logout' }}" class="logout-btn">Sair da Conta</a>
             </div>
         </div>
     </header>
+
 
     <nav class="top-nav">
         <a href="{{ url_for('home_bp.home') }}">Estoque</a>

@@ -61,10 +61,11 @@
                     <strong>{{ session.get('usuario', 'Usuário') }}</strong>
                 </div>
                 <hr>
-                <a href="#">Alterar Senha</a>
+                <a href="{{ url_for('login_bp.logout') if 'logout' in config else '/logout' }}" class="logout-btn">Sair da Conta</a>
             </div>
         </div>
     </header>
+
 
     <nav class="top-nav">
         <a href="{{ url_for('home_bp.home') }}">Estoque</a>

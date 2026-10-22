@@ -1,5 +1,7 @@
 import MySQLdb.cursors
 import bcrypt
+from datetime import datetime
+import zoneinfo
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 
 admin_bp = Blueprint('admin_bp', __name__)
@@ -7,10 +9,14 @@ admin_bp = Blueprint('admin_bp', __name__)
 def registrar_log(usuario, acao, detalhe):
     from app import mysql
     try:
+        # Pega a hora atual exata no fuso horário de Brasília
+        fuso_brasilia = zoneinfo.ZoneInfo("America/Sao_Paulo")
+        horario_brasilia = datetime.now(fuso_brasilia).strftime('%Y-%m-%d %H:%M:%S')
+
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute(
-            "INSERT INTO historico_logs (usuario, acao, detalhe) VALUES (%s, %s, %s)",
-            (usuario, acao, detalhe)
+            "INSERT INTO historico_logs (usuario, acao, detalhe, data_registro) VALUES (%s, %s, %s, %s)",
+            (usuario, acao, detalhe, horario_brasilia)
         )
         mysql.connection.commit()
     except Exception as e:
@@ -109,9 +115,18 @@ def admin():
 
     filtro_usuario = request.args.get('filtro_usuario', '').strip()
     if filtro_usuario:
-        cursor.execute("SELECT * FROM historico_logs WHERE usuario LIKE %s ORDER BY id DESC", (f"%{filtro_usuario}%",))
+        cursor.execute("""
+            SELECT id, usuario, acao, detalhe, data_registro AS data_hora 
+            FROM historico_logs 
+            WHERE usuario LIKE %s 
+            ORDER BY id DESC
+        """, (f"%{filtro_usuario}%",))
     else:
-        cursor.execute("SELECT * FROM historico_logs ORDER BY id DESC")
+        cursor.execute("""
+            SELECT id, usuario, acao, detalhe, data_registro AS data_hora 
+            FROM historico_logs 
+            ORDER BY id DESC
+        """)
     logs = cursor.fetchall()
 
     cursor.execute("SELECT login, status, role FROM usuarios ORDER BY login ASC")
@@ -163,7 +178,6 @@ def cadastrar_usuario():
         )
         mysql.connection.commit()
 
-        # Registra corretamente quem executou a ação no histórico de logs
         registrar_log(usuario_criador, 'Novo Usuário', f"Cadastrou o usuário '{novo_usuario}' (Role: {role})")
 
         msg = f"Usuário '{novo_usuario}' cadastrado com sucesso!"
