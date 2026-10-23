@@ -5,63 +5,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - SENAI Almoxarifado</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        :root {
-            --primary-blue: #192A6B;
-        }
-
         body {
             margin: 0;
-            min-height: 100vh;
-            background: var(--primary-blue) url("{{ url_for('static', filename='Almoxarifado.png') }}") center/cover no-repeat;
+            height: 100vh;
+            background: #192A6B url("{{ url_for('static', filename='Almoxarifado.png') }}") center/cover no-repeat;
             font-family: Arial, sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Ajuste do container das mensagens flash para não colar no topo absoluto */
+        .flash-container {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: 90%;
+            max-width: 450px;
         }
 
         .login-box {
             position: absolute;
-            top: 49%;
+            top: 52%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 510px;
-            height: 285px;
+            height: 330px; /* Altura expandida para comportar perfeitamente os campos e o título */
             background: white;
             border-radius: 30px;
-            padding: 20px 0;
+            padding: 25px 0;
+            box-sizing: border-box;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
         }
 
         .login-box h1 {
             margin: 0 0 15px;
             text-align: center;
             color: #f28c00;
-            font-size: 60px;
-            text-shadow: 3px 3px #000;
+            font-size: 52px;
+            text-shadow: 2px 2px #000;
         }
 
         .campo {
             margin-left: 60px;
-            margin-bottom: 10px;
+            margin-right: 60px;
+            margin-bottom: 12px;
         }
 
         .campo label {
             display: block;
             font-size: 13px;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
+            color: #333;
         }
 
         .campo input {
-            width: 390px;
-            height: 32px;
+            width: 100%;
+            height: 36px;
             padding: 0 12px;
             border: 2px solid #000;
             border-radius: 20px;
             box-sizing: border-box;
+            font-size: 14px;
         }
 
         .botao-entrar {
             display: block;
             width: 150px;
-            margin: 14px auto 0;
+            margin: 18px auto 0;
             padding: 10px 0;
             background: #192A6B;
             color: white;
@@ -70,30 +85,36 @@
             border-radius: 20px;
             font-weight: bold;
             cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .botao-entrar:hover {
+            background: #f28c00;
         }
     </style>
 </head>
 <body>
-    <main>
-                <!-- Exibição de Mensagens Flash -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-container">
-            {% for category, message in messages %}
-                <div class="flash-message {{ category }}">
+
+    <!-- Exibição de Mensagens Flash Padronizadas -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flash-container">
+        {% for category, message in messages %}
+            <div class="flash-message {{ category }}">
                 <span>{% if category == 'success' %}✅{% else %}⚠️{% endif %} {{ message }}</span>
                 <button class="flash-close" onclick="this.parentElement.style.display='none';">&times;</button>
-                </div>
-            {% endfor %}
             </div>
-        {% endif %}
-        {% endwith %}
+        {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
     <form class="login-box" method="POST" action="{{ url_for('login_bp.login') }}">
         <h1>Login</h1>
 
         <div class="campo">
             <label for="usuario">Usuário:</label>
-            <input type="text" id="usuario" name="usuario" required>
+            <input type="text" id="usuario" name="usuario" required autocomplete="off">
         </div>
 
         <div class="campo">
@@ -104,6 +125,5 @@
         <button type="submit" class="botao-entrar">Entrar</button>
     </form>
 
-        <main>
 </body>
 </html>

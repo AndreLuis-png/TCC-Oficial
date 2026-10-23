@@ -8,7 +8,6 @@ login_bp = Blueprint('login_bp', __name__)
 def login():
     from app import mysql
     
-    # 1. Tratamento para requisições do App Mobile (JSON)
     if request.is_json:
         data = request.get_json() or {}
         usuario = data.get('usuario', '').strip()
@@ -35,7 +34,6 @@ def login():
 
         return jsonify({"sucesso": False, "mensagem": "Usuário ou senha inválidos."}), 401
 
-    # 2. Tratamento padrão para Web (Formulário HTML)
     if request.method == 'POST':
         usuario = request.form.get('usuario', '').strip()
         senha = request.form.get('senha', '')

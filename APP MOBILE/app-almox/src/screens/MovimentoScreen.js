@@ -20,7 +20,6 @@ export default function MovimentoScreen({ navigation, route }) {
   const [preco, setPreco] = useState('');
   const [linkImagem, setLinkImagem] = useState('');
   
-  // Estados para a exclusão de registro
   const [itemExcluir, setItemExcluir] = useState('');
   
   const [carregando, setCarregando] = useState(false);
@@ -50,7 +49,7 @@ export default function MovimentoScreen({ navigation, route }) {
           preco: preco || 0,
           descricao: descricao,
           link_imagem: linkImagem,
-          usuario: usuarioLogado // Envia o operador logado para registrar no log do servidor
+          usuario: usuarioLogado
         })
       });
 
@@ -58,7 +57,7 @@ export default function MovimentoScreen({ navigation, route }) {
 
       if (response.ok && data.sucesso) {
         Alert.alert('Sucesso', data.mensagem || 'Movimentação realizada!');
-        navigation.navigate('Home');
+        navigation.navigate('Home', { usuario: usuarioLogado, isAdmin });
       } else {
         Alert.alert('Atenção', data.mensagem || 'Não foi possível salvar a movimentação.');
       }
@@ -82,8 +81,8 @@ export default function MovimentoScreen({ navigation, route }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           acao_tipo: 'deletar',
-          produto: itemExcluir,
-          usuario: usuarioLogado // Envia o operador logado para registrar no log
+          id: itemExcluir, // Compatível com a checagem por ID ou produto no backend
+          usuario: usuarioLogado
         })
       });
 
@@ -105,7 +104,6 @@ export default function MovimentoScreen({ navigation, route }) {
   return (
     <View style={styles.containerPrincipal}>
       
-      {/* 1. CABEÇALHO AZUL PRINCIPAL (Padronizado) */}
       <View style={styles.headerTop}>
         <View style={styles.logoContainer}>
           <Text style={styles.logoSenai}>SENAI</Text>
@@ -124,7 +122,6 @@ export default function MovimentoScreen({ navigation, route }) {
         </TouchableOpacity>
       </View>
 
-      {/* Dropdown de Usuário / Sair */}
       {menuPerfilAberto && (
         <View style={styles.dropdownPerfil}>
           <Text style={styles.dropdownUsuarioNom}>{usuarioLogado}</Text>
@@ -140,29 +137,25 @@ export default function MovimentoScreen({ navigation, route }) {
         </View>
       )}
 
-      {/* Conteúdo com Scroll */}
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         
-        {/* 2. TÍTULO E SUBTÍTULO LARANJA */}
         <Text style={styles.tituloPagina}>Movimentação de estoque</Text>
         <Text style={styles.subtituloPagina}>Registre entradas, saídas e alterações nos itens do estoque</Text>
 
-        {/* 3. NAV BAR SUPERIOR */}
         <View style={styles.navBar}>
-          <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Home')}>
+          <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Home', { usuario: usuarioLogado, isAdmin })}>
             <Text style={styles.navTxt}>Estoque</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.navBtnAtivo} onPress={() => navigation.navigate('Movimento')}>
+          <TouchableOpacity style={styles.navBtnAtivo} onPress={() => navigation.navigate('Movimento', { usuario: usuarioLogado, isAdmin })}>
             <Text style={styles.navTxtAtivo}>Movimentação</Text>
           </TouchableOpacity>
           {isAdmin && (
-            <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Admin')}>
+            <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Admin', { usuario: usuarioLogado, isAdmin })}>
               <Text style={styles.navTxt}>Gerenciamento</Text>
             </TouchableOpacity>
           )}
         </View>
 
-        {/* 4. PAINEL 1: DADOS DA MOVIMENTAÇÃO */}
         <View style={styles.card}>
           <Text style={styles.label}>Tipo de Movimentação</Text>
           <View style={styles.pickerSimulado}>
@@ -211,7 +204,6 @@ export default function MovimentoScreen({ navigation, route }) {
           />
         </View>
 
-        {/* 5. PAINEL 2: QUANTIDADE, PREÇO E BOTÕES */}
         <View style={styles.card}>
           <Text style={styles.label}>Quantidade</Text>
           <TextInput 
@@ -239,7 +231,7 @@ export default function MovimentoScreen({ navigation, route }) {
           />
 
           <View style={styles.botoesContainer}>
-            <TouchableOpacity style={styles.btnCancelar} onPress={() => navigation.navigate('Home')}>
+            <TouchableOpacity style={styles.btnCancelar} onPress={() => navigation.navigate('Home', { usuario: usuarioLogado, isAdmin })}>
               <Text style={styles.txtCancelar}>Cancelar</Text>
             </TouchableOpacity>
 
@@ -257,14 +249,13 @@ export default function MovimentoScreen({ navigation, route }) {
           </View>
         </View>
 
-        {/* 6. PAINEL 3: EXCLUIR REGISTRO (Disponível para Admin) */}
         {isAdmin && (
           <View style={styles.card}>
             <Text style={styles.labelExcluirTitulo}>Excluir Registro de Estoque (Apenas Admin)</Text>
-            <Text style={styles.label}>Selecione ou Informe o Item para Excluir:</Text>
+            <Text style={styles.label}>Selecione ou Informe o ID do Item:</Text>
             <TextInput 
               style={styles.input} 
-              placeholder="Digite o ID ou Nome do Item..." 
+              placeholder="Digite o ID do Item..." 
               value={itemExcluir} 
               onChangeText={setItemExcluir} 
             />
@@ -289,10 +280,7 @@ export default function MovimentoScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  containerPrincipal: { 
-    flex: 1, 
-    backgroundColor: '#F4F6F9' 
-  },
+  containerPrincipal: { flex: 1, backgroundColor: '#F4F6F9' },
   headerTop: { 
     height: 85, 
     backgroundColor: '#192A6B', 
@@ -340,11 +328,7 @@ const styles = StyleSheet.create({
   dropdownUsuarioNom: { fontSize: 15, fontWeight: 'bold', color: '#192A6B', marginBottom: 12 },
   dropdownBtnSair: { borderTopWidth: 1, borderColor: '#ECECEC', paddingTop: 8 },
   dropdownTxtSair: { color: '#EF4444', fontSize: 13, fontWeight: '500' },
-  scrollContainer: { 
-    paddingHorizontal: 15, 
-    paddingTop: 20, 
-    paddingBottom: 40 
-  },
+  scrollContainer: { paddingHorizontal: 15, paddingTop: 20, paddingBottom: 40 },
   tituloPagina: { fontSize: 26, fontWeight: 'bold', color: '#192A6B' },
   subtituloPagina: { fontSize: 12, color: '#F28C00', fontWeight: '500', marginBottom: 20 },
   navBar: { flexDirection: 'row', gap: 15, marginBottom: 20, borderBottomWidth: 1, borderColor: '#E5E7EB', paddingBottom: 5 },

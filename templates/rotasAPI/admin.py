@@ -9,7 +9,6 @@ admin_bp = Blueprint('admin_bp', __name__)
 def registrar_log(usuario, acao, detalhe):
     from app import mysql
     try:
-        # Pega a hora atual exata no fuso horário de Brasília
         fuso_brasilia = zoneinfo.ZoneInfo("America/Sao_Paulo")
         horario_brasilia = datetime.now(fuso_brasilia).strftime('%Y-%m-%d %H:%M:%S')
 
@@ -136,7 +135,6 @@ def admin():
         return jsonify({"sucesso": True, "logs": logs, "usuarios": usuarios}), 200
 
     return render_template('rotasURL/admin.html', logs=logs, usuarios=usuarios, is_admin=True)
-
 
 @admin_bp.route('/cadastrar_usuario', methods=['GET', 'POST'])
 def cadastrar_usuario():

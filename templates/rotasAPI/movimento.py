@@ -1,7 +1,6 @@
 import unicodedata
 import MySQLdb.cursors
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
-from templates.rotasAPI.home import checar_bloqueio
 
 movimento_bp = Blueprint('movimento_bp', __name__)
 
@@ -13,13 +12,22 @@ def padronizar_texto(texto):
     return limpo.capitalize()
 
 def registrar_log(usuario, acao, detalhe):
+    from datetime import datetime
+    import zoneinfo
     from app import mysql
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute(
-        "INSERT INTO historico_logs (usuario, acao, detalhe) VALUES (%s, %s, %s)",
-        (usuario, acao, detalhe)
-    )
-    mysql.connection.commit()
+    
+    try:
+        fuso_brasilia = zoneinfo.ZoneInfo("America/Sao_Paulo")
+        horario_brasilia = datetime.now(fuso_brasilia).strftime('%Y-%m-%d %H:%M:%S')
+
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute(
+            "INSERT INTO historico_logs (usuario, acao, detalhe, data_registro) VALUES (%s, %s, %s, %s)",
+            (usuario, acao, detalhe, horario_brasilia)
+        )
+        mysql.connection.commit()
+    except Exception as e:
+        print(f"Erro ao registrar log: {e}")
 
 def gerar_proximo_id(cursor, area_uso):
     faixas = {'Geral': 1, 'Mecanica': 10001, 'Eletrica': 20001}
@@ -45,8 +53,7 @@ def gerar_proximo_id(cursor, area_uso):
 def movimento():
     from app import mysql
     
-    # Verificação para Web
-    if not request.is_json and ('logged_in' not in session or not checar_bloqueio()):
+    if not request.is_json and ('logged_in' not in session or not session.get('is_admin')):
         return redirect(url_for('login_bp.login'))
         
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -58,8 +65,18 @@ def movimento():
             produto = padronizar_texto(data.get('produto'))
             area = data.get('area_uso', 'Geral')
             tipo_mov = data.get('tipo_movimentacao', 'entrada')
-            qtd_input = abs(int(data.get('quantidade', 0)))
-            preco_input = float(data.get('preco', 0))
+            
+            try:
+                qtd_input = abs(int(data.get('quantidade', 1)))
+            except (ValueError, TypeError):
+                qtd_input = 1
+                
+            preco_val = data.get('preco')
+            try:
+                preco_input = float(preco_val) if preco_val is not None and str(preco_val).strip() != '' else 0.0
+            except (ValueError, TypeError):
+                preco_input = 0.0
+
             desc_input = padronizar_texto(data.get('descricao', ''))
             img_input = str(data.get('link_imagem', '')).strip()
             usuario_atual = data.get('usuario', 'AppMobile')
@@ -68,13 +85,22 @@ def movimento():
             produto = padronizar_texto(request.form.get('produto'))
             area = request.form.get('area_uso')
             tipo_mov = request.form.get('tipo_movimentacao', 'entrada')
-            qtd_input = abs(int(request.form.get('quantidade', 0)))
-            preco_input = float(str(request.form.get('preco', 0)).replace(',', '.'))
+            
+            try:
+                qtd_input = abs(int(request.form.get('quantidade', 1)))
+            except (ValueError, TypeError):
+                qtd_input = 1
+                
+            preco_str = str(request.form.get('preco', '0')).replace(',', '.')
+            try:
+                preco_input = float(preco_str) if preco_str.strip() != '' else 0.0
+            except (ValueError, TypeError):
+                preco_input = 0.0
+
             desc_input = padronizar_texto(request.form.get('descricao', ''))
             img_input = request.form.get('link_imagem', '').strip()
             usuario_atual = session.get('usuario', 'Anônimo')
 
-        # Inserção / Entrada / Saída de Estoque
         if tipo == 'inserir':
             cursor.execute("SELECT * FROM estoque WHERE LOWER(produto) = LOWER(%s)", (produto,))
             item_existente = cursor.fetchone()
@@ -96,7 +122,6 @@ def movimento():
                 mysql.connection.commit()
                 acao_log = 'Saída' if tipo_mov == 'saida' else 'Entrada'
                 
-                # Regista rigorosamente quem executou a movimentação de itens
                 registrar_log(usuario_atual, f"Movimentação ({acao_log})", f"Item '{produto}' (ID: {item_existente['id']}) - Qtd: {qtd_input}")
 
                 if request.is_json:
@@ -117,7 +142,6 @@ def movimento():
 
                 mysql.connection.commit()
                 
-                # Regista rigorosamente quem adicionou o novo item ao estoque
                 registrar_log(usuario_atual, 'Novo Cadastro de Item', f"Item '{produto}' criado (ID: {novo_id}) com {qtd_input} unidades.")
 
                 if request.is_json:
@@ -125,9 +149,16 @@ def movimento():
 
             return redirect(url_for('home_bp.home'))
 
-        # Exclusão de Item de Estoque
         elif tipo == 'deletar':
-            identificador = data.get('produto') if request.is_json else request.form.get('produto')
+            # Captura o identificador priorizando 'id' e validando também 'produto'
+            identificador = data.get('id') or data.get('produto') if request.is_json else request.form.get('id') or request.form.get('produto')
+            
+            if not identificador:
+                if request.is_json:
+                    return jsonify({"sucesso": False, "mensagem": "Identificador do item não informado."}), 400
+                flash("Erro: Nenhum item foi selecionado para exclusão.", "error")
+                return redirect(url_for('movimento_bp.movimento'))
+
             cursor.execute("SELECT * FROM estoque WHERE id = %s OR LOWER(produto) = LOWER(%s)", (identificador, identificador))
             item_alvo = cursor.fetchone()
 
@@ -135,15 +166,19 @@ def movimento():
                 cursor.execute("DELETE FROM estoque WHERE id = %s", (item_alvo['id'],))
                 mysql.connection.commit()
                 
-                # Regista rigorosamente quem excluiu o item do estoque
                 registrar_log(usuario_atual, 'Exclusão de Item', f"Removeu o item '{item_alvo['produto']}' (ID: {item_alvo['id']}) do estoque.")
 
                 if request.is_json:
                     return jsonify({"sucesso": True, "mensagem": f"Item '{item_alvo['produto']}' excluído com sucesso!"}), 200
+                
+                flash(f"Item '{item_alvo['produto']}' excluído com sucesso!", "success")
             else:
                 if request.is_json:
                     return jsonify({"sucesso": False, "mensagem": "Item não encontrado no estoque."}), 404
+                flash("Erro: Item não encontrado no estoque.", "error")
 
+            return redirect(url_for('movimento_bp.movimento'))
+        
     cursor.execute("SELECT id, produto, quantidade FROM estoque ORDER BY id ASC")
     itens = cursor.fetchall()
 

@@ -24,7 +24,6 @@ export default function HomeScreen({ navigation, route }) {
   const isAdmin = route?.params?.isAdmin || false;
   const usuarioLogado = route?.params?.usuario || 'andre';
 
-  // Função que faz o fetch de dados na API segura do contêiner Docker
   const buscarEstoque = async (categoria = 'Todos', termo = '') => {
     setCarregando(true);
     try {
@@ -55,7 +54,6 @@ export default function HomeScreen({ navigation, route }) {
     buscarEstoque(categoriaSel, pesquisa);
   }, [categoriaSel]);
 
-  // CONSERTO DOS FILTROS: Essa função agora muda o botão na tela E busca no banco
   const handleAlterarFiltro = (novaCategoria) => {
     setCategoriaSel(novaCategoria);
     buscarEstoque(novaCategoria, pesquisa);
@@ -82,7 +80,6 @@ export default function HomeScreen({ navigation, route }) {
   return (
     <View style={styles.container}>
       
-      {/* 1. CABEÇALHO AZUL PRINCIPAL (Padronizado) */}
       <View style={styles.headerTop}>
         <View style={styles.logoContainer}>
           <Text style={styles.logoSenai}>SENAI</Text>
@@ -101,7 +98,6 @@ export default function HomeScreen({ navigation, route }) {
         </TouchableOpacity>
       </View>
 
-      {/* Dropdown de Usuário / Sair */}
       {menuPerfilAberto && (
         <View style={styles.dropdownPerfil}>
           <Text style={styles.dropdownUsuarioNom}>{usuarioLogado}</Text>
@@ -117,7 +113,6 @@ export default function HomeScreen({ navigation, route }) {
         </View>
       )}
 
-      {/* Lista com o Conteúdo de Layout */}
       <FlatList
         data={estoque}
         renderItem={renderItem}
@@ -125,26 +120,23 @@ export default function HomeScreen({ navigation, route }) {
         contentContainerStyle={styles.conteudoScroll}
         ListHeaderComponent={
           <View>
-            {/* 2. TÍTULO PRINCIPAL E LEGENDA */}
             <Text style={styles.tituloPagina}>Estoque</Text>
             <Text style={styles.subtituloPagina}>Lista de todos os itens cadastrados</Text>
 
-            {/* 3. NAV BAR LOGO ABAIXO DO TÍTULO */}
             <View style={styles.navBar}>
-              <TouchableOpacity style={styles.navBtnAtivo} onPress={() => navigation.navigate('Home')}>
+              <TouchableOpacity style={styles.navBtnAtivo} onPress={() => navigation.navigate('Home', { usuario: usuarioLogado, isAdmin })}>
                 <Text style={styles.navTxtAtivo}>Estoque</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Movimento')}>
+              <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Movimento', { usuario: usuarioLogado, isAdmin })}>
                 <Text style={styles.navTxt}>Movimentação</Text>
               </TouchableOpacity>
               {isAdmin && (
-                <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Admin')}>
+                <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Admin', { usuario: usuarioLogado, isAdmin })}>
                   <Text style={styles.navTxt}>Gerenciamento</Text>
                 </TouchableOpacity>
               )}
             </View>
 
-            {/* 4. BARRA DE PESQUISA */}
             <View style={styles.pesquisaContainer}>
               <TextInput
                 style={styles.inputPesquisa}
@@ -157,31 +149,34 @@ export default function HomeScreen({ navigation, route }) {
               </TouchableOpacity>
             </View>
 
-            {/* 5. BOTÕES DE FILTRO (Inativos em tom intermediário, ativo forte) */}
+            {/* BOTÕES DE FILTRO CORRIGIDOS COM OS VALORES EXATOS */}
             <View style={styles.grupoFiltros}>
-              {['Uso Geral', 'Mecânica', 'Elétrica', 'Todos'].map((cat) => {
-                const catBanco = cat === 'Uso Geral' ? 'Geral' : cat === 'Mecânica' ? 'Mecanica' : cat === 'Elétrica' ? 'Eletrica' : 'Todos';
-                const ativo = categoriaSel === catBanco;
+              {[
+                { label: 'Uso Geral', valor: 'Geral' },
+                { label: 'Mecânica', valor: 'Mecanica' },
+                { label: 'Elétrica', valor: 'Eletrica' },
+                { label: 'Todos', valor: 'Todos' }
+              ].map((cat) => {
+                const ativo = categoriaSel === cat.valor;
                 return (
                   <TouchableOpacity 
-                    key={cat} 
+                    key={cat.valor} 
                     style={[styles.btnFiltro, ativo && styles.btnFiltroAtivo]}
-                    onPress={() => handleAlterarFiltro(catBanco)}
+                    onPress={() => handleAlterarFiltro(cat.valor)}
                   >
-                    <Text style={styles.txtFiltro}>{cat}</Text>
+                    <Text style={styles.txtFiltro}>{cat.label}</Text>
                   </TouchableOpacity>
                 );
               })}
             </View>
 
-            {/* 6. TABELA DE ITENS */}
             <View style={styles.cabecalhoTabela}>
               <Text style={[styles.celulaCabecalho, { flex: 0.8 }]}>Id</Text>
               <Text style={[styles.celulaCabecalho, { flex: 2 }]}>Produto</Text>
-              <Text style={styles.celulaCabecalho}>Área de Uso</Text>
-              <Text style={styles.celulaCabecalho}>Quantidade</Text>
-              <Text style={styles.celulaCabecalho}>Preço</Text>
-              <Text style={styles.celulaCabecalho}>Imagem</Text>
+              <Text style={[styles.celulaCabecalho]}>Área de Uso</Text>
+              <Text style={[styles.celulaCabecalho]}>Quantidade</Text>
+              <Text style={[styles.celulaCabecalho]}>Preço</Text>
+              <Text style={[styles.celulaCabecalho]}>Imagem</Text>
             </View>
 
             {carregando && <ActivityIndicator size="large" color="#192A6B" style={{ marginTop: 25 }} />}
@@ -189,7 +184,6 @@ export default function HomeScreen({ navigation, route }) {
         }
       />
 
-      {/* Modal Nativo de Imagem */}
       <Modal visible={!!imagemModal} transparent={true} animationType="fade">
         <View style={styles.containerModal}>
           <View style={styles.conteudoModal}>
@@ -266,8 +260,6 @@ const styles = StyleSheet.create({
   inputPesquisa: { flex: 1, borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 8, paddingHorizontal: 12, height: 42, backgroundColor: '#FFF' },
   btnBuscar: { backgroundColor: '#192A6B', paddingHorizontal: 20, justifyContent: 'center', borderRadius: 8, height: 42 },
   grupoFiltros: { flexDirection: 'row', gap: 8, marginBottom: 25 },
-  
-  // Botões inativos em tom intermediário (equilibrado: nem muito claro, nem forte como o ativo)
   btnFiltro: { 
     flex: 1, 
     height: 38, 
@@ -277,7 +269,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     opacity: 0.75,
   },
-  // Botão ativo com o laranja forte padrão totalmente opaco
   btnFiltroAtivo: { 
     backgroundColor: '#F28C00', 
     opacity: 1,
@@ -287,7 +278,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 1,
   },
-
   txtFiltro: { color: '#FFF', fontWeight: 'bold', fontSize: 11 },
   cabecalhoTabela: { flexDirection: 'row', backgroundColor: '#192A6B', paddingVertical: 12, paddingHorizontal: 5, borderRadius: 6, marginBottom: 5 },
   celulaCabecalho: { flex: 1, color: '#FFF', fontWeight: 'bold', fontSize: 12, textAlign: 'center' },
