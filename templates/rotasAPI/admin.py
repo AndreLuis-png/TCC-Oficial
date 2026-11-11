@@ -4,9 +4,11 @@ from datetime import datetime
 import zoneinfo
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 
+# Cria o Blueprint para as rotas administrativas
 admin_bp = Blueprint('admin_bp', __name__)
 
 def registrar_log(usuario, acao, detalhe):
+    """Função auxiliar para registrar ações e auditorias no banco de dados."""
     from app import mysql
     try:
         fuso_brasilia = zoneinfo.ZoneInfo("America/Sao_Paulo")
@@ -23,8 +25,10 @@ def registrar_log(usuario, acao, detalhe):
 
 @admin_bp.route('/admin', methods=['GET', 'POST'])
 def admin():
+    """Painel administrativo: gerencia bloqueios, exclusões, visualização de logs e usuários."""
     from app import mysql
 
+    # Restringe o acesso apenas a administradores (exceto se for requisição via JSON/API)
     if not request.is_json:
         if 'logged_in' not in session or not session.get('is_admin'):
             flash("Acesso restrito a administradores!", "error")
@@ -32,6 +36,7 @@ def admin():
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
+    # Processamento de formulários ou requisições POST (Ações administrativas)
     if request.method == 'POST':
         if request.is_json:
             data = request.get_json() or {}
@@ -45,6 +50,7 @@ def admin():
             acao = request.form.get('action')
             usuario_solicitante = session.get('usuario', 'Admin')
 
+        # Busca a chave mestra configurada no sistema
         cursor.execute("SELECT chave_mestra FROM config_admin LIMIT 1")
         config = cursor.fetchone()
 
@@ -54,6 +60,7 @@ def admin():
             flash(msg, "error")
             return redirect(url_for('admin_bp.admin'))
 
+        # Valida a chave mestra utilizando bcrypt
         try:
             chave_valida = bcrypt.checkpw(chave_mestra_informada.encode('utf-8'), config['chave_mestra'].encode('utf-8'))
         except Exception:
@@ -66,6 +73,7 @@ def admin():
             return redirect(url_for('admin_bp.admin'))
 
         try:
+            # Executa a ação solicitada (bloquear, desbloquear ou deletar)
             if acao == 'bloquear':
                 cursor.execute("UPDATE usuarios SET status = 'bloqueado' WHERE login = %s", (usuario_alvo,))
                 mysql.connection.commit()
@@ -112,6 +120,7 @@ def admin():
 
         return redirect(url_for('admin_bp.admin'))
 
+    # Método GET: Carrega os logs do sistema (com suporte a filtro por usuário) e lista de usuários
     filtro_usuario = request.args.get('filtro_usuario', '').strip()
     if filtro_usuario:
         cursor.execute("""
@@ -138,6 +147,7 @@ def admin():
 
 @admin_bp.route('/cadastrar_usuario', methods=['GET', 'POST'])
 def cadastrar_usuario():
+    """Rota para cadastrar novos usuários no sistema com criptografia de senha (bcrypt)."""
     from app import mysql
 
     if not request.is_json:
@@ -161,21 +171,25 @@ def cadastrar_usuario():
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute("SELECT * FROM usuarios WHERE login = %s", (novo_usuario,))
         
+        # Verifica se o usuário já existe
         if cursor.fetchone():
             msg = "Nome de usuário já cadastrado no sistema!"
             if request.is_json: return jsonify({"sucesso": False, "mensagem": msg}), 400
             flash(msg, "error")
             return redirect(url_for('admin_bp.cadastrar_usuario'))
 
+        # Criptografa a senha utilizando bcrypt
         salt = bcrypt.gensalt(12)
         senha_hash = bcrypt.hashpw(senha.encode('utf-8'), salt).decode('utf-8')
 
+        # Insere o novo usuário no banco com status 'ativo'
         cursor.execute(
             "INSERT INTO usuarios (login, senha, role, status) VALUES (%s, %s, %s, 'ativo')",
             (novo_usuario, senha_hash, role)
         )
         mysql.connection.commit()
 
+        # Registra o log da criação
         registrar_log(usuario_criador, 'Novo Usuário', f"Cadastrou o usuário '{novo_usuario}' (Role: {role})")
 
         msg = f"Usuário '{novo_usuario}' cadastrado com sucesso!"
