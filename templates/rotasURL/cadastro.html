@@ -56,7 +56,7 @@
     </svg>
 </div>
           
-            <div class="user-menu" id="userMenu">
+            <div class="user-menu" id="userMenu"> <!--apresenta o nome do usuário conectado e a opção de sair da conta.-->
                 <div class="user-menu-header">
                     <strong>{{ session.get('usuario', 'Usuário') }}</strong>
                 </div>
@@ -67,18 +67,18 @@
     </header>
 
 
-    <nav class="top-nav">
+    <nav class="top-nav"> <!--cria a navegação entre as páginas do sistema.-->
         <a href="{{ url_for('home_bp.home') }}">Estoque</a>
         <a href="{{ url_for('movimento_bp.movimento') }}">Movimentação</a>
-        {% if is_admin %}
+        {% if is_admin %} <!--verifica se o usuário possui permissões de administrador.-->
             <a href="{{ url_for('admin_bp.admin') }}">Gerenciamento</a>
             <a href="{{ url_for('admin_bp.cadastrar_usuario') }}" class="active">Cadastrar Usuário</a>
         {% endif %}
     </nav>
 
-    <main class="main-centralizado">
+    <main class="main-centralizado"> <!--organiza o conteúdo principal da página.-->
         <!-- Exibição de Mensagens Flash -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% with messages = get_flashed_messages(with_categories=true) %} <!--apresenta mensagens de sucesso ou aviso.-->
         {% if messages %}
             <div class="flash-container">
             {% for category, message in messages %}
@@ -94,36 +94,37 @@
         <h1 class="page-title">Cadastrar Novo Usuário</h1>
         <p class="page-subtitle">Crie um acesso para um novo operador ou administrador do sistema</p>
 
-        <div class="card-painel">
-            <form method="POST" action="{{ url_for('admin_bp.cadastrar_usuario') }}">
+        <div class="card-painel"> <!--organiza o formulário de cadastro.-->
+            <form method="POST" action="{{ url_for('admin_bp.cadastrar_usuario') }}"><!--envia os dados preenchidos para o Flask processar o cadastro.-->
                 <div class="campo-form">
                     <label>Nome de Usuário (Login)</label>
-                    <input type="text" name="usuario" class="input-padrao" required placeholder="Ex: joao.silva">
+                    <input type="text" name="usuario" class="input-padrao" required placeholder="Ex: joao.silva"> <!--recebe o nome de login.-->
                 </div>
 
                 <div class="campo-form">
-                    <label>Senha Inicial</label>
+                    <label>Senha Inicial</label> <!--recebe a senha inicial.-->
                     <input type="password" name="senha" class="input-padrao" required placeholder="********">
                 </div>
 
                 <div class="campo-form checkbox-container">
-                    <input type="checkbox" name="is_admin" id="is_admin">
+                    <input type="checkbox" name="is_admin" id="is_admin"> <!--permite conceder permissões de administrador.-->
                     <label for="is_admin" class="checkbox-label">Conceder permissões de Administrador</label>
                 </div>
 
                 <div class="form-acoes">
-                    <a href="{{ url_for('admin_bp.admin') }}" class="botao-cancelar">Cancelar</a>
-                    <button type="submit" class="botao-filtro btn-salvar-usuario">Salvar Usuário</button>
+                    <a href="{{ url_for('admin_bp.admin') }}" class="botao-cancelar">Cancelar</a> <!--retorna à página de gerenciamento.-->
+                    <button type="submit" class="botao-filtro btn-salvar-usuario">Salvar Usuário</button> <!--envia os dados para cadastro.-->
                 </div>
             </form>
         </div>
     </main>
 
-    <script>
-        function toggleUserMenu() {
+    <!--abre e fecha o menu do usuário.-->
+    <script> 
+        function toggleUserMenu() { 
             document.getElementById("userMenu").classList.toggle("show");
         }
-
+        
         window.onclick = function(event) {
             if (!event.target.matches('#userAvatarBtn')) {
                 var dropdowns = document.getElementsByClassName("user-menu");
@@ -136,5 +137,6 @@
             }
         }
     </script>
+        <!--fecha o menu quando ocorre um clique fora dele.-->
 </body>
 </html>
