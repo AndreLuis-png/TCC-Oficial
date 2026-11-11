@@ -12,24 +12,28 @@ import {
 import { API_URL } from '../services/api.js';
 
 export default function MovimentoScreen({ navigation, route }) {
-  const [tipoMovimentacao, setTipoMovimentacao] = useState('entrada');
-  const [produto, setProduto] = useState('');
-  const [areaUso, setAreaUso] = useState('Geral');
-  const [descricao, setDescricao] = useState('');
-  const [quantidade, setQuantidade] = useState('1');
-  const [preco, setPreco] = useState('');
-  const [linkImagem, setLinkImagem] = useState('');
+  // --- ESTADOS DA TELA ---
+  const [tipoMovimentacao, setTipoMovimentacao] = useState('entrada'); // Define se é 'entrada' ou 'saida'
+  const [produto, setProduto] = useState('');           // Nome/identificador do item
+  const [areaUso, setAreaUso] = useState('Geral');      // Área de uso do produto ('Geral', 'Mecanica', 'Eletrica')
+  const [descricao, setDescricao] = useState('');       // Descrição ou observações do item
+  const [quantidade, setQuantidade] = useState('1');    // Quantidade movimentada
+  const [preco, setPreco] = useState('');               // Preço unitário do produto
+  const [linkImagem, setLinkImagem] = useState('');     // Link opcional de imagem
   
-  const [itemExcluir, setItemExcluir] = useState('');
+  const [itemExcluir, setItemExcluir] = useState('');   // ID do item a ser excluído (área restrita para admin)
   
-  const [carregando, setCarregando] = useState(false);
-  const [carregandoExclusao, setCarregandoExclusao] = useState(false);
-  const [menuPerfilAberto, setMenuPerfilAberto] = useState(false);
+  const [carregando, setCarregando] = useState(false);              // Indicador de carregamento para salvar movimentação
+  const [carregandoExclusao, setCarregandoExclusao] = useState(false); // Indicador de carregamento para exclusão
+  const [menuPerfilAberto, setMenuPerfilAberto] = useState(false);     // Controla a abertura do menu de perfil
 
+  // Obtém parâmetros passados pela rota (com valores padrão caso estejam vazios)
   const usuarioLogado = route?.params?.usuario || 'andre';
   const isAdmin = route?.params?.isAdmin || true;
 
+  // --- FUNÇÃO PARA SALVAR MOVIMENTAÇÃO (Entrada ou Saída / Inserção) ---
   const handleSalvarMovimento = async () => {
+    // Validação: Garante que o nome do item foi preenchido
     if (!produto.trim()) {
       Alert.alert('Erro', 'Por favor, informe o nome do item.');
       return;
@@ -37,6 +41,7 @@ export default function MovimentoScreen({ navigation, route }) {
 
     setCarregando(true);
     try {
+      // Faz uma requisição POST para a rota /movimento do servidor Flask
       const response = await fetch(`${API_URL}/movimento`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -55,8 +60,10 @@ export default function MovimentoScreen({ navigation, route }) {
 
       const data = await response.json();
 
+      // Verifica se a operação foi bem-sucedida
       if (response.ok && data.sucesso) {
         Alert.alert('Sucesso', data.mensagem || 'Movimentação realizada!');
+        // Retorna para a tela de Estoque (Home) atualizando os parâmetros
         navigation.navigate('Home', { usuario: usuarioLogado, isAdmin });
       } else {
         Alert.alert('Atenção', data.mensagem || 'Não foi possível salvar a movimentação.');
@@ -68,7 +75,9 @@ export default function MovimentoScreen({ navigation, route }) {
     }
   };
 
+  // --- FUNÇÃO PARA EXCLUIR ITEM DO ESTOQUE (Exclusiva para Administradores) ---
   const handleExcluirEstoque = async () => {
+    // Validação: Garante que o ID do item foi informado
     if (!itemExcluir.trim()) {
       Alert.alert('Atenção', 'Informe o identificador ou ID do item a ser excluído.');
       return;
@@ -76,12 +85,13 @@ export default function MovimentoScreen({ navigation, route }) {
 
     setCarregandoExclusao(true);
     try {
+      // Faz uma requisição POST enviando a ação de deletar
       const response = await fetch(`${API_URL}/movimento`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           acao_tipo: 'deletar',
-          id: itemExcluir, // Compatível com a checagem por ID ou produto no backend
+          id: itemExcluir, // ID ou produto verificado pelo backend
           usuario: usuarioLogado
         })
       });
@@ -90,7 +100,7 @@ export default function MovimentoScreen({ navigation, route }) {
 
       if (response.ok && data.sucesso) {
         Alert.alert('Sucesso', data.mensagem || 'Registro excluído do estoque!');
-        setItemExcluir('');
+        setItemExcluir(''); // Limpa o campo de exclusão
       } else {
         Alert.alert('Erro', data.mensagem || 'Falha ao excluir registro.');
       }
@@ -104,12 +114,14 @@ export default function MovimentoScreen({ navigation, route }) {
   return (
     <View style={styles.containerPrincipal}>
       
+      {/* 1. CABEÇALHO AZUL PRINCIPAL */}
       <View style={styles.headerTop}>
         <View style={styles.logoContainer}>
           <Text style={styles.logoSenai}>SENAI</Text>
           <Text style={styles.logoSub}> Almoxarifado</Text>
         </View>
         
+        {/* Botão de Perfil */}
         <TouchableOpacity 
           style={styles.btnPerfil} 
           onPress={() => setMenuPerfilAberto(!menuPerfilAberto)}
@@ -122,6 +134,7 @@ export default function MovimentoScreen({ navigation, route }) {
         </TouchableOpacity>
       </View>
 
+      {/* Menu Dropdown de Perfil */}
       {menuPerfilAberto && (
         <View style={styles.dropdownPerfil}>
           <Text style={styles.dropdownUsuarioNom}>{usuarioLogado}</Text>
@@ -139,9 +152,11 @@ export default function MovimentoScreen({ navigation, route }) {
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         
+        {/* 2. TÍTULO E SUBTÍTULO */}
         <Text style={styles.tituloPagina}>Movimentação de estoque</Text>
         <Text style={styles.subtituloPagina}>Registre entradas, saídas e alterações nos itens do estoque</Text>
 
+        {/* 3. BARRA DE NAVEGAÇÃO ENTRE TELAS */}
         <View style={styles.navBar}>
           <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Home', { usuario: usuarioLogado, isAdmin })}>
             <Text style={styles.navTxt}>Estoque</Text>
@@ -156,6 +171,7 @@ export default function MovimentoScreen({ navigation, route }) {
           )}
         </View>
 
+        {/* 4. CARD 1: FORMULÁRIO DE MOVIMENTAÇÃO */}
         <View style={styles.card}>
           <Text style={styles.label}>Tipo de Movimentação</Text>
           <View style={styles.pickerSimulado}>
@@ -204,6 +220,7 @@ export default function MovimentoScreen({ navigation, route }) {
           />
         </View>
 
+        {/* 5. CARD 2: DETALHES DE QUANTIDADE, PREÇO E BOTÕES DE AÇÃO */}
         <View style={styles.card}>
           <Text style={styles.label}>Quantidade</Text>
           <TextInput 
@@ -249,6 +266,7 @@ export default function MovimentoScreen({ navigation, route }) {
           </View>
         </View>
 
+        {/* 6. CARD 3: ÁREA EXCLUSIVA DE EXCLUSÃO (Se usuário for Administrador) */}
         {isAdmin && (
           <View style={styles.card}>
             <Text style={styles.labelExcluirTitulo}>Excluir Registro de Estoque (Apenas Admin)</Text>
@@ -279,6 +297,7 @@ export default function MovimentoScreen({ navigation, route }) {
   );
 }
 
+// --- ESTILIZAÇÃO DA TELA (CSS-in-JS via React Native StyleSheet) ---
 const styles = StyleSheet.create({
   containerPrincipal: { flex: 1, backgroundColor: '#F4F6F9' },
   headerTop: { 
