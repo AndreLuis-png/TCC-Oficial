@@ -2,9 +2,11 @@ import unicodedata
 import MySQLdb.cursors
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 
+# Cria o Blueprint para as rotas de movimentação e controle de estoque
 movimento_bp = Blueprint('movimento_bp', __name__)
 
 def padronizar_texto(texto):
+    """Remove acentos, padroniza para minúsculas e capitaliza a primeira letra do texto."""
     if not texto:
         return ""
     nfkd = unicodedata.normalize('NFKD', texto)
@@ -12,6 +14,7 @@ def padronizar_texto(texto):
     return limpo.capitalize()
 
 def registrar_log(usuario, acao, detalhe):
+    """Registra logs de auditoria no banco de dados com fuso horário de Brasília."""
     from datetime import datetime
     import zoneinfo
     from app import mysql
@@ -30,6 +33,7 @@ def registrar_log(usuario, acao, detalhe):
         print(f"Erro ao registrar log: {e}")
 
 def gerar_proximo_id(cursor, area_uso):
+    """Gera um ID sequencial baseado na faixa numérica de cada área de uso."""
     faixas = {'Geral': 1, 'Mecanica': 10001, 'Eletrica': 20001}
     inicio_faixa = faixas.get(area_uso, 1)
     fim_faixa = inicio_faixa + 10000
@@ -51,6 +55,7 @@ def gerar_proximo_id(cursor, area_uso):
 
 @movimento_bp.route('/movimento', methods=['GET', 'POST'])
 def movimento():
+    """Gerencia entradas, saídas, cadastros e exclusões de itens do estoque."""
     from app import mysql
     
     if not request.is_json and ('logged_in' not in session or not session.get('is_admin')):
@@ -59,6 +64,7 @@ def movimento():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     
     if request.method == 'POST':
+        # Captura os dados dependendo se a requisição veio via JSON (API) ou Formulário Web
         if request.is_json:
             data = request.get_json() or {}
             tipo = data.get('acao_tipo')
@@ -101,6 +107,7 @@ def movimento():
             img_input = request.form.get('link_imagem', '').strip()
             usuario_atual = session.get('usuario', 'Anônimo')
 
+        # Ação para Inserir / Atualizar / Registrar Entrada ou Saída
         if tipo == 'inserir':
             cursor.execute("SELECT * FROM estoque WHERE LOWER(produto) = LOWER(%s)", (produto,))
             item_existente = cursor.fetchone()
@@ -149,8 +156,8 @@ def movimento():
 
             return redirect(url_for('home_bp.home'))
 
+        # Ação para Deletar Item
         elif tipo == 'deletar':
-            # Captura o identificador priorizando 'id' e validando também 'produto'
             identificador = data.get('id') or data.get('produto') if request.is_json else request.form.get('id') or request.form.get('produto')
             
             if not identificador:
