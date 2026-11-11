@@ -1,12 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='çennay.png') }}">    
+    <!-- Define o ícone que aparece na aba do navegador -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='çennay.png') }}">
+
+    <!-- Define a codificação de caracteres e adapta a página para diferentes telas -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Define o título da página e importa o arquivo CSS externo -->
     <title>Login - SENAI Almoxarifado</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
     <style>
+        /* Configura o fundo da página, a imagem, a fonte e o posicionamento dos elementos */
         body {
             margin: 0;
             height: 100vh;
@@ -16,7 +23,7 @@
             overflow: hidden;
         }
 
-        /* Ajuste do container das mensagens flash para não colar no topo absoluto */
+        /* Posiciona as mensagens de retorno na parte superior da página */
         .flash-container {
             position: fixed;
             top: 30px;
@@ -26,6 +33,8 @@
             width: 90%;
             max-width: 450px;
         }
+
+        /* Define o tamanho, a posição e a aparência da caixa de login */
         .login-box {
             position: absolute;
             top: 48%;
@@ -38,8 +47,9 @@
             padding: 25px 0;
             box-sizing: border-box;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-}
+        }
 
+        /* Personaliza o título da caixa de login */
         .login-box h1 {
             margin: 0 0 15px;
             text-align: center;
@@ -48,12 +58,14 @@
             text-shadow: 2px 2px #000;
         }
 
+        /* Organiza os campos de preenchimento e define seus espaçamentos */
         .campo {
             margin-left: 60px;
             margin-right: 60px;
             margin-bottom: 12px;
         }
 
+        /* Define a aparência dos nomes dos campos */
         .campo label {
             display: block;
             font-size: 15px;
@@ -62,6 +74,7 @@
             color: #333;
         }
 
+        /* Personaliza as caixas onde o usuário digita suas informações */
         .campo input {
             width: 100%;
             height: 40px;
@@ -72,6 +85,7 @@
             font-size: 14px;
         }
 
+        /* Define o tamanho, a cor e a aparência do botão de entrar */
         .botao-entrar {
             display: block;
             width: 200px;
@@ -88,6 +102,7 @@
             transition: background 0.2s;
         }
 
+        /* Altera a cor do botão quando o mouse passa sobre ele */
         .botao-entrar:hover {
             background: #f28c00;
         }
@@ -95,13 +110,15 @@
 </head>
 <body>
 
-    <!-- Exibição de Mensagens Flash Padronizadas -->
+    <!-- Exibe mensagens de sucesso ou erro enviadas pelo Flask -->
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         <div class="flash-container">
         {% for category, message in messages %}
             <div class="flash-message {{ category }}">
                 <span>{% if category == 'success' %}✅{% else %}⚠️{% endif %} {{ message }}</span>
+
+                <!-- Permite fechar a mensagem ao clicar no botão -->
                 <button class="flash-close" onclick="this.parentElement.style.display='none';">&times;</button>
             </div>
         {% endfor %}
@@ -109,19 +126,25 @@
     {% endif %}
     {% endwith %}
 
+    <!-- Formulário responsável por enviar os dados de login ao Flask -->
     <form class="login-box" method="POST" action="{{ url_for('login_bp.login') }}">
+
+        <!-- Exibe o título do formulário -->
         <h1>Login</h1>
 
+        <!-- Campo para digitar o nome de usuário -->
         <div class="campo">
             <label for="usuario">Usuário:</label>
             <input type="text" id="usuario" name="usuario" required autocomplete="off">
         </div>
 
+        <!-- Campo para digitar a senha -->
         <div class="campo">
             <label for="senha">Senha:</label>
             <input type="password" id="senha" name="senha" required>
         </div>
 
+        <!-- Botão que envia as informações preenchidas no formulário -->
         <button type="submit" class="botao-entrar">Entrar</button>
     </form>
 
