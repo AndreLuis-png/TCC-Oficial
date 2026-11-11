@@ -12,59 +12,68 @@ import {
 import { API_URL } from '../services/api.js';
 
 export default function CadastroUsuarioScreen({ navigation, route }) {
-  const [usuario, setUsuario] = useState('');
-  const [senha, setSenha] = useState('');
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [carregando, setCarregando] = useState(false);
-  const [menuPerfilAberto, setMenuPerfilAberto] = useState(false);
+  // --- ESTADOS DA TELA ---
+  const [usuario, setUsuario] = useState('');       // Armazena o nome de usuário (login) digitado
+  const [senha, setSenha] = useState('');           // Armazena a senha inicial do novo usuário
+  const [isAdmin, setIsAdmin] = useState(false);    // Controla se o novo usuário terá privilégios de administrador
+  const [carregando, setCarregando] = useState(false); // Controla o indicador de carregamento (loading)
+  const [menuPerfilAberto, setMenuPerfilAberto] = useState(false); // Controla a abertura do menu flutuante de perfil
 
+  // Obtém parâmetros passados pela rota anterior (com valores padrão caso estejam vazios)
   const usuarioLogado = route?.params?.usuario || 'andre';
   const userIsAdmin = route?.params?.isAdmin || true;
 
+  // --- FUNÇÃO DE CADASTRO ---
   const handleCadastrar = async () => {
+    // Validação: Garante que os campos de usuário e senha não estejam vazios
     if (!usuario.trim() || !senha.trim()) {
       Alert.alert('Erro', 'Preencha o nome de usuário e a senha.');
       return;
     }
 
-    setCarregando(true);
+    setCarregando(true); // Ativa o indicador de carregamento
     try {
+      // Faz a requisição POST para a API do Flask para cadastrar o usuário
       const response = await fetch(`${API_URL}/cadastrar_usuario`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           usuario: usuario,
           senha: senha,
-          is_admin: isAdmin ? 'on' : '',
+          is_admin: isAdmin ? 'on' : '', // Envia 'on' se marcado, ou vazio se for operador comum
           usuario_criador: usuarioLogado // Envia o operador logado para registrar no log do servidor
         })
       });
 
       const data = await response.json();
 
+      // Verifica se o cadastro foi realizado com sucesso
       if (response.ok && data.sucesso) {
         Alert.alert('Sucesso', data.mensagem || `Usuário ${usuario} cadastrado!`);
-        navigation.navigate('Admin');
+        navigation.navigate('Admin'); // Retorna para a tela de gerenciamento de admin
       } else {
+        // Exibe mensagem de erro retornada pelo servidor
         Alert.alert('Erro', data.mensagem || 'Não foi possível cadastrar o usuário.');
       }
     } catch (error) {
+      // Trata erros de conexão com a rede ou servidor fora do ar
       Alert.alert('Erro de Conexão', 'Não foi possível conectar ao servidor Flask.');
     } finally {
-      setCarregando(false);
+      setCarregando(false); // Desativa o indicador de carregamento independentemente do resultado
     }
   };
 
   return (
     <View style={styles.containerPrincipal}>
       
-      {/* 1. CABEÇALHO AZUL PRINCIPAL (Padronizado) */}
+      {/* 1. CABEÇALHO AZUL PRINCIPAL */}
       <View style={styles.headerTop}>
         <View style={styles.logoContainer}>
           <Text style={styles.logoSenai}>SENAI</Text>
           <Text style={styles.logoSub}> Almoxarifado</Text>
         </View>
         
+        {/* Botão de Perfil que abre/fecha o menu dropdown */}
         <TouchableOpacity 
           style={styles.btnPerfil} 
           onPress={() => setMenuPerfilAberto(!menuPerfilAberto)}
@@ -77,7 +86,7 @@ export default function CadastroUsuarioScreen({ navigation, route }) {
         </TouchableOpacity>
       </View>
 
-      {/* Dropdown de Usuário / Sair */}
+      {/* Dropdown de Usuário / Sair (Exibido condicionalmente) */}
       {menuPerfilAberto && (
         <View style={styles.dropdownPerfil}>
           <Text style={styles.dropdownUsuarioNom}>{usuarioLogado}</Text>
@@ -85,7 +94,7 @@ export default function CadastroUsuarioScreen({ navigation, route }) {
             style={styles.dropdownBtnSair} 
             onPress={() => {
               setMenuPerfilAberto(false);
-              navigation.navigate('Login');
+              navigation.navigate('Login'); // Redireciona para a tela de login
             }}
           >
             <Text style={styles.dropdownTxtSair}>Sair da Conta</Text>
@@ -95,11 +104,11 @@ export default function CadastroUsuarioScreen({ navigation, route }) {
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         
-        {/* 2. TÍTULO E SUBTÍTULO LARANJA */}
+        {/* 2. TÍTULO E SUBTÍTULO DA PÁGINA */}
         <Text style={styles.tituloPagina}>Cadastrar Novo Usuário</Text>
         <Text style={styles.subtituloPagina}>Crie um acesso para um novo operador ou administrador do sistema</Text>
 
-        {/* 3. NAV BAR COM ABA ATIVA DE CADASTRO */}
+        {/* 3. BARRA DE NAVEGAÇÃO ENTRE TELAS */}
         <View style={styles.navBar}>
           <TouchableOpacity style={styles.navBtn} onPress={() => navigation.navigate('Home')}>
             <Text style={styles.navTxt}>Estoque</Text>
@@ -117,7 +126,7 @@ export default function CadastroUsuarioScreen({ navigation, route }) {
           </TouchableOpacity>
         </View>
 
-        {/* 4. CARD DE CADASTRO */}
+        {/* 4. CARD DE CADASTRO (Formulário) */}
         <View style={styles.card}>
           <Text style={styles.label}>Nome de Usuário (Login)</Text>
           <TextInput 
@@ -137,6 +146,7 @@ export default function CadastroUsuarioScreen({ navigation, route }) {
             onChangeText={setSenha} 
           />
 
+          {/* Checkbox customizado para conceder privilégios de Admin */}
           <TouchableOpacity 
             style={styles.checkboxContainer} 
             onPress={() => setIsAdmin(!isAdmin)}
@@ -147,6 +157,7 @@ export default function CadastroUsuarioScreen({ navigation, route }) {
             <Text style={styles.checkboxLabel}>Conceder permissões de Administrador</Text>
           </TouchableOpacity>
 
+          {/* Botões de Ação: Cancelar e Salvar */}
           <View style={styles.botoesContainer}>
             <TouchableOpacity style={styles.btnCancelar} onPress={() => navigation.navigate('Admin')}>
               <Text style={styles.txtCancelar}>Cancelar</Text>
@@ -171,6 +182,7 @@ export default function CadastroUsuarioScreen({ navigation, route }) {
   );
 }
 
+// --- ESTILIZAÇÃO DA TELA (CSS-in-JS via React Native StyleSheet) ---
 const styles = StyleSheet.create({
   containerPrincipal: { flex: 1, backgroundColor: '#F4F6F9' },
   headerTop: { 
