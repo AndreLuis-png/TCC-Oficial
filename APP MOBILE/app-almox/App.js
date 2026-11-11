@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, StatusBar } from 'react-native';
 
+# Importação das telas do aplicativo mobile
 import LoginScreen from './src/screens/LoginScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import MovimentoScreen from './src/screens/MovimentoScreen';
@@ -8,9 +9,11 @@ import AdminScreen from './src/screens/AdminScreen';
 import CadastroUsuarioScreen from './src/screens/CadastroUsuarioScreen';
 
 export default function App() {
+  # Estados para controlar qual tela está ativa e os parâmetros/dados de sessão
   const [telaAtual, setTelaAtual] = useState('Login');
   const [dadosSessao, setDadosSessao] = useState({});
 
+  # Objeto que simula as funções de navegação entre as telas
   const navigationSimulada = {
     navigate: (nomeTela, parametros = {}) => {
       if (Object.keys(parametros).length > 0) {
@@ -23,7 +26,10 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Configuração da barra de status do celular */}
       <StatusBar barStyle="light-content" backgroundColor="#192A6B" />
+      
+      {/* Renderização condicional da tela ativa no momento */}
       {telaAtual === 'Login' && <LoginScreen navigation={navigationSimulada} />}
       {telaAtual === 'Home' && <HomeScreen navigation={navigationSimulada} route={{ params: dadosSessao }} />}
       {telaAtual === 'Movimento' && <MovimentoScreen navigation={navigationSimulada} route={{ params: dadosSessao }} />}
@@ -36,6 +42,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: '#F3F4F6', // Cor de fundo padrão cinza claro
   },
 });
