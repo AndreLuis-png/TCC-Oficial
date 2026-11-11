@@ -104,7 +104,7 @@
                 <form method="GET" action="{{ url_for('admin_bp.admin') }}"> <!--envia o filtro de pesquisa pela URL.-->
                     <div class="campo-form">
                         <label>Usuário:</label>
-                        <input type="text" name="filtro_usuario" class="input-padrao" placeholder="Buscar histórico por nome..." value="{{ request.args.get('filtro_usuario', '') }}"> */ permite pesquisar o histórico pelo nome do usuário.*/
+                        <input type="text" name="filtro_usuario" class="input-padrao" placeholder="Buscar histórico por nome..." value="{{ request.args.get('filtro_usuario', '') }}"> <!--permite pesquisar o histórico pelo nome do usuário.-->
                     </div>
                     <button type="submit" class="botao-filtro" style="margin-bottom: 15px;">Filtrar</button> <!--executa a pesquisa. -->
                 </form>
