@@ -1,6 +1,7 @@
 /* ==========================================
    VARIÁVEIS GLOBAIS
    ========================================== */
+/* Define as variáveis globais de cores utilizadas em diferentes partes do sistema. */
 :root {
     --primary-blue: #192A6B;
     --accent-orange: #FF9500;
@@ -13,6 +14,7 @@
 }
 
 /* Container de Alertas Flash Centralizado no topo da página */
+/* Posiciona e dimensiona o contêiner das mensagens de aviso no topo da página. */
 .flash-container {
     position: fixed;
     top: 20px;
@@ -23,6 +25,7 @@
     max-width: 450px;
 }
 
+/* Define a aparência geral das mensagens de retorno exibidas ao usuário. */
 .flash-message {
     padding: 14px 20px;
     border-radius: 12px;
@@ -36,18 +39,21 @@
     backdrop-filter: blur(4px);
 }
 
+/* Estiliza as mensagens que indicam que uma ação foi concluída com sucesso. */
 .flash-message.success {
     background-color: rgba(220, 252, 231, 0.95);
     color: #15803d;
     border-left: 5px solid var(--success);
 }
 
+/* Estiliza as mensagens que indicam erros ou falhas durante uma ação. */
 .flash-message.error {
     background-color: rgba(254, 226, 226, 0.95);
     color: #b91c1c;
     border-left: 5px solid var(--error);
 }
 
+/* Configura o botão utilizado para fechar uma mensagem de aviso. */
 .flash-close {
     background: none;
     border: none;
@@ -58,16 +64,19 @@
     margin-left: 10px;
 }
 
+/* Altera a opacidade do botão de fechar quando o cursor passa sobre ele. */
 .flash-close:hover {
     opacity: 1;
 }
 
+/* Aplica configurações básicas de dimensionamento e espaçamento a todos os elementos. */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
+/* Define as configurações gerais da página, incluindo altura, rolagem, fonte e fundo. */
 html, body {
     margin: 0;
     padding: 0;
@@ -79,6 +88,7 @@ html, body {
 }
 
 /* === CABEÇALHO INTEGRADO === */
+/* Organiza o cabeçalho principal, com cor de fundo, alinhamento e espaçamento. */
 header {
     width: 100%;
     background-color: var(--primary-blue);
@@ -90,18 +100,21 @@ header {
     border-bottom: 2px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Alinha os elementos que ficam agrupados no lado esquerdo do cabeçalho. */
 .header-left {
     display: flex;
     align-items: center;
     gap: 15px;
 }
 
+/* Define a aparência e o comportamento visual do ícone de menu. */
 .menu-hamburguer {
     font-size: 32px;
     color: var(--pure-white);
     cursor: pointer;
 }
 
+/* Estiliza o nome ou logotipo exibido no cabeçalho. */
 .logo {
     font-size: 30px;
     font-weight: 900;
@@ -110,6 +123,7 @@ header {
     letter-spacing: 1px;
 }
 
+/* Ajusta o tamanho e o espaçamento do texto complementar dentro do logotipo. */
 .logo span {
     font-weight: 400;
     font-size: 20px;
@@ -117,6 +131,7 @@ header {
 }
 
 /* === NAV BAR === */
+/* Configura a barra de navegação localizada abaixo do cabeçalho. */
 nav.top-nav {
     width: 100%;
     background-color: var(--primary-blue);
@@ -127,6 +142,7 @@ nav.top-nav {
     box-shadow: none !important;
 }
 
+/* Define a aparência dos links da barra de navegação. */
 nav.top-nav a {
     color: rgba(255, 255, 255, 0.85);
     text-decoration: none;
@@ -141,6 +157,7 @@ nav.top-nav a.active {
 }
 
 /* === MAIN CONTAINER === */
+/* Define a área principal de conteúdo, incluindo largura, espaçamento e rolagem. */
 main {
     width: 96%;
     max-width: 1800px;
@@ -154,6 +171,7 @@ main {
 }
 
 /* === TÍTULOS E SUBTÍTULOS === */
+/* Estiliza o título principal de cada página. */
 .page-title {
     color: var(--primary-blue);
     font-size: 42px;
@@ -161,6 +179,7 @@ main {
     margin-bottom: 2px;
 }
 
+/* Estiliza o subtítulo apresentado abaixo do título principal. */
 .page-subtitle {
     color: var(--orange-shadow);
     font-size: 18px;
@@ -169,6 +188,7 @@ main {
 }
 
 /* === PESQUISA E BOTÕES DE FILTRO  === */
+/* Define o tamanho, as cores e a aparência do campo de pesquisa. */
 .caixa-pesquisa {
     width: 100%;
     max-width: 600px;
@@ -183,17 +203,20 @@ main {
     transition: all 0.2s ease;
 }
 
+/* Destaca o campo de pesquisa enquanto ele está selecionado. */
 .caixa-pesquisa:focus {
     border-color: var(--accent-orange);
     background: #ffffff;
 }
 
+/* Organiza os botões de filtro em uma linha, permitindo quebra quando necessário. */
 .botoes-grupo {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
 }
 
+/* Define a aparência e o posicionamento dos botões utilizados para filtrar informações. */
 .botao-filtro {
     height: 50px;
     padding: 0 24px;
@@ -213,12 +236,14 @@ main {
     transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
 
+/* Aplica efeitos visuais ao botão de filtro quando o cursor passa sobre ele. */
 .botao-filtro:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 18px rgba(255, 149, 0, 0.4);
     filter: brightness(1.02);
 }
 
+/* Ajusta o tamanho e remove decorações do conteúdo interno dos botões de filtro. */
 .botao-filtro span {
     font-size: 22px;
     text-decoration: none !important;
@@ -226,11 +251,13 @@ main {
 }
 
 /* === TABELA ESTILIZADA === */
+/* Define a área externa que envolve a tabela de informações. */
 .tabela-area {
     width: 100%;
     margin-top: 20px;
 }
 
+/* Cria a área rolável da tabela e configura sua borda, fundo e sombra. */
 .tabela-scroll {
     width: 100%;
     max-height: 580px;
@@ -241,12 +268,14 @@ main {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
+/* Define a largura e o comportamento geral da tabela. */
 table {
     width: 100%;
     border-collapse: collapse;
     border-spacing: 0;
 }
 
+/* Configura o espaçamento, alinhamento e comportamento do texto nas células da tabela. */
 th, td {
     border: none;
     border-bottom: 1px solid #f1f5f9;
@@ -255,16 +284,19 @@ th, td {
     text-align: center;
 }
 
+/* Define especificamente a aparência do conteúdo das células da tabela. */
 td {
     font-size: 16px;
     font-weight: 400;
     color: #334155;
 }
 
+/* Destaca uma linha da tabela quando o cursor passa sobre ela. */
 tbody tr:hover {
     background-color: #f8fafc;
 }
 
+/* Estiliza os cabeçalhos da tabela e mantém sua posição fixa durante a rolagem. */
 th {
     position: sticky;
     top: 0;
@@ -288,18 +320,21 @@ table td .btn-primary,
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
+/* Aplica um efeito visual aos botões de ação da tabela quando recebem o cursor. */
 table td .btn-primary:hover {
     background-color: var(--accent-orange) !important;
     transform: translateY(-1px);
 }
 
 /* === CARDS DE DADOS E FORMULÁRIOS === */
+/* Organiza os elementos em uma grade com duas colunas adaptáveis ao espaço disponível. */
 .grid-2 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
     gap: 25px;
 }
 
+/* Define a aparência dos cartões que agrupam informações e formulários. */
 .card-painel {
     background: #ffffff;
     border: 1px solid rgba(0, 0, 0, 0.05) !important;
@@ -308,10 +343,12 @@ table td .btn-primary:hover {
     box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05) !important;
 }
 
+/* Controla o espaçamento entre os campos de um formulário. */
 .campo-form {
     margin-bottom: 16px;
 }
 
+/* Estiliza os textos que identificam os campos dos formulários. */
 .campo-form label {
     display: block;
     font-size: 15px;
@@ -320,6 +357,7 @@ table td .btn-primary:hover {
     color: #1e293b;
 }
 
+/* Define a aparência e o tamanho padrão dos campos de entrada de dados. */
 .input-padrao {
     width: 100%;
     height: 48px;
@@ -333,6 +371,7 @@ table td .btn-primary:hover {
     transition: all 0.2s ease;
 }
 
+/* Destaca o campo de entrada enquanto o usuário está digitando nele. */
 .input-padrao:focus {
     border-color: var(--accent-orange) !important;
     background: #ffffff;
@@ -340,6 +379,7 @@ table td .btn-primary:hover {
 }
 
 /* === TELA DE LOGIN === */
+/* Centraliza o conteúdo da tela de login e configura sua imagem de fundo. */
 .login-body {
     min-height: 100vh;
     display: flex;
@@ -348,6 +388,7 @@ table td .btn-primary:hover {
     background: var(--primary-blue) url('../../static/Almoxarifado.png') center/cover no-repeat;
 }
 
+/* Define o tamanho, o fundo, os cantos e a sombra da caixa de login. */
 .login-box {
     width: 520px;
     background: white;
@@ -356,6 +397,7 @@ table td .btn-primary:hover {
     box-shadow: 0 15px 35px rgba(0,0,0,0.25);
 }
 
+/* Estiliza o título exibido dentro da caixa de login. */
 .login-box h1 {
     margin: 0 0 20px;
     text-align: center;
@@ -364,6 +406,7 @@ table td .btn-primary:hover {
     text-shadow: 2px 2px #000;
 }
 
+/* Configura a aparência e o posicionamento de um botão de navegação. */
 .botao-menu {
     display: block;
     width: 160px;
@@ -381,11 +424,13 @@ table td .btn-primary:hover {
 }
 
 /* Container do Usuário */
+/* Serve como referência para posicionar o menu suspenso do usuário. */
 .user-dropdown-container {
     position: relative;
     display: inline-block;
 }
 
+/* Define a aparência e o comportamento visual do ícone de perfil do usuário. */
 .user-avatar {
     width: 48px;
     height: 48px;
@@ -401,6 +446,7 @@ table td .btn-primary:hover {
 }
 
 /* Menu Dropdown */
+/* Configura o menu suspenso que apresenta as opções da conta do usuário. */
 .user-menu {
     display: none;
     position: absolute;
@@ -415,18 +461,21 @@ table td .btn-primary:hover {
     border: 1px solid #e2e8f0;
 }
 
+/* Estiliza a área superior do menu suspenso, usada para identificar o usuário. */
 .user-menu-header {
     padding: 10px 16px;
     color: var(--primary-blue);
     font-size: 14px;
 }
 
+/* Configura a linha divisória entre as opções do menu do usuário. */
 .user-menu hr {
     border: 0;
     border-top: 1px solid #f1f5f9;
     margin: 6px 0;
 }
 
+/* Define a aparência dos links disponíveis no menu do usuário. */
 .user-menu a {
     color: #334155;
     padding: 10px 16px;
@@ -437,27 +486,33 @@ table td .btn-primary:hover {
     transition: background 0.15s;
 }
 
+/* Destaca uma opção do menu quando o cursor passa sobre ela. */
 .user-menu a:hover {
     background-color: #f8fafc;
 }
 
+/* Diferencia visualmente o link utilizado para sair da conta. */
 .user-menu a.logout-btn {
     color: #ef4444;
 }
 
+/* Destaca o link de saída quando o cursor passa sobre ele. */
 .user-menu a.logout-btn:hover {
     background-color: #fef2f2;
 }
 
+/* Exibe o menu suspenso quando a classe show está presente. */
 .user-menu.show {
     display: block;
 }
 
 /* === MODAL === */
+/* Define a largura máxima da janela modal utilizada para visualizar imagens. */
 #imageModal .modal-dialog {
     max-width: 750px;
 }
 
+/* Estiliza a estrutura principal da janela modal de imagens. */
 #imageModal .modal-content {
     border: none !important;
     border-radius: 20px !important;
@@ -466,6 +521,7 @@ table td .btn-primary:hover {
     background-color: #ffffff;
 }
 
+/* Configura o cabeçalho da janela modal, incluindo o alinhamento do título e do botão de fechar. */
 #imageModal .modal-header {
     background-color: #f8fafc;
     border-bottom: 1px solid #e2e8f0;
@@ -476,6 +532,7 @@ table td .btn-primary:hover {
     align-items: center;
 }
 
+/* Centraliza e estiliza o título exibido no cabeçalho da janela modal. */
 #imageModal .modal-title {
     font-weight: 700;
     color: var(--primary-blue);
@@ -487,6 +544,7 @@ table td .btn-primary:hover {
     text-align: center;
 }
 
+/* Centraliza o conteúdo apresentado no corpo da janela modal. */
 #imageModal .modal-body {
     padding: 30px;
     background-color: #ffffff;
@@ -495,6 +553,7 @@ table td .btn-primary:hover {
     align-items: center;
 }
 
+/* Limita as dimensões da imagem exibida na janela modal, preservando sua proporção. */
 #imageModal #modalImage {
     max-height: 400px;
     width: auto;
@@ -502,6 +561,7 @@ table td .btn-primary:hover {
     object-fit: contain;
 }
 
+/* Configura a área inferior da janela modal e centraliza seus elementos. */
 #imageModal .modal-footer {
     background-color: #f8fafc;
     border-top: 1px solid #e2e8f0;
@@ -510,6 +570,7 @@ table td .btn-primary:hover {
     justify-content: center;
 }
 
+/* Define a aparência do botão secundário localizado no rodapé da janela modal. */
 #imageModal .modal-footer .btn-secondary {
     background-color: var(--primary-blue) !important;
     border: none !important;
@@ -520,18 +581,21 @@ table td .btn-primary:hover {
     transition: background-color 0.2s, transform 0.1s;
 }
 
+/* Altera a aparência do botão secundário quando o cursor passa sobre ele. */
 #imageModal .modal-footer .btn-secondary:hover {
     background-color: var(--accent-orange) !important;
     transform: translateY(-1px);
 }
 
 /* === AJUSTE ESPECÍFICO PARA PÁGINAS CENTRALIZADAS (EX: CADASTRO) === */
+/* Ajusta a largura e o posicionamento da área principal em páginas com conteúdo centralizado. */
 main.main-centralizado {
     max-width: 650px !important;
     margin: 12px auto !important;
     padding: 15px 20px !important;
 }
 
+/* Organiza a caixa de seleção e seu texto, controlando o alinhamento e o espaçamento. */
 .checkbox-container {
     display: flex;
     align-items: center;
@@ -540,6 +604,7 @@ main.main-centralizado {
     margin-bottom: 22px;
 }
 
+/* Define o tamanho, a cor e o cursor da caixa de seleção. */
 .checkbox-container input[type="checkbox"] {
     width: 20px;
     height: 20px;
@@ -547,6 +612,7 @@ main.main-centralizado {
     cursor: pointer;
 }
 
+/* Estiliza o texto associado à caixa de seleção. */
 .checkbox-label {
     margin: 0 !important;
     cursor: pointer;
@@ -554,12 +620,14 @@ main.main-centralizado {
     color: #334155 !important;
 }
 
+/* Organiza os botões de ação de um formulário, mantendo o espaçamento entre eles. */
 .form-acoes {
     display: flex;
     gap: 15px;
     align-items: center;
 }
 
+/* Define a aparência e o alinhamento do botão utilizado para cancelar uma ação. */
 .botao-cancelar {
     display: flex;
     align-items: center;
@@ -575,10 +643,12 @@ main.main-centralizado {
     transition: background 0.2s;
 }
 
+/* Altera a cor de fundo do botão de cancelar quando o cursor passa sobre ele. */
 .botao-cancelar:hover {
     background: #94a3b8;
 }
 
+/* Faz o botão de salvar usuário ocupar o espaço disponível e define sua altura. */
 .btn-salvar-usuario {
     flex: 1;
     height: 50px !important;

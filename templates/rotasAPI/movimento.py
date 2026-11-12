@@ -58,7 +58,7 @@ def movimento():
     """Gerencia entradas, saídas, cadastros e exclusões de itens do estoque."""
     from app import mysql
     
-    if not request.is_json and ('logged_in' not in session or not session.get('is_admin')):
+    if not request.is_json and 'logged_in' not in session:
         return redirect(url_for('login_bp.login'))
         
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
